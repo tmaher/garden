@@ -3,7 +3,7 @@
 
 use strict;
 use XML::Simple;
-use Net::XMPP2;
+use AnyEvent::XMPP;
 use Data::Dumper;
 # use WWW::Mechanize;
 use URI::Escape;
@@ -15,16 +15,15 @@ use Fcntl qw/:flock/;
 use File::Copy;
 use Sys::Syslog qw/:standard :macros/;
 
-use Net::XMPP2::Client;
+use AnyEvent::XMPP::Client;
 use AnyEvent;
 
-use lib "/home/tmaher/src/perl";
 use tursom;
 
-my $DEBUG=1;
-
+my $DEBUG=0;
+my $NUKEPID=0;
+my $STOP = 0;
 my $am_child = 0;
-
 my $homebot_uid = getpwnam("homebot");
 
 if($< == 0){
@@ -34,9 +33,28 @@ if($< == 0){
   die "ERROR: must be started as root or homebot!\n";
 }
 
+my $USAGE = <<__EOS
+usage: $0 
+__EOS
+;
+
+while(defined($_ = shift(@ARGV))){
+  (/^-h$/ or /^--help$/) and do { die $USAGE; };
+  (/^-d$/ or /^--debug$/) and do { $DEBUG = 1; next; };
+  (/^-r$/) and do { $NUKEPID = 1; next; };
+  (/^-stop$/) and do { $STOP = 1; next; };
+}
+
+
 my $pidfile = "/var/run/homebot/pid";
 my $bot_sock = "/var/run/homebot/sock";
 
+if((-r $pidfile) and ($NUKEPID or $STOP)){
+  kill_pidfile($pidfile);
+  unlink($pidfile);
+  exit(0) if($STOP);
+}
+  
 my $pid_fh = new FileHandle;
 $pid_fh->open($pidfile, O_WRONLY|O_CREAT|O_EXCL|O_TRUNC) or
   die "pidfile or can't write to it! plz clean up manually!\n";
@@ -54,7 +72,7 @@ unless (defined($ref->{homebot})){
 }
 my $hb = $ref->{homebot};
 
-my $key_file = "/home/homebot/conf/pw.xml";
+my $key_file = "/home/homebot/private/pw.xml";
 $ref = XMLin($key_file);
 unless (defined($ref->{homebot}->{secret})){
   unlink($pidfile);
@@ -155,7 +173,7 @@ my $exit_normal = 0;
 
 my $j_c;
 
-my $cl = Net::XMPP2::Client->new(debug => $DEBUG);
+my $cl = AnyEvent::XMPP::Client->new(debug => $DEBUG);
 $cl->add_account($hb->{jid}, $secret) or die "Can't add acct";
 
 my $w_c = AnyEvent->io (
@@ -190,7 +208,7 @@ $cl->reg_cb
      my ($cl, $acc, $err) = @_;
      syslog(LOG_WARNING, "Error: %s", $err->string);
    },
-
+   
    contact_request_subscribe => sub {
      my ($cl, $acc, $roster, $contact) = @_;
      if (!defined($auth_users{$contact->jid})) {
