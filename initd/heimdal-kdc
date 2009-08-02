@@ -1,0 +1,80 @@
+#!/bin/bash
+# $Id$
+#
+# heimdal-kdc       heimdal key distribution center
+#
+# chkconfig:   - 35 65
+# description: Kerberos 5, Swedish-style!
+# processname: kdc
+# config: /etc/sysconfig/heimdal-kdc
+#
+
+# Get config.
+. /etc/sysconfig/network
+
+# Get config.
+[ -r /etc/sysconfig/heimdal-kdc ] && . /etc/sysconfig/heimdal-kdc
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+prog="Heimdal KDC"
+krb5kdc=/opt/heimdal/libexec/kdc
+
+# Sheel functions to cut down on useless shell instances.
+start() {
+	[ -x $krb5kdc ] || exit 5
+	echo -n $"Starting $prog: "
+    daemon ${krb5kdc} $HEIMDAL_ARGS
+	# daemon ${krb5kdc} ${KRB5REALM:+-r ${KRB5REALM}} $KRB5KDC_ARGS
+	RETVAL=$?
+	echo
+	[ $RETVAL = 0 ] && touch /var/lock/subsys/heimdal-kdc
+}
+stop() {
+	echo -n $"Stopping $prog: "
+	killproc ${krb5kdc}
+	RETVAL=$?
+	echo
+	[ $RETVAL = 0 ] && rm -f /var/lock/subsys/heimdal-kdc
+}
+reload() {
+	echo -n $"Reopening $prog log file: "
+	killproc ${krb5kdc} -HUP
+        RETVAL=$?
+	echo
+}
+
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	stop
+	start
+	;;
+  reload)
+        reload
+        ;;
+  status)
+	status ${krb5kdc}
+        RETVAL=$?
+	;;
+  condrestart)
+	if [ -f /var/lock/subsys/heimdal-kdc ] ; then
+		stop
+		start
+	fi
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|status|reload|restart|condrestart}"
+	RETVAL=2
+	;;
+esac
+
+exit $RETVAL

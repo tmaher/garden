@@ -11,3 +11,5 @@ fi
 ${INST_N} mt-daapd /etc/init.d/
 ${INST_N} pytivo /etc/init.d/
 ${INST_N} transmission-daemon /etc/init.d/
+${INST_N} heimdal-kdc /etc/init.d/
+${INST_N} youtube_talk /etc/init.d/
