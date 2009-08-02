@@ -1,0 +1,64 @@
+#!/usr/local/bin/perl -w
+# $Id$
+
+use strict;
+use Digest::HMAC;
+use Digest::SHA1;
+use LWP::UserAgent;
+use FileHandle;
+use Sys::Hostname;
+use MIME::Base64;
+
+my $CHECKIN_URL="http://tursom.org/checkin.php";
+
+my ($host, undef) = split(/\./, hostname());
+my $sent_ts = time();
+my $nonce = get_nonce();
+
+my $keys = get_keys();
+die "no key for $host" unless defined($keys->{$host});
+my $hmac = Digest::HMAC->new($keys->{$host}, "Digest::SHA1");
+my $sig = $hmac->add(join("|", $host, $sent_ts, $nonce))->hexdigest();
+
+my $ua = LWP::UserAgent->new();
+my $resp = $ua->post($CHECKIN_URL, {hostname => $host,
+                                    sent_ts => $sent_ts,
+                                    n => $nonce,
+                                    h => $sig,
+                                   });
+if($resp->code > 299 or !($resp->is_success)){
+  printf("checkin failure: '%d'\n", $resp->code);
+  exit(1);
+}
+
+print $resp->content . "\n";
+
+exit 0;
+
+sub get_nonce {
+  my $fh = new FileHandle ("/dev/urandom")
+    or die "Can't open urandom: $!";
+  $fh->binmode();
+  $fh->sysread(my $nonce, 15)
+    or die "Can't read from urandom";
+  $fh->close();
+  $nonce = encode_base64($nonce, "");
+  $nonce =~ tr,+/=,._-,;
+  return $nonce;
+}
+
+sub get_keys {
+
+  my $all_keys = {};
+  my $fh = new FileHandle ("/home/tmaher/private/checkin_hosts")
+    or die "can't open file: $!";
+  while(defined(my $line = $fh->getline())){
+    next if ($line =~ /^\s*#/);
+    chomp($line);
+    my ($key, $val) = split(/:/, $line, 2);
+    $all_keys->{$key} = $val;
+  }
+  $fh->close();
+
+  return $all_keys;
+}

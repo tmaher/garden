@@ -1,0 +1,12 @@
+#!/bin/bash
+# $Id$
+
+. `dirname "$0"`/../gen/setup_hdr
+
+if [ ! -r tursom_checkin ]; then
+  echo "ERROR: can't find stuff"
+  exit 1
+fi
+
+${INST_N} tursom_checkin /usr/local/bin/
+
