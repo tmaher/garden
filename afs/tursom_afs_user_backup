@@ -1,6 +1,11 @@
 #!/bin/bash
 # $Id$
 
+if [ $EUID != "0" ]; then
+    echo "ERROR: must be run as root"
+    exit 1
+fi
+
 PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
 VOLS=`vos listvldb -localauth | grep '^u\.'`
 vos backupsys -prefix u. -localauth >/dev/null 2>&1
