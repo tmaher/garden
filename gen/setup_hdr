@@ -1,0 +1,11 @@
+# $Id$
+INST="/usr/bin/install"
+INST_N="${INST} -o root -g root"
+
+if [ $EUID != "0" ]; then
+  echo "ERROR: must run as root/sudo"
+  exit 1
+fi
+
+DIR=`dirname "$0"`
+cd "$DIR"
