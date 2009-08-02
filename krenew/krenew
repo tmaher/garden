@@ -1,0 +1,20 @@
+#!/bin/bash
+
+PATH=/opt/heimdal/bin:$PATH
+KEYTAB="$HOME/private/$USER.kt"
+PRINC="$USER"
+
+if [ ! -r $KEYTAB ]; then
+  echo "ERROR: keytab not set up for $USER"
+  exit 1
+fi
+
+kinit --renewable -l 29d -t $KEYTAB $PRINC >/dev/null 2>&1
+
+klist -s
+if [ $? != 0 ]; then
+  echo "ERROR: $USER didn't get a credential cache!"
+  exit 1
+fi
+
+exit 0

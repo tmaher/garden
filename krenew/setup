@@ -1,0 +1,17 @@
+#!/bin/bash
+
+INST="/usr/bin/install"
+
+if [ $EUID != "0" ]; then
+  echo "ERROR: must run as root/sudo"
+  exit 1
+fi
+
+DIR=`dirname "$0"`
+
+if [ ! -r "${DIR}/krenew" ]; then
+  echo "ERROR: can't find krenew"
+  exit 1
+fi
+
+${INST} -o root -g root ${DIR}/krenew /usr/local/bin
