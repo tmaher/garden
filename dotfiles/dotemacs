@@ -1,0 +1,328 @@
+;;; -*- emacs-lisp -*-
+;;; $Id$
+
+;;; gc-cons-threshold should be mega-high during initialization
+(if (boundp 'tmaher-system-gc-cons-threshold) ()
+  (defvar tmaher-system-gc-cons-threshold gc-cons-threshold))
+(setq gc-cons-threshold 5000000)
+
+;;; Start off by setting the load-path idempotently
+(if (boundp 'tmaher-system-load-path) () 
+  (defvar tmaher-system-load-path load-path))
+(defvar tmaher-load-path 
+  '("~/src/elisp" 
+    ;; "~/src/elisp/gnus"
+    ))
+(setq load-path (append tmaher-load-path tmaher-system-load-path))
+(if (boundp 'user-in-xemacs) nil
+  (defvar user-in-xemacs (if (string-match "XEmacs" emacs-version) t nil)))
+(defmacro fsf/x (fsf x) `(if user-in-xemacs ,x ,fsf))
+
+;;; system-provided libraries
+(require 'font-lock)
+(require 'custom)
+(require 'cus-face)
+(require 'cus-edit)
+(fsf/x (require 'timer) nil)
+(require 'easymenu)
+(require 'lazy-lock)
+(fsf/x nil (require 'efs-cu))
+(require 'cl)
+(require 'wid-edit)
+(require 'vc)
+(require 'php-mode)
+;; (load-file "/usr/local/share/emacs/site-lisp/nxhtml/autostart.el")
+
+;;; Local libraries
+(require 'magus-macs)
+;; (require 'tmaher-gnus)
+;; (fsf/x nil (require 'zephyr-setup))
+;; (require 'tnt) ;;; I am such a tool of the man
+;; (require 'html-helper-mode)
+(require 'plsql)
+
+;;; Add some stubs so this works in both FSF & X Emacs.
+(if (fboundp 'scroll-bar-mode) nil
+  (defun scroll-bar-mode (x) "this is an unimplemented stub" 
+    (identity 'x)))
+
+(if (fboundp 'extent-properties-at) nil
+  (defun extent-properties-at (x) "this is an unimplemented stub"
+    (identity 'x)))
+
+(if (fboundp 'gnuserv-start) nil
+  (defun gnuserv-start () "this is an unimplemented stub"
+    nil))
+
+(if (fboundp 'custom-set-variables) nil
+  (defun custom-set-variables (x y) "this is an unimplemented stub"
+    (identity 'x)))
+
+(fsf/x nil 
+       (defun face-at-point ()
+         "What face is current point in?"
+         (interactive)
+         (message "%s" (or 
+                        (car (cdr 
+                              (member 'face (extent-properties-at (point)))))
+                        "default"))))
+
+(defvar fixed 
+  "-misc-fixed-medium-r-semicondensed--13-120-75-75-c-60-iso8859-1")
+
+(defun crack-whore () 
+  "It's easy, m'kay?"
+  (interactive)
+  (message "Living on the street, giving handjobs for crack."))
+
+
+(defun tmaher-init-keybind ()
+  "Rebind my keys correctly, damn it!"
+  (interactive)
+  (fsf/x (global-set-key "\C-\\" 'iso-accents-mode) nil)
+  (global-set-key "\C-x\-" 'shrink-window)
+  (global-set-key "\M-g" 'goto-line)
+  (global-set-key "\C-g" 'magus-jolly-candy-like-keyboard-quit)
+  (global-set-key "\C-s" 'isearch-forward-regexp)
+  (global-set-key "\C-r" 'isearch-backward-regexp)
+  (global-set-key "\M-%" 'query-replace-regexp)
+  (global-set-key [(meta tab)] 'dabbrev-completion)
+  (global-set-key "\M-s" 'ispell-buffer)
+  (define-key global-map [(control home)] 'beginning-of-buffer)
+  (define-key global-map [(control end)] 'end-of-buffer)
+  (define-key global-map [home] 'beginning-of-line)
+  (define-key global-map [end] 'end-of-line)
+  ;;  (if (fboundp 'tmaher-gnus-save)
+  ;;      (define-key gnus-summary-mode-map "s" 'tmaher-gnus-save))
+  ;; (if (fboundp 'tmaher-gnus-summary-delete-article-no-really)
+  ;; (gnus-define-keys (gnus-summary-backend-map "B" gnus-summary-mode-map)
+  ;; "D" tmaher-gnus-summary-delete-article-no-really))
+  ;; tnt-im, the AIM client, uses annoying keybindings.
+  ;; this makes them closer to zephyr.
+  (setq tnt-im-mode-map (make-sparse-keymap))
+  (define-key tnt-im-mode-map "\C-j" 'tnt-send-text-as-instant-message)
+  (define-key tnt-im-mode-map "\C-c\C-c" 'tnt-send-text-as-instant-message)
+  )
+
+(defun tmaher-init-setq ()
+  "(Re)set some default variables."
+  (interactive)
+  (setq
+   make-backup-files nil
+   auto-mode-alist (append (list '("\\.pl$" . cperl-mode)
+                                 '("\\.txt$" . text-mode)
+                                 '("\\.+rc$" . shell-script-mode)
+                                 ) auto-mode-alist)
+   frame-title-format (format "%S: %%b"(fsf/x 'emacs 'xemacs))
+   next-line-add-newlines nil  ;;; rms is a twit
+   minibuffer-max-depth nil
+   default-fill-column 72
+   default-tab-width 8
+   ;; resize-minibuffer-window-max-height 2
+   require-final-newline t
+   mm-inline-media-tests 
+   (cons '("text/html" nil (lambda (h) nil))
+         (if (boundp 'mm-inline-media-tests) mm-inline-media-tests
+           nil))
+   html-helper-address-string 
+   "Tom Maher 
+    &lt;<a href=\"mailto:tmaher@watson.org\">tmaher@watson.org</a>&gt; <br>"
+   ;; tnt is the emacs AOL instant messanger client
+   tnt-default-username "tkmaher3"
+   tnt-separator "\n"
+   tnt-use-timestamps t
+   tnt-beep-on-message-available-event 'audible
+   tnt-beep-on-message-in-visible-buffer 'audible
+   tnt-recenter-windows nil
+   lpr-switches '("-Plws313"))
+  (setq-default
+   indent-tabs-mode nil
+   sh-indentation 2)
+  )
+
+(defvar tmaher-at-work t)
+
+(defun tmaher-work ()
+  (interactive) (setq tmaher-at-work t))
+
+(defun tmaher-play ()
+  (interactive) (setq tmaher-at-work nil))
+
+(defun indent-buffer () (interactive)
+  "Smart-indent buffer"
+  (save-excursion (indent-region (point-min) (point-max) nil))
+  (save-excursion (untabify (point-min) (point-max)))
+  (if font-lock-mode (font-lock-fontify-buffer)))
+
+(defun tmaher-init-face-cleanup () 
+
+  "I think the whole \"custom\" package thing was designed to make me learn
+more elisp.  It worked. This function de-cusomifies all the faces listed below
+and makes them work properly."
+
+  (defvar tmaher-fucked-faces 
+    '(bold
+      bold-italic
+      italic
+      custom-button-face
+      custom-variable-button-face
+      widget-button-face
+      font-lock-comment-face
+      font-lock-doc-string-face
+      font-lock-function-name-face
+      font-lock-keyword-face
+      font-lock-preprocessor-face
+      font-lock-reference-face
+      font-lock-string-face
+      font-lock-type-face
+      font-lock-variable-name-face
+      font-lock-warning-face
+      ))
+  (maplist 
+   '(lambda (x) (let ((face (car x)))
+                  (custom-set-faces `(,face ((t nil)) t))
+                  (face-custom-attributes-set
+                   face nil :italic nil :bold nil :underline nil :size 10)
+                  (set-face-font face fixed)
+                  nil))
+   tmaher-fucked-faces))
+
+(defun tmaher-init-faces ()
+  "Set the faces the way I like them, damn it!"
+
+  (fsf/x (set-background-color "black") nil)
+  (magus-face 'default :font fixed :fg "lightgrey" :bg "black")
+  (magus-face 'bold :fg "white" :tty "white")
+  (magus-face 'bold-italic :fg "yellow" :tty "brightyellow")
+  (magus-face 'italic :fg "orange" :tty "yellow")
+  (fsf/x nil (magus-face 'custom-button-face :fg "white" :tty "white"))
+  (fsf/x nil (magus-face 
+              'custom-variable-button-face :fg "white" :tty "white"))
+  (fsf/x nil (magus-face 'widget-button-face :fg "white" :tty "white"))
+
+  (magus-face 'modeline :font fixed :fg "yellow" :bg "navy"
+              :tty "yellow" :tty-bg "blue")
+  (magus-face 'modeline-buffer-id :source 'modeline)
+  (magus-face 'modeline-mousable :source 'modeline)
+  (magus-face 'modeline-mousable-minor-mode :source 'modeline)
+
+  ;; source code editing faces
+  (magus-face 'font-lock-comment-face :fg "red" :tty "brightred")
+  (magus-face 'font-lock-doc-string-face :fg "green" :tty "green")
+  (magus-face 'font-lock-function-name-face :fg "green" :tty "green")
+  (magus-face 'font-lock-keyword-face :fg "orange" :tty "yellow")
+  (magus-face 'font-lock-preprocessor-face :fg "dodgerblue" :tty "brightblue")
+  (magus-face 'font-lock-reference-face :fg "orchid" :tty "magenta")
+  (magus-face 'font-lock-string-face :fg "green" :tty "green")
+  (magus-face 'font-lock-type-face :fg "gold" :tty "brightyellow")
+  (magus-face 'font-lock-variable-name-face :fg "dodgerblue" :tty "brightblue")
+
+  ;; mail/news reading & writing faces
+  ;; (magus-face 'gnus-group-news-3-face :source 'bold)
+  ;; (magus-face 'gnus-header-name-face :fg "lightgreen" :tty "brightgreen")
+  ;; (magus-face 'gnus-header-subject-face :source 'default)
+  ;; (magus-face 'gnus-header-content-face :source 'default)
+  (magus-face 'message-separator-face :fg "lightblue" :tty "brightblue")
+  ;; (magus-face 'message-header-name-face :source 'gnus-header-name-face)
+  (magus-face 'message-header-to-face :source 'bold)
+  (magus-face 'message-header-subject-face :source 'default)
+  (magus-face 'message-header-cc-face :source 'default)
+  (magus-face 'message-header-other-face :source 'default)
+
+  ;; la la la, fsf emacs-21.2 fixes much
+  (fsf/x 
+   (let ()
+     (set-face-attribute 'modeline nil
+                         :foreground "yellow"
+                         :background "blue"
+                         :inverse-video nil))
+   nil))
+
+
+(defun html-helper-default-insert-timestamp ()
+  "\"Default\" timestamp insertion function."
+  (let ((time (current-time-string)))
+    (insert "Last remix: "
+            (substring time 0 20)
+            (nth 1 (current-time-zone))
+            " "
+            (substring time -4)
+            "\n")))
+
+(defun tmaher-init ()
+  "Actually initialize stuff"
+  ;; cperl override
+  (defalias 'perl-mode 'cperl-mode)
+  (tmaher-init-setq)
+  (fsf/x nil (tmaher-init-face-cleanup))
+  (fsf/x nil (tmaher-init-faces))
+;;  (tmaher-init-gnus)
+  (fsf/x (server-start) (gnuserv-start))
+  (tmaher-init-keybind)
+  (column-number-mode t)
+  (line-number-mode t)
+  ;; (set-coding-priority-list '(utf-8))
+  ;; (set-coding-category-system 'utf-8 'utf-8)
+
+  ;; (fsf/x (global-font-lock-mode) nil)
+  ;; (resize-minibuffer-mode 2)
+  (fsf/x (scroll-bar-mode -1) nil)
+  (fsf/x nil (custom-set-variables
+              '(load-home-init-file t t)
+              '(user-mail-address "Tom Maher <tmaher@watson.org>" t)
+              '(toolbar-visible-p nil)
+              '(query-user-mail-address nil)))
+  (fsf/x (let ()
+;;         (tool-bar-mode -1) 
+           (menu-bar-mode -1))
+         nil)
+  (fsf/x (or (assq 'iso-accents-mode minor-mode-alist)
+             (setq minor-mode-alist
+                   (append minor-mode-alist
+                           '((iso-accents-mode " ISO-Acc"))))) nil)
+  ;; (fsf/x (standard-display-european t) nil)
+
+  (add-hook 'java-mode-hook (lambda () (setq c-basic-offset 2
+                                             indent-tabs-mode nil)))
+  )
+
+(tmaher-init)
+(setq gc-cons-threshold tmaher-system-gc-cons-threshold)
+
+(message "What is thy bidding, my master?")
+
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(load-home-init-file t t)
+ '(nxhtml-skip-welcome t)
+ '(query-user-mail-address nil)
+ '(toolbar-visible-p nil)
+ '(user-mail-address "Tom Maher <tmaher@watson.org>"))
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(bold ((t nil)))
+ '(bold-italic ((t nil)))
+ '(custom-button ((t nil)))
+ '(custom-variable-button ((t nil)))
+ '(face ((t (:foreground (quote foreground)))))
+ '(font-lock-comment-face ((t (:foreground "red" :weight light))))
+ '(font-lock-doc-string-face ((t nil)))
+ '(font-lock-function-name-face ((t (:foreground "magenta"))))
+ '(font-lock-keyword-face ((t (:foreground "yellow"))))
+ '(font-lock-preprocessor-face ((t nil)))
+ '(font-lock-reference-face ((t nil)))
+ '(font-lock-string-face ((t (:foreground "green"))))
+ '(font-lock-type-face ((t nil)))
+ '(font-lock-variable-name-face ((t (:foreground "cyan"))))
+ '(font-lock-warning-face ((t nil)))
+ '(italic ((t nil)))
+ '(mode-line ((t (:background "yellow" :foreground "blue" :inverse-video t))))
+ '(mumamo-background-chunk-major ((((class color) (min-colors 8)) nil)))
+ '(mumamo-background-chunk-submode ((((class color) (min-colors 8)) nil)))
+ '(widget-button ((t nil))))

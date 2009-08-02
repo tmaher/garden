@@ -1,7 +1,6 @@
 #!/bin/bash
 # $Id$
 
-
 export NOROOT=1
 . `dirname "$0"`/../gen/setup_hdr
 
@@ -13,3 +12,5 @@ fi
 ${INST} dotbashrc "${HOME}/.bashrc"
 ${INST} dotbash_profile "${HOME}/.bash_profile"
 ${INST} dotbash_logout "${HOME}/.bash_logout"
+${INST} dotemacs "${HOME}/.emacs"
+${INST} dotscreenrc "${HOME}/.screenrc"

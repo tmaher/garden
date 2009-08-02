@@ -1,5 +1,5 @@
-# -*- cperl -*-
 # $Id$
+
 package tursom;
 use strict;
 use LWP::UserAgent;
