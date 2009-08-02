@@ -1,0 +1,43 @@
+#!/bin/bash
+# $Id$
+
+export SCREEN_ACTUAL="/usr/bin/screen"
+export TD="/tmp/${USER}/ssh-agent-screen-${UID}"
+export WRAP_AGENT="${TD}/agent"
+
+reset
+resize
+
+if [ "x${SSH_AUTH_SOCK}" = "x" ]; then
+    export SSH_AUTH_SOCK="${WRAP_AGENT}"
+    exec ${SCREEN_ACTUAL} "$@"
+fi
+
+if [ ! -d "$TD" ]; then
+    mkdir -p "$TD"
+    chmod go-rwx "$TD"
+fi
+
+if [ ! -d "$TD" ]; then
+    echo "OMG: can't create agent directory!" >&2
+    exit 1
+fi
+
+if [ -L "${WRAP_AGENT}" ]; then
+    rm -f "${WRAP_AGENT}"
+fi
+
+if [ -L "${WRAP_AGENT}" ]; then
+    echo "OMG: can't unlink wrapper agent ${WRAP_AGENT}" >&2
+    exit 1
+fi
+
+ln -s "${SSH_AUTH_SOCK}" "${WRAP_AGENT}"
+
+if [ ! -L "${WRAP_AGENT}" ]; then
+    echo "OMG: can't create wrapper agent ${WRAP_AGENT}" >&2
+    exit 1
+fi
+
+export SSH_AUTH_SOCK="${WRAP_AGENT}"
+exec ${SCREEN_ACTUAL} "$@"
