@@ -1,0 +1,13 @@
+#!/bin/bash
+# $Id$
+
+. `dirname "$0"`/../gen/setup_hdr
+
+if [ ! -r mt-daapd ]; then
+  echo "ERROR: can't find stuff"
+  exit 1
+fi
+
+${INST_N} mt-daapd /etc/init.d/
+${INST_N} pytivo /etc/init.d/
+${INST_N} transmission-daemon /etc/init.d/
