@@ -6,7 +6,7 @@ use LWP::UserAgent;
 use URI::Escape;
 use HTML::Entities;
 use Socket;
-use POSIX;
+use POSIX qw(:errno_h);
 use HTML::PullParser;
 use HTML::TreeBuilder;
 use HTTP::Cookies::Netscape;
@@ -18,6 +18,7 @@ our @EXPORT = qw( &yt_get_video_id
                &yt_get_info
                &yt_fetch_vid
                &demonoid_get_id
+               &kill_pidfile
                );
 
 sub yt_get_video_id {
@@ -192,6 +193,25 @@ sub udp_ack {
   close(SOCK_CLIENT);
 
   return;
+}
+
+sub kill_pidfile {
+  my $pidfile = shift;
+  my $fh = new FileHandle;
+  my $pid;
+
+  $fh->open($pidfile) or return -1;
+  if(!defined($pid = $fh->getline())){
+    $fh->close();
+    return -1;
+  }
+
+  chomp($pid);
+  return -1 unless($pid =~ /^\d+$/);
+
+  kill "TERM", $pid;
+
+  return 1;
 }
 
 1;
