@@ -50,7 +50,7 @@ sub get_nonce {
 sub get_keys {
 
   my $all_keys = {};
-  my $fh = new FileHandle ("/home/tmaher/private/checkin_hosts")
+  my $fh = new FileHandle ("/home/homebot/private/checkin_hosts")
     or die "can't open file: $!";
   while(defined(my $line = $fh->getline())){
     next if ($line =~ /^\s*#/);
