@@ -1,9 +1,14 @@
+# -*- shell-script -*-
 # $Id$
+
 INST="/usr/bin/install"
 INST_N="${INST} -o root -g root"
 
-if [ $EUID != "0" ]; then
-  echo "ERROR: must run as root/sudo"
+if [ $EUID != "0" ] && [ x"${NOROOT}" = "x" ]; then
+  echo "ERROR: must run as root/sudo" >&2
+  exit 1
+elif [ $EUID = "0" ] && [ x"${NOROOT}" != "x" ]; then
+  echo "ERROR: no root was specified, but we are root!" >&2
   exit 1
 fi
 

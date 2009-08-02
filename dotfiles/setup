@@ -1,0 +1,14 @@
+#!/bin/bash
+# $Id$
+
+export NOROOT=1
+. `dirname "$0"`/../gen/setup_hdr
+
+if [ ! -r dotbashrc ]; then
+  echo "ERROR: can't find stuff"
+  exit 1
+fi
+
+${INST} dotbashrc "${HOME}/.bashrc"
+${INST} dotbash_profile "${HOME}/.bash_profile"
+${INST} dotbash_logout "${HOME}/.bash_logout"

@@ -9,3 +9,4 @@ if [ ! -r tursom.pm ]; then
 fi
 
 ${INST_N} tursom.pm /usr/lib/perl5/site_perl/ 
+${INST_N} screen-wrap /usr/local/bin/

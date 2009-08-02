@@ -1,0 +1,32 @@
+# -*- shell-script -*-
+# $Id$
+
+PATH=$HOME/bin:$HOME/sbin:/opt/emacs-23.0.95/bin:/usr/local/bin:/usr/local/sbin
+PATH=$PATH:/usr/bin:/usr/sbin:/bin/sbin
+PATH=$PATH:/opt/heimdal/bin:/opt/heimdal/sbin
+PATH=$PATH:/usr/kerberos/bin:/usr/kerberos/sbin:/bin:/sbin:/usr/X11R6/bin
+export PATH
+export PATH_NO_REALLY=$PATH
+
+MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
+MANPATH=$MANPATH:/opt/heimdal/share/man
+MANPATH=$MANPATH:/usr/man:/usr/kerberos/man:/usr/X11R6/man
+export MANPATH
+
+export EDITOR=vim
+export SVN_EDITOR=$EDITOR
+export EDITOR
+export SVN_EDITOR
+
+PAGER=less; export PAGER
+BLOCKSIZE=K; export BLOCKSIZE
+
+HOST_SHORT=`hostname | tr A-Z a-z`
+export HOST_SHORT
+
+if readlink /bin/sh | grep bash >/dev/null; then
+  ENV="$HOME/.bashrc"
+  export ENV
+fi
+
+. $HOME/.bashrc
