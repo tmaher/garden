@@ -1,2 +1,3 @@
 # $Id$
 0 4 * * *  /usr/local/bin/krenew
+*/5 * * * * /usr/local/bin/tursom_checkin
