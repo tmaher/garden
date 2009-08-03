@@ -1,0 +1,17 @@
+#!/bin/bash
+# $Id$
+
+. `dirname "$0"`/../gen/setup_hdr
+
+if [ ! -r root ]; then
+  echo "ERROR: can't find stuff"
+  exit 1
+fi
+
+for ACCT in tmaher homebot transmission root; do
+    if [ ! -r "${ACCT}" ]; then
+        echo "ERROR: no crontab for ${ACCT}" >&2
+        exit 1
+    fi
+    crontab -u "${ACCT}" "${ACCT}"
+done
