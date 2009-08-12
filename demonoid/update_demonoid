@@ -1,0 +1,25 @@
+#!/usr/local/bin/bash
+# $Id$
+
+PATH=$PATH:/usr/local/bin:/usr/local/sbin
+export PATH
+
+let SLEEPTIME="($RANDOM -367) % 3600"
+# sleep $SLEEPTIME
+
+#CK=`mktemp /tmp/dcookie.XXXXXX` || exit 1
+CK_SAVE="/var/tmp/dcookie"
+CK="${CK}.live"
+
+POST=$HOME/.demonoid.post
+WGET="wget -q --load-cookies $CK --keep-session-cookies --save-cookies $CK"
+
+rm -f /tmp/log[123]
+
+$WGET -O /tmp/log1 http://www.demonoid.com/
+$WGET --post-file $POST -O /tmp/log2 http://www.demonoid.com/account_handler.php
+$WGET -O /tmp/log3 http://www.demonoid.com/files
+
+mv "$CK" "${CK_SAVE}"
+
+# rm -f $CK
