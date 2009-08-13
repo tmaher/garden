@@ -31,7 +31,7 @@ if($resp->code > 299 or !($resp->is_success)){
   exit(1);
 }
 
-print $resp->content . "\n";
+# print $resp->content . "\n";
 
 exit 0;
 
