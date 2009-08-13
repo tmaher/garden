@@ -17,7 +17,7 @@ if [ ! -d ${CK_SAVE} ]; then
   exit 1
 fi
 
-CK=`mktemp /var/tmp/dcookie.XXXXXX` || exit 1
+CK=`mktemp /var/tmp/dcookie/cookie.XXXXXX` || exit 1
 
 POST=$HOME/private/demonoid.post
 WGET="wget -q --load-cookies $CK --keep-session-cookies --save-cookies $CK"
