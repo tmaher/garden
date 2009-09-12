@@ -7,10 +7,11 @@ if [ $EUID != "0" ]; then
 fi
 
 PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
-VOLS=`vos listvldb -localauth | grep '^[a-z]' | grep -v '^u\.'`
+VOLS=`vos listvldb -localauth | grep '^[a-tv-z]'`
 
-for vol in "${VOLS}"; do
-    vos rel "$vol" -localauth
+for vol in ${VOLS}; do
+    echo "releasing $vol";
+    vos rel "$vol" -localauth 2>&1
 done
 
 exit 0
