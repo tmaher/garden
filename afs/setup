@@ -9,3 +9,4 @@ if [ ! -r tursom_afs_user_backup ]; then
 fi
 
 ${INST_N} tursom_afs_user_backup /usr/local/sbin/
+${INST_N} tursom_afs_all_release /usr/local/sbin/
