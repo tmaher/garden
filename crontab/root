@@ -1,2 +1,3 @@
 # $Id$
 30 4 * * * /usr/local/sbin/tursom_afs_user_backup
+30 5 * * * /usr/local/sbin/tursom_afs_all_release
