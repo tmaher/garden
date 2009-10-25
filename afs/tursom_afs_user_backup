@@ -11,7 +11,7 @@ VOLS=`vos listvldb -localauth | grep '^u\.'`
 vos backupsys -prefix u. -localauth >/dev/null 2>&1
 
 for vol in $VOLS; do
-  vos rel "$vol" -localauth >/dev/null >/dev/null 2>&1
+  vos rel "$vol" -localauth >/dev/null 2>&1
 done
 
 exit 0
