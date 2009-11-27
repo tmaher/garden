@@ -5,15 +5,6 @@
 ddns-update-style none;
 #
 
-subnet 9.111.111.0 netmask 255.255.255.192 {
-  pool {            
-    failover peer "dhcp";
-    range 9.111.111.10 9.111.111.50;
-    deny dynamic bootp clients;
-  }
-  option routers 9.111.111.62;
-} 
-
 subnet 192.168.123.0 netmask 255.255.255.0 {
   pool {
     failover peer "dhcp";
