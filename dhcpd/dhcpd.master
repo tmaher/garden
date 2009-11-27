@@ -1,0 +1,69 @@
+# $Id$
+# DHCP Server Configuration file.
+#   see /usr/share/doc/dhcp*/dhcpd.conf.sample  
+#
+ddns-update-style none;
+subnet 192.168.123.0 netmask 255.255.255.0 {
+  range 192.168.123.128 192.168.123.191;
+  default-lease-time 7200;
+  max-lease-time 14400;
+  option routers 192.168.123.254;
+  option domain-name-servers 68.94.156.1, 68.94.157.1;
+  option subnet-mask 255.255.255.0;
+  option domain-name "tursom.org";
+  # option time-offset -8;
+}
+
+
+group {
+  # fixed devices
+
+  host steam {
+    hardware ethernet 00:40:63:F9:6F:6C;
+    fixed-address steam.tursom.org;
+    option host-name "steam";
+    #next-server 192.168.123.2;
+    #filename "pxelinux.0";
+  }
+  host hippie {
+    hardware ethernet 00:1A:4B:14:A9:6F;
+    fixed-address hippie.tursom.org;
+  }
+  host office-tivo {
+    hardware ethernet 00:11:d9:0f:0f:f2;
+    fixed-address office-tivo.tursom.org;
+  }
+  host living-tivo {
+    hardware ethernet 00:11:d9:0a:59:3c;
+    fixed-address living-tivo.tursom.org;
+  }
+}
+
+group {
+  # laptops/phones
+
+  host doubtfeet-lm {
+    hardware ethernet 00:1b:63:a5:3e:06;
+    fixed-address 192.168.123.51;
+  }
+  host doubtfeet-lm-wireless {
+    hardware ethernet 00:1c:b3:c3:d1:62;
+    fixed-address 192.168.123.52;
+  }
+  host grover {
+    hardware ethernet 00:1e:c2:0a:d7:06;
+    fixed-address 192.168.123.53;
+  }
+  host grover-wireless {
+    hardware ethernet 00:1e:52:75:58:a7;
+    fixed-address 192.168.123.54;
+  }
+  host datagasm {
+    hardware ethernet 00:21:e9:58:62:50;
+    fixed-address 192.168.123.55;
+  }
+  host ursophone {
+    hardware ethernet 00:26:08:aa:ed:b2;
+    fixed-address 192.168.123.56;
+  }
+}
