@@ -3,8 +3,23 @@
 #   see /usr/share/doc/dhcp*/dhcpd.conf.sample  
 #
 ddns-update-style none;
+#
+
+subnet 9.111.111.0 netmask 255.255.255.192 {
+  pool {            
+    failover peer "dhcp";
+    range 9.111.111.10 9.111.111.50;
+    deny dynamic bootp clients;
+  }
+  option routers 9.111.111.62;
+} 
+
 subnet 192.168.123.0 netmask 255.255.255.0 {
-  range 192.168.123.128 192.168.123.191;
+  pool {
+    failover peer "dhcp";
+    range 192.168.123.128 192.168.123.191;
+    deny dynamic bootp clients;
+  }
   default-lease-time 7200;
   max-lease-time 14400;
   option routers 192.168.123.254;

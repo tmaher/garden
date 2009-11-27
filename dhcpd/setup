@@ -1,0 +1,15 @@
+#!/bin/bash
+# $Id$
+
+. `dirname "$0"`/../gen/setup_hdr
+
+if [ ! -r dhcpd.master ]; then
+  echo "ERROR: can't find stuff"
+  exit 1
+fi
+
+. /etc/sysconfig/network
+SHORTHOST=`echo $HOSTNAME | cut -f 1 -d \. `
+
+${INST_N} dhcpd.master /etc/
+${INST_N} dhcpd.conf.${SHORTHOST} /etc/dhcpd.conf

@@ -1,0 +1,14 @@
+# $Id$
+# DHCP conf file for steam, the backup
+
+failover peer "dhcp" {
+   secondary;
+   address 192.168.123.3;
+   port 647;
+   peer address 192.168.123.3;
+   peer port 647;
+   max-response-delay 60;
+   max-unacked-updates 10;
+}
+
+include "/etc/dhcpd.master";
