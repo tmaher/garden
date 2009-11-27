@@ -1,9 +1,9 @@
 # $Id$
 # DHCP Server Configuration file.
 #   see /usr/share/doc/dhcp*/dhcpd.conf.sample  
-#
+
+authoritative;
 ddns-update-style none;
-#
 
 subnet 192.168.123.0 netmask 255.255.255.0 {
   pool {
@@ -24,9 +24,14 @@ subnet 192.168.123.0 netmask 255.255.255.0 {
 group {
   # fixed devices
 
+  host lambic {
+    hardware ethernet 00:21:9B:19:76:19;
+    fixed-address 192.168.123.2;
+    option host-name "lambic";
+  }
   host steam {
     hardware ethernet 00:40:63:F9:6F:6C;
-    fixed-address steam.tursom.org;
+    fixed-address 192.168.123.3;
     option host-name "steam";
     #next-server 192.168.123.2;
     #filename "pxelinux.0";
