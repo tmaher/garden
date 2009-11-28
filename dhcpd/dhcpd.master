@@ -14,7 +14,8 @@ subnet 192.168.123.0 netmask 255.255.255.0 {
   default-lease-time 7200;
   max-lease-time 14400;
   option routers 192.168.123.254;
-  option domain-name-servers 68.94.156.1, 68.94.157.1;
+  # option domain-name-servers 68.94.156.1, 68.94.157.1;
+  option domain-name-servers 192.168.123.2, 192.168.123.3;
   option subnet-mask 255.255.255.0;
   option domain-name "tursom.org";
   # option time-offset -8;
