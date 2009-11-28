@@ -1,3 +1,3 @@
 search tursom.org
-nameserver 68.94.156.1
-nameserver 68.94.157.1
+nameserver 127.0.0.1
+nameserver 192.168.123.3

@@ -8,6 +8,11 @@ if [ ! -r named.conf ]; then
   exit 1
 fi
 
+. /etc/sysconfig/network
+SHORTHOST=`echo $HOSTNAME | cut -f 1 -d \. `
+
+${INST_RO} resolv.conf.${SHORTHOST} /etc/resolv.conf
+
 ${INST_RO} named.conf /etc/
 ${INST_RO} named.conf /var/named/chroot/etc/
 
