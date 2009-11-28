@@ -1,0 +1,9 @@
+$TTL 345600
+@       IN      SOA     localhost. root.localhost.  (
+00       ; Serial
+86400    ; Refresh
+7200     ; Retry
+2592000  ; Expire
+345600 ) ; Minimum
+0.0.127.in-addr.arpa.    IN      NS      localhost.
+1       IN      PTR     localhost.

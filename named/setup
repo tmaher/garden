@@ -1,0 +1,13 @@
+#!/bin/bash
+# $Id$
+
+. `dirname "$0"`/../gen/setup_hdr
+
+if [ ! -r named.conf ]; then
+  echo "ERROR: can't find stuff"
+  exit 1
+fi
+
+${INST_N} named.conf /etc/
+${INST_N} db.127.0.0 /var/named/chroot/var/named/ 
+${INST_N} named.root /var/named/chroot/var/named/
