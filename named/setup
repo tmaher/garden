@@ -8,6 +8,10 @@ if [ ! -r named.conf ]; then
   exit 1
 fi
 
-${INST_N} named.conf /etc/
-${INST_N} db.127.0.0 /var/named/chroot/var/named/ 
-${INST_N} named.root /var/named/chroot/var/named/
+${INST_RO} named.conf /etc/
+${INST_RO} named.conf /var/named/chroot/etc/
+
+${INST_RO} named.root /etc/
+${INST_RO} named.root /var/named/chroot/var/named/
+
+${INST_RO} db.127.0.0 /var/named/chroot/var/named/
