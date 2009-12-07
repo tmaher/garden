@@ -16,6 +16,7 @@ use File::Copy;
 use Sys::Syslog qw/:standard :macros/;
 
 use AnyEvent::XMPP::Client;
+use AnyEvent::XMPP::Ext::Ping;
 use AnyEvent;
 
 use tursom;
@@ -175,6 +176,8 @@ my $j_c;
 
 my $cl = AnyEvent::XMPP::Client->new(debug => $DEBUG);
 $cl->add_account($hb->{jid}, $secret) or die "Can't add acct";
+$cl->add_extension (my $cl_ping = AnyEvent::XMPP::Ext::Ping->new);
+$cl_ping->auto_timeout (60);
 
 my $w_c = AnyEvent->io (
 #                        fh => \*SOCK_SERVER,
@@ -195,6 +198,62 @@ $cl->reg_cb
      my ($cl, $acc) = @_;
      syslog(LOG_NOTICE, "session ready, %s notified", $startup_inform);
      $cl->send_message($startup_msg => $startup_inform, undef, 'chat');
+   },
+
+   session_error => sub {
+     my ($cl, $acc, $e) = @_;
+     my $desc = defined($e->condition()) ? $e->condition() : "undefined err";
+     syslog(LOG_NOTICE, "session error: %s", $desc);
+   },
+
+   iq_xml => sub {
+     my ($cl, $acc, $node) = @_;
+     my $ns = defined($node->namespace()) ? $node->namespace() : "NULL";
+     my $from = defined($node->attr("from")) ? $node->attr("from") : "SERVER";
+
+
+     #syslog(LOG_NOTICE, "IQ: from:%s, as:%s", $from, $node->as_string());
+
+     #my $child_list = Dumper($node->nodes);
+     #foreach my $child (@{$node->nodes}){
+     #  syslog(LOG_NOTICE, "have child %s", Dumper($child));
+     #  my $child_ns = defined($child->namespace) ? $child->namespace : "NULL";
+     #  $child_list .= $child->name . "-" . $child->namespace() . ";";
+     #}
+
+     #syslog(LOG_NOTICE, "IQ: from:%s, CHILDREN:%s", $child_list);
+
+   },
+
+   roster_update => sub {
+     my ($cl, $acc, $roster, $contacts) = @_;
+
+     my $ct_string = "";
+
+     foreach my $contact (@$contacts){
+       $ct_string .= ";" . $contact->jid;
+     }
+     $ct_string =~ s/^\;//;
+
+     syslog(LOG_NOTICE, "roster: %s", $ct_string);
+   },
+
+   roster_error => sub {
+     my ($cl, $acc, $e) = @_;
+     my $desc = defined($e->condition()) ? $e->condition() : "undefined err";
+     syslog(LOG_NOTICE, "roster error: %s", $desc);
+   },
+
+   presence_error => sub {
+     my ($cl, $acc, $e) = @_;
+     my $desc = defined($e->condition()) ? $e->condition() : "undefined err";
+     syslog(LOG_NOTICE, "presence error: %s", $desc);
+   },
+
+   message_error => sub {
+     my ($cl, $acc, $e) = @_;
+     my $desc = defined($e->condition()) ? $e->condition() : "undefined err";
+     syslog(LOG_NOTICE, "message error: %s", $desc);
    },
 
    disconnect => sub {
