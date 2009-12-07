@@ -127,6 +127,9 @@ my $sock_server =
     die "socket: $err";
   };
 
+chown(5186, 100, $bot_sock) or die $!;
+chmod(0760, $bot_sock);
+
 #my $uaddr = sockaddr_un($bot_sock);
 #unless(socket(SOCK_SERVER, PF_UNIX, SOCK_DGRAM, 0)) {
 #  my $err = $!;
@@ -206,13 +209,55 @@ $cl->reg_cb
      syslog(LOG_NOTICE, "session error: %s", $desc);
    },
 
+   stream_error => sub {
+     my ($cl, $acc, $e) = @_;
+     my $en = defined($e->name()) ? $e->name() : "UNDEF";
+     my $et = defined($e->text()) ? $e->text() : "UNDEF";
+
+     syslog(LOG_NOTICE, "stream err: %s %s", $en, $et);
+   },
+
+   xml_parser_error  => sub {
+     my ($cl, $acc, $e) = @_;
+     syslog(LOG_NOTICE, "XML PARSING ERROR");
+   },
+
+   tls_error => sub {
+     my ($cl, $acc) = @_;
+
+     syslog(LOG_NOTICE, "TLS ERROR");
+   },
+
+   sasl_error => sub {
+     my ($cl, $acc) = @_;
+
+     syslog(LOG_NOTICE, "SASL error");
+   },
+
+   iq_auth_error  => sub {
+     my ($cl, $acc, $e) = @_;
+     syslog(LOG_NOTICE, "IQ Auth error");
+   },
+
+   connect => sub {
+     my ($cl, $acc, $host, $port) = @_;
+
+     syslog(LOG_NOTICE, "connected: %s:%d", $host, $port);
+   },
+
+   
+
    iq_xml => sub {
      my ($cl, $acc, $node) = @_;
      my $ns = defined($node->namespace()) ? $node->namespace() : "NULL";
      my $from = defined($node->attr("from")) ? $node->attr("from") : "SERVER";
 
+     my @nr = $node->nodes;
+     # my @names = map { $_->name } @nr;
+     my $names_str = join(":", map { $_->name } @nr);
 
-     #syslog(LOG_NOTICE, "IQ: from:%s, as:%s", $from, $node->as_string());
+     syslog(LOG_NOTICE, "IQ:%d:from:%s, ns %s, nodes:%s",
+            scalar(time()), $from, $ns, $names_str);
 
      #my $child_list = Dumper($node->nodes);
      #foreach my $child (@{$node->nodes}){
@@ -242,6 +287,20 @@ $cl->reg_cb
      my ($cl, $acc, $e) = @_;
      my $desc = defined($e->condition()) ? $e->condition() : "undefined err";
      syslog(LOG_NOTICE, "roster error: %s", $desc);
+   },
+
+   presence_update => sub {
+     my ($cl, $acc, $roster, $contact, $p_old, $p_new) = @_;
+     
+     my $s_old = defined($p_old) ? $p_old->status : 'unavailable';
+     $s_old = "available" unless($s_old =~ /./);
+     my $s_new = defined($p_new) ? $p_new->status : 'unavailable';
+     $s_new = "available" unless($s_new =~ /./);
+     
+
+     syslog(LOG_NOTICE, "PRESENCE: %s : %s => %s",
+            $contact->jid, $s_old, $s_new);
+     
    },
 
    presence_error => sub {
@@ -320,6 +379,7 @@ $cl->reg_cb
 
        exit(0);
      }
+     AnyEvent::XMPP::IM::Connection->new()->ping($cl);
      $j_c = AnyEvent->condvar;
    },
   );
@@ -334,7 +394,7 @@ while(!$exit_normal){
     exit(1);
   }
   $j = AnyEvent->condvar;
-  sleep(30) unless ($exit_normal);
+  sleep(1) unless ($exit_normal);
 }
 
 unlink($bot_sock);
