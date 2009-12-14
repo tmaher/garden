@@ -9,5 +9,4 @@ if [ ! -r update_demonoid ]; then
 fi
 
 ${INST_N} update_demonoid /usr/local/bin/
-${INST_N} update_tvtorrents /user/local/bin/
-
+${INST_N} update_tvtorrents /usr/local/bin/
