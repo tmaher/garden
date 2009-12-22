@@ -44,7 +44,9 @@ if($pl === NULL or
 }
 
 ?>
-<html><head><title>list test</title>
+<html><head><title>
+<?php print($user . "/" . $list . " twitter feed"); ?>
+</title>
 <style type="text/css">
 <!--
   a {  font-family: Arial, Helvetica, sans-serif; color: #000099; text-decoration: none}
