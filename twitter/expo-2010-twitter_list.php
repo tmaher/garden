@@ -1,5 +1,11 @@
 <?php
 // $Id$
+
+$error_msg =<<<ERROR
+<html><head><title>OMG TWITTER ERROR</title></head>
+<body><b>OMG TWITTER ERROR</b></body></html>
+ERROR;
+
 $user = "ExpoMuseum";
 $list = "expo-2010";
 $fmt = "json";
@@ -12,19 +18,30 @@ $payload = curl_exec($ch);
 
 if($payload === false){
   error_log("error fetching $src : " . curl_error($ch));
-
   header("HTTP/1.1 500 Internal Server Error");
+  print($error_msg);
+  exit(1);
+}
+
+$i = curl_getinfo($ch);
+if(!preg_match("/application\/json/i", $i["content_type"])){
+  error_log("error fetching $src, got " . $i["content_type"]);
+  header("HTTP/1.1 500 Internal Server Error");
+  print($error_msg);
   exit(1);
 }
 
 curl_close($ch);
 
 $pl = json_decode($payload);
-if($pl === NULL){
+
+if($pl === NULL or
+   isset($pl->error)){
   error_log("json_decode error");
   header("HTTP/1.1 500 Internal Server Error");
+  print($error_msg);
   exit(1);
-}  
+}
 
 ?>
 <html><head><title>list test</title>
@@ -72,7 +89,6 @@ body {
 </head>
 <body>
 <?php
-
 
 printf("<div id=\"twitter_div\">\n");
 printf("%s<hr />\n", date('r'));
