@@ -62,7 +62,7 @@ li {
   margin-bottom: 10px;
 }
 body {
-  background-image: url(imagebucket/tile01.gif);
+  background-image: url('http://www.expomuseum.com/imagebucket/tile01.gif');
   background-color: #FFFFFF;
 }
 -->
