@@ -1,4 +1,5 @@
 <?php
+// $Id$
 
 if(!isset($_REQUEST['hostname']) or
    !isset($_REQUEST['sent_ts']) or
