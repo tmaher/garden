@@ -21,7 +21,7 @@ my $TMPLM4A = <<EOL
 <item>
   <title>The World's Fair Podcast, Episode __ENUM__</title>
   <description>__EDESC__</description>
-  <itunes:summary>__EDESC__</description>
+  <itunes:summary>__EDESC__</itunes:summary>
   <guid>http://www.worldsfairpodcast.com/itunes/WFP-__ENUM3__.m4a</guid>
   <enclosure url="http://www.worldsfairpodcast.com/itunes/WFP-__ENUM3__.m4a" length="__M4ALENGTH__" type="audio/x-m4a" />
   <pubDate>__DATE__</pubDate>
@@ -95,13 +95,12 @@ $TMPLM4A =~ s/__DATE__/$now/g;
 $TMPLM4A =~ s/__LENGTH__/$length/g;
 
 print "\n\n";
+printf(" <pubDate>%s</pubDate>\n", $build_time);
 if($mode eq "mp3"){
-  print "\n\n";
-  printf("<lastBuildDate>%s</lastBuildDate>\n\n", $build_time);
-
+  printf(" <lastBuildDate>%s</lastBuildDate>\n\n", $build_time);
   print $TMPLMP3;
 } elsif($mode eq "itunes"){
-  print $TMPLM4A;
+  print "\n\n" . $TMPLM4A;
 } else { die $USAGE; }
 print "\n\n";
 
