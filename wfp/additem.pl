@@ -6,7 +6,7 @@ use POSIX;
 
 my $TMPLMP3 =<<EOL
  <item>
-  <title>World's Fair Podcast, Episode __ENUM__: __TITLE__</title>
+  <title>The World's Fair Podcast, Episode __ENUM__: __TITLE__</title>
   <description>__EDESC__</description>
   <itunes:summary>__EDESC__</itunes:summary>
   <guid>http://www.worldsfairpodcast.com/itunes/WFP-__ENUM3__.mp3</guid>
@@ -19,7 +19,7 @@ EOL
 
 my $TMPLM4A = <<EOL
 <item>
-  <title>World's Fair Podcast, Episode __ENUM__: __TITLE__</title>
+  <title>The World's Fair Podcast, Episode __ENUM__: __TITLE__</title>
   <description>__EDESC__</description>
   <itunes:summary>__EDESC__</itunes:summary>
   <guid>http://www.worldsfairpodcast.com/itunes/WFP-__ENUM3__.m4a</guid>
