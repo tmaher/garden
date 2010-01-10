@@ -9,8 +9,8 @@ my $TMPLMP3 =<<EOL
   <title>The World's Fair Podcast, Episode __ENUM__: __TITLE__</title>
   <description>__EDESC__</description>
   <itunes:summary>__EDESC__</itunes:summary>
-  <guid>http://www.worldsfairpodcast.com/itunes/WFP-__ENUM3__.mp3</guid>
-  <enclosure url="http://www.worldsfairpodcast.com/itunes/WFP-__ENUM3__.mp3" length="__MP3LENGTH__" type="audio/mpeg" />
+  <guid>http://www.worldsfairpodcast.com/mp3/WFP-__ENUM3__.mp3</guid>
+  <enclosure url="http://www.worldsfairpodcast.com/mp3/WFP-__ENUM3__.mp3" length="__MP3LENGTH__" type="audio/mpeg" />
   <pubDate>__DATE__</pubDate>
   <itunes:duration>__LENGTH__</itunes:duration>
  </item>
