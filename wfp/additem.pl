@@ -6,7 +6,7 @@ use POSIX;
 
 my $TMPLMP3 =<<EOL
  <item>
-  <title>The World's Fair Podcast, Episode __ENUM__</title>
+  <title>World's Fair Podcast, Episode __ENUM__: __TITLE__</title>
   <description>__EDESC__</description>
   <itunes:summary>__EDESC__</itunes:summary>
   <guid>http://www.worldsfairpodcast.com/itunes/WFP-__ENUM3__.mp3</guid>
@@ -19,7 +19,7 @@ EOL
 
 my $TMPLM4A = <<EOL
 <item>
-  <title>The World's Fair Podcast, Episode __ENUM__</title>
+  <title>World's Fair Podcast, Episode __ENUM__: __TITLE__</title>
   <description>__EDESC__</description>
   <itunes:summary>__EDESC__</itunes:summary>
   <guid>http://www.worldsfairpodcast.com/itunes/WFP-__ENUM3__.m4a</guid>
@@ -32,17 +32,19 @@ EOL
 ;
 
 my $USAGE = <<EOL
-$0 itunes -n EPNUM < DESCRIPTION
-$0 mp3 -n EPNUM < DESCRIPTION
+$0 itunes -n EPNUM -t TITLE < DESCRIPTION
+$0 mp3 -n EPNUM -t TITLE < DESCRIPTION
 
 EOL
 ;
 
-my ($mode, $enum, $length) = (undef, undef, undef);
+my ($mode, $enum, $title) = (undef, undef, undef);
 while(defined($ARGV[0]) and $_ = shift(@ARGV)){
   (/^-h$/ or /^--help$/) and die $USAGE;
   (/^-n$/) and do { defined($ARGV[0]) or die $USAGE;
 		    $enum = shift(@ARGV); next; };
+  (/^-t$/) and do { defined($ARGV[0]) or die $USAGE;
+		    $title = shift(@ARGV); next; };
   (/^itunes$/) and do { defined($mode) and die $USAGE;
 			$mode = "itunes"; next; };
   (/^mp3$/) and do {defined($mode) and die $USAGE;
@@ -50,7 +52,7 @@ while(defined($ARGV[0]) and $_ = shift(@ARGV)){
   die $USAGE;
 }
 
-(defined($mode) and defined($enum)) or die $USAGE;
+(defined($mode) and defined($enum) and defined($title) ) or die $USAGE;
 ($enum =~ /^\d+$/) or die $USAGE;
 my $enum3 = sprintf("%03d", $enum);
 
@@ -69,11 +71,13 @@ my $mp3length = (stat($mp3file))[7];
 my $desc = "";
 my $line = "";
 while(defined($line = <>)){ $desc .= $line; }
+$desc =~ s/^\s*//gm;
+$desc =~ s/\s*$//gm;
 chomp($desc);
 
 my $fflength = `ffmpeg -i $m4afile 2>&1 | grep "Duration: "`;
 $fflength =~ /Duration: (\d\d:\d\d:\d\d)\./;
-$length = $1;
+my $length = $1;
 $length =~ s/^00://;
 $length =~ s/^0+//;
 
@@ -86,6 +90,7 @@ $TMPLMP3 =~ s/__ENUM3__/$enum3/g;
 $TMPLMP3 =~ s/__MP3LENGTH__/$mp3length/g;
 $TMPLMP3 =~ s/__DATE__/$now/g;
 $TMPLMP3 =~ s/__LENGTH__/$length/g;
+$TMPLMP3 =~ s/__TITLE__/$title/g;
 
 $TMPLM4A =~ s/__ENUM__/$enum/g;
 $TMPLM4A =~ s/__EDESC__/$desc/g;
@@ -93,6 +98,7 @@ $TMPLM4A =~ s/__ENUM3__/$enum3/g;
 $TMPLM4A =~ s/__M4ALENGTH__/$m4alength/g;
 $TMPLM4A =~ s/__DATE__/$now/g;
 $TMPLM4A =~ s/__LENGTH__/$length/g;
+$TMPLM4A =~ s/__TITLE__/$title/g;
 
 print "\n\n";
 printf(" <pubDate>%s</pubDate>\n", $build_time);
