@@ -1,0 +1,16 @@
+# $Id$
+"\e[3~": backward-delete-char
+"\342": backward-word
+"\346": forward-word
+"\274": beginning-of-history
+"\360": non-incremental-reverse-search-history
+"\356": non-incremental-forward-search-history
+"\365": upcase-word
+"\354": downcase-word
+"\343": capitalize-word
+"\344": kill-word
+"\334": delete-horizontal-space
+set meta-flag on
+set input-meta on
+set output-meta on
+set convert-meta off
