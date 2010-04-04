@@ -14,3 +14,7 @@ ${INST} dotbash_profile "${HOME}/.bash_profile"
 ${INST} dotbash_logout "${HOME}/.bash_logout"
 ${INST} dotemacs "${HOME}/.emacs"
 ${INST} dotscreenrc "${HOME}/.screenrc"
+
+if [ -r /etc/debian_version ]; then
+  ${INST} dotinputrc "${HOME}/.inputrc"
+fi
