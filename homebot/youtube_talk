@@ -391,6 +391,8 @@ $cl->reg_cb
        $j_c = undef;
        my $ih = do_fetch($from_jid, $video_id);
 
+       udp_ack("homebot\@tursom.org", "what's going on?");
+       
        exit(0);
      }
      AnyEvent::XMPP::IM::Connection->new()->ping($cl);
