@@ -1,0 +1,43 @@
+#!/usr/local/bin/bash
+# $Id$
+
+PATH=$PATH:/usr/local/bin:/usr/local/sbin
+export PATH
+
+let SLEEPTIME="($RANDOM -367) % 3600"
+sleep $SLEEPTIME
+
+UA='Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2'
+
+umask 077
+CK_SAVE="/var/tmp/checkin_cookie"
+if [ ! -d ${CK_SAVE} ]; then
+  mkdir ${CK_SAVE}
+fi
+if [ ! -d ${CK_SAVE} ]; then
+  echo "NO TMP DIR ${CK_SAVE}, OMG!"
+  exit 1
+fi
+
+SITES="demonoid|http://www.demonoid.com/|account_handler.php|files
+tvtorrents|http://www.tvtorrents.com/|login.do|loggedin/my/fav_shows.do"
+
+for siteinfo in SITES; do
+  site=`echo ${siteinfo} | cut -d \| -f 1`
+  url1=`echo ${siteinfo} | cut -d \| -f 2`
+  url2=`echo ${siteinfo} | cut -d \| -f 2,3 | sed -e 's/\|//'`
+  url3=`echo ${siteinfo} | cut -d \| -f 2,4 | sed -e 's/\|//'`
+  
+  CK=`mktemp /var/tmp/checkin_cookie/${site}.XXXXXX` || exit 1
+  POST=${HOME}/private/${site}.post
+  CURL="curl -b $CK -c $CK"
+
+  rm -f ${CK_SAVE}/${site}.log[123]
+
+  ${CURL} -A "${UA}" -o ${CK_SAVE}/${site}.log1 "${url1}"
+  ${CURL} -A "${UA}" -o ${CK_SAVE}/${site}.log1 -d @${POST} "${url2}"
+  ${CURL} -A "${UA}" -o ${CK_SAVE}/${site}.log1 "${url3}"
+done
+
+exit 0
+
