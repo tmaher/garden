@@ -1,9 +1,12 @@
 # $Id$
 
 Trivial Twitter API consumer.  This backposts to the Twitter API to
-fetch a list and re-displays it in an iframe hosted here:
+fetch a "twitter list" (see
+http://blog.twitter.com/2009/10/theres-list-for-that.html ).  It's
+reformatted for display in an iframe on my husband's website.  It looks
+like this in action...
 
-http://www.expomuseum.com/blah-blah/
+http://www.tursom.org/expomuseum/expo-2010-twitter_list.php
 
 I use a simple 60-second local file cache to keep from going over API
 limit.  I could probably do something with postMessage to pull this in
