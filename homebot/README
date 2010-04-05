@@ -36,6 +36,7 @@ socket, and uses that to send IMs back to the user.
 Authorization: JIDs listed in the conf file (homebot.xml).
 
 ****************************************
+
 Copyright 2010, Tom Maher <tmaher@watson.org>
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may
