@@ -22,7 +22,7 @@ fi
 SITES="demonoid|http://www.demonoid.com/|account_handler.php|files
 tvtorrents|http://www.tvtorrents.com/|login.do|loggedin/my/fav_shows.do"
 
-for siteinfo in SITES; do
+for siteinfo in $SITES; do
   site=`echo ${siteinfo} | cut -d \| -f 1`
   url1=`echo ${siteinfo} | cut -d \| -f 2`
   url2=`echo ${siteinfo} | cut -d \| -f 2,3 | sed -e 's/\|//'`
