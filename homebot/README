@@ -1,0 +1,51 @@
+# $Id$
+
+Homebot: An XMPP bot for fetching YouTube videos to my home server.
+
+Given a regular old YouTube URL, for example (work-safe):
+
+http://www.youtube.com/watch?v=fy6faAgrLg4
+
+IM it homebot@tursom.org (XMPP/Jabber/GoogleTalk/whatever).  homebot
+will fetch the video metadata, and IM that back to you.  It'll then
+start downloading it in the highest video quality available and store it
+to my AFS server.  Once it's done, homebot will IM you back saying the
+transfer is complete.
+
+So why go to all this trouble?  Well, we have these nice big screen TVs,
+with Tivos that support 720p, so it's much nicer than watching stuff on
+my husband's laptop.
+
+Tivo does have a YouTube client, but there's no keyboard so the user
+experience is poor.  Tivo's Home Media Option uses a fairly well
+documented protocol, which has a python implementation called pyTivo
+(http://pytivo.sourceforge.net/).  I use a very light-modified version
+of pyTivo that to re-export videos out of AFS to the Tivo.
+
+Homebot's code is in two parts -
+
+garden/homebot/youtube_talk - the script that gets run as an init.d
+  script
+garden/gen/tursom.pm - yt_fetch_vid and other heavy lifting done there
+
+youtube_talk spins up a master process that handles the connection to
+XMPP.  Whenever it receives an IM, it forks off a child to handle the
+HTTP fetches.  The child talks back to the master over a unix domain
+socket, and uses that to send IMs back to the user.
+
+Authorization: JIDs listed in the conf file (homebot.xml).
+
+****************************************
+Copyright 2010, Tom Maher <tmaher@watson.org>
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may
+not use this file except in compliance with the License. You may obtain
+a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied. See the License for the specific language governing permissions
+and limitations und
