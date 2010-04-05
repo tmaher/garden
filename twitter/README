@@ -1,0 +1,12 @@
+# $Id$
+
+Trivial Twitter API consumer.  This backposts to the Twitter API to
+fetch a list and re-displays it in an iframe hosted here:
+
+http://www.expomuseum.com/blah-blah/
+
+I use a simple 60-second local file cache to keep from going over API
+limit.  I could probably do something with postMessage to pull this in
+purely on the client side, but Twitter's rate limit for this particular
+API is IP-addr rate-limited, and I'm worried about aggregate users
+hitting the limit.
