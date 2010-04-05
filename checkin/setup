@@ -9,4 +9,5 @@ if [ ! -r tursom_checkin ]; then
 fi
 
 ${INST_N} tursom_checkin /usr/local/bin/
+${INST_N} other_checkin /usr/local/bin/
 
