@@ -29,9 +29,10 @@ use Fcntl qw/:flock/;
 use File::Copy;
 use Sys::Syslog qw/:standard :macros/;
 
+use AnyEvent;
+use AnyEvent::HTTP;
 use AnyEvent::XMPP::Client;
 use AnyEvent::XMPP::Ext::Ping;
-use AnyEvent;
 
 use tursom;
 
@@ -41,9 +42,9 @@ my $STOP = 0;
 my $am_child = 0;
 my $homebot_uid = getpwnam("homebot");
 
-if($< == 0){
+if ($< == 0) {
   setuid($homebot_uid) or die "setuid() failed: $!";
-} elsif ($< == $homebot_uid){
+} elsif ($< == $homebot_uid) {
 } else {
   die "ERROR: must be started as root or homebot!\n";
 }
@@ -51,9 +52,9 @@ if($< == 0){
 my $USAGE = <<__EOS
 usage: $0 
 __EOS
-;
+  ;
 
-while(defined($_ = shift(@ARGV))){
+while (defined($_ = shift(@ARGV))) {
   (/^-h$/ or /^--help$/) and do { die $USAGE; };
   (/^-d$/ or /^--debug$/) and do { $DEBUG = 1; next; };
   (/^-r$/) and do { $NUKEPID = 1; next; };
@@ -64,7 +65,7 @@ while(defined($_ = shift(@ARGV))){
 my $pidfile = "/var/run/homebot/pid";
 my $bot_sock = "/var/run/homebot/sock";
 
-if((-r $pidfile) and ($NUKEPID or $STOP)){
+if ((-r $pidfile) and ($NUKEPID or $STOP)) {
   kill_pidfile($pidfile);
   unlink($pidfile);
   exit(0) if($STOP);
@@ -80,7 +81,7 @@ openlog("homebot", "pid", LOG_LOCAL3) or die "can't open log: $!";
 syslog(LOG_DEBUG, "about to read conf files\n");
 my $conf_file = "/home/homebot/conf/homebot.xml";
 my $ref = XMLin($conf_file);
-unless (defined($ref->{homebot})){
+unless (defined($ref->{homebot})) {
   unlink($pidfile);
   $pid_fh->close();
   die "can't read config file";
@@ -89,7 +90,7 @@ my $hb = $ref->{homebot};
 
 my $key_file = "/home/homebot/private/pw.xml";
 $ref = XMLin($key_file);
-unless (defined($ref->{homebot}->{secret})){
+unless (defined($ref->{homebot}->{secret})) {
   unlink($pidfile);
   $pid_fh->close();
   die "can't read secret";
@@ -107,7 +108,7 @@ unlink($bot_sock);
 syslog(LOG_DEBUG, "about to not fork\n");
 my $child = ($DEBUG) ? 0 : fork();
 
-if($child){
+if ($child) {
   unless($pid_fh->printf("%s", $child)) {
     my $err = $!;
     unlink($pidfile);
@@ -118,9 +119,9 @@ if($child){
   exit(0);
 }
 
-if(! $DEBUG){
+if (! $DEBUG) {
   my ($timeout, $max_timeout) = (1, 10);
-  while(getppid() != 1 and $timeout++ < $max_timeout){
+  while (getppid() != 1 and $timeout++ < $max_timeout) {
     sleep(1);
   }
   die "FATAL: Parent failed to record my PID!" unless (getppid() == 1);
@@ -168,13 +169,12 @@ chmod(0760, $bot_sock);
 umask($old_umask);
 
 syslog(LOG_DEBUG, "about to not dup stdout\n");
-if(!$DEBUG){
+if (!$DEBUG) {
   open(STDIN, "</dev/null") or die "can't redirect stdin: $!";
   open(STDOUT, ">/dev/null") or die "can't redirect stdout: $!";
   open(STDERR, ">/dev/null") or die "can't redirect stderr: $!";
 }
-
-foreach my $exit_sig ("INT", "TERM", "QUIT"){
+foreach my $exit_sig ("INT", "TERM", "QUIT") {
   $SIG{$exit_sig} = \&catch_stop;
 }
 
@@ -196,25 +196,26 @@ $cl->add_account($hb->{jid}, $secret) or die "Can't add acct";
 $cl->add_extension (my $cl_ping = AnyEvent::XMPP::Ext::Ping->new);
 $cl_ping->auto_timeout (60);
 
-my $w_c = AnyEvent->io (
-#                        fh => \*SOCK_SERVER,
-                        fh => $sock_server,
-                        poll => 'r',
-                        cb => sub {
-                          my $return_msg = "";
-#                          recv(SOCK_SERVER, $return_msg, 192, 0);
-                          $sock_server->recv($return_msg, 192, 0);
-                          ack_back($cl, $return_msg);
-                          $j_c->send if defined($j_c);
-                        },
-                       );
+my $w_c;
+$w_c = AnyEvent->io (
+                     # fh => \*SOCK_SERVER,
+                     fh => $sock_server,
+                     poll => 'r',
+                     cb => sub {
+                       my $return_msg = "";
+                       #  recv(SOCK_SERVER, $return_msg, 192, 0);
+                       $sock_server->recv($return_msg, 192, 0);
+                       ack_back($cl, $return_msg);
+                       # $j_c->send if defined($j_c);
+                     },
+                    );
 
 $cl->reg_cb
   (
    session_ready => sub {
      my ($cl, $acc) = @_;
      syslog(LOG_NOTICE, "session ready, %s notified", $startup_inform);
-     $cl->send_message($startup_msg => $startup_inform, undef, 'chat');
+     $cl->send_message($startup_msg, $startup_inform, undef, 'chat');
    },
 
    session_error => sub {
@@ -289,7 +290,7 @@ $cl->reg_cb
 
      my $ct_string = "";
 
-     foreach my $contact (@$contacts){
+     foreach my $contact (@$contacts) {
        $ct_string .= ";" . $contact->jid;
      }
      $ct_string =~ s/^\;//;
@@ -363,55 +364,187 @@ $cl->reg_cb
        return;
      }
 
-     my $video_id = yt_get_video_id($msg->body());
-     if(!defined($video_id)){
+     my $vid = yt_get_video_id($msg->body());
+     if (!defined($vid)) {
        $body = "Hi, I'm homebot\@tursom.org.\nSend me a youtube URL.";
-       $cl->send_message($body => $from_jid, undef, 'chat');
+       $cl->send_message($body, $from_jid, undef, 'chat');
        syslog(LOG_INFO, "other msg from %s: %s", $from_jid, $msg->body());
        return;
      }
      return unless($msg->body() =~ /./);
 
-     syslog(LOG_INFO, "youtube URL from %s: %s", $from_jid, $video_id);
+     my $info_url =
+       sprintf("http://www.youtube.com/get_video_info?video_id=%s", $vid);
+     my $info_req;
+     $info_req = http_get $info_url, recurse => 0, sub {
+       undef $info_req;
+       my ($body, $hdr) = @_;
+       my $xmpp_msg;
 
-     my $child = fork();
-     if ($child == 0) {
-       $am_child = $$;
-       #close(SOCK_SERVER);
-       $sock_server->close();
-       close($cl->get_account($hb->{jid})->connection()->{socket});
-       #my $conn = $cl->get_account($hb->{jid})->connection();
-       #close($conn->{socket});
+       syslog(LOG_INFO, "youtube URL from %s: %s", $from_jid, $vid);
+         
+       if ($hdr->{Status} =~ /^59/) {
+         $xmpp_msg = "Info Fetch error: " . $hdr->{Reason};
+         $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+         return;
+       } elsif ($hdr->{Status} !~ /^2/) {
+         $xmpp_msg = "unexpected status code: " . $hdr->{Status};
+         $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+         return;
+       }
+       my @kvs = split(/\&/, $body);
+       my %md = ();
 
-       foreach my $exit_sig ("INT", "TERM", "QUIT"){
-         $SIG{$exit_sig} = \&catch_null;
+       foreach my $kv (@kvs) {
+         my ($key, $val) = split(/\=/, $kv);
+         $val =~ s/\+/ /g;
+         $md{$key} = uri_unescape($val);
        }
 
-       $j = undef;
-       $j_c = undef;
-       my $ih = do_fetch($from_jid, $video_id);
+       $md{title} =~ s,/,-,g;
+       if ($md{status} !~ /^ok/i) {
+         $xmpp_msg = "Video $vid NOT OK: $body";
+         $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+         return;
+       }
 
-       udp_ack("homebot\@tursom.org", "what's going on?");
-       
-       exit(0);
-     }
-     AnyEvent::XMPP::IM::Connection->new()->ping($cl);
-     $j_c = AnyEvent->condvar;
-   },
+       my $lock_file = sprintf("/var/run/homebot/lock/%s", $vid);
+       my $lock_fh = FileHandle->new();
+       if (!$lock_fh->open($lock_file, O_WRONLY|O_CREAT|O_EXCL)) {
+         $xmpp_msg =
+           sprintf("Error: fetch already in progress for %s, '%s'",
+                   $vid, $md{title});
+         $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+         return;
+       }
+       my $len = length_trans($md{length_seconds});
+       $xmpp_msg = sprintf("video id: %s, %s\n%s\nStarting Fetch!\n",
+                           $vid, $len, $md{title});
+       $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+
+       my $fetch_url =
+         sprintf("http://www.youtube.com/get_video?video_id=%s&t=%s&fmt=%d",
+                 $vid, $md{token}, 18);
+
+       my $save_dir = "/afs/tursom/u/tv/media/youtube/";
+       my $out_file = sprintf("%s%s.%s.mp4", $save_dir, $md{title}, $vid);
+       if (-s $out_file) {
+         $lock_fh->close();
+         unlink($lock_file);
+         $xmpp_msg =
+           sprintf("Error: already have file\n'%s'", $out_file);
+         $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+         return;
+       }
+       my $out_fh = new FileHandle;
+       $out_fh->open("> $out_file");
+
+       my $fetch_req;
+       $fetch_req =
+         http_get $fetch_url, recurse => 10, timeout => 600,
+           on_body => sub { $out_fh->print($_[0]) if(length($_[0]) > 0); },
+           sub {
+             undef $fetch_req;
+             $out_fh->print($_[0]);
+             $cl->send_message(Dumper($_[1]), $from_jid, undef, 'chat');
+             my $hdr = $_[1];
+
+             $out_fh->close();
+             $lock_fh->close();
+             unlink($lock_file);
+             if ($hdr->{Status} =~ /^59/) {
+               $xmpp_msg = "Vid Fetch error: " . $hdr->{Reason};
+               $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+               return;
+             }
+             $xmpp_msg = "Succes!  Saved $md{title}\n$out_file";
+             $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+           };
+     };
+
+##     sub down_the_hole {
+##       my ($req_ctx, $fmt, $from_jid, $fetch_url_base,
+##           $out_fh, $lock_fh, $lock_file, $cl, $md, $data, $hdr ) = @_;
+##       return sub {
+##         undef $req_ctx;
+##
+##         if ($hdr->{Status} =~ /^4/){
+##           if($#{$fmt} < 0){
+##             $out_fh->close(); $lock_fh->close(); unlink($lock_file);
+##
+##             $xmpp_msg = "Failed on $md->{title}: can't find valid format";
+##             $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+##             return;
+##           }
+##             
+##           my $new_fmt = unshift @$fmt;
+##           my $fetch_url = $fetch_url_base . "&fmt=" . $new_fmt->{id};
+##           $req_ctx = http_get $fetch_url, timeout => 600,
+##             on_body => sub { $out_fh->print($_[0]) if(length($_[0]) > 0); },
+##               down_the_hole($req_ctx, $fmt, $from_jid, $fetch_url_base,
+##                             $out_fh, $lock_fh, $lock_file, $cl, $md);
+##         } else {
+##
+##           $out_fh->print($_[0]);
+##           $cl->send_message(Dumper($_[1]), $from_jid, undef, 'chat');
+##           my $hdr = $_[1];
+##
+##           $out_fh->close(); $lock_fh->close(); unlink($lock_file);
+##           
+##           if ($hdr->{Status} =~ /^59/) {
+##             $xmpp_msg = "Vid Fetch error: " . $hdr->{Reason};
+##             $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+##             return;
+##           }
+##           $xmpp_msg = "Succes!  Saved $md{title}\n$out_file";
+##           $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+##         }
+##       };
+##     }
+
+     
+     # XXX
+     ##         my $child = fork();
+     ##     if ($child == 0) {
+     ##       $am_child = $$;
+     ##       #close(SOCK_SERVER);
+     ##       $sock_server->close();
+     ##       close($cl->get_account($hb->{jid})->connection()->{socket});
+     ##       #my $conn = $cl->get_account($hb->{jid})->connection();
+     ##       #close($conn->{socket});
+     ##
+     ##       foreach my $exit_sig ("INT", "TERM", "QUIT"){
+     ##         $SIG{$exit_sig} = \&catch_null;
+     ##       }
+     ##
+     ##       $j = undef;
+     ##       $j_c = undef;
+     ##       my $ih = do_fetch($from_jid, $video_id);
+     ##
+     ##       udp_ack("homebot\@tursom.org", "what's going on?");
+     ##       
+     ##       exit(0);
+     ##     }
+     ##     AnyEvent::XMPP::IM::Connection->new()->ping($cl);
+     ##     $j_c = AnyEvent->condvar;
+
+   }
   );
+  
 
-
-while(!$exit_normal){
+while (!$exit_normal) {
   $cl->start;
   syslog(LOG_NOTICE, "homebot connected");
-  $j->recv();
-  if($am_child){
+  $j->recv;
+  if ($am_child) {
     syslog(LOG_WARNING, "ERROR, child %s escaped from outer loop!?!", $$);
     exit(1);
   }
   $j = AnyEvent->condvar;
+  syslog(LOG_NOTICE, "am are looping");
   sleep(1) unless ($exit_normal);
 }
+syslog(LOG_NOTICE, "am are done looping");
 
 unlink($bot_sock);
 unlink($pidfile);
@@ -434,7 +567,7 @@ sub is_youtube {
   my @msgs = split(/\n/m, $full_msg);
   my $vid_id = undef;
 
-  foreach my $msg (@msgs){
+  foreach my $msg (@msgs) {
     syslog(LOG_INFO, "line: %s", $msg);
 
     $msg =~ /http:\/\/(www.|)youtube\.com\/.*watch\?([\w\d_\.\%\&\(\)\;=-]+)/;
@@ -442,12 +575,12 @@ sub is_youtube {
     # syslog(LOG_INFO, "1: %s, 2: '%s'", $1, $2);
     my @url_args = split(/\&/, $url_arg_string);
     my %kv = ();
-    foreach my $kv (@url_args){
+    foreach my $kv (@url_args) {
       my ($key, $value) = split(/=/, $kv);
       $kv{$key} = $value;
     }
 
-    if(defined($kv{v}) and $kv{v} =~ /^[\w\d_\.-]+$/){
+    if (defined($kv{v}) and $kv{v} =~ /^[\w\d_\.-]+$/) {
       $vid_id = $kv{v};
     }
   }
@@ -470,14 +603,14 @@ sub do_fetch {
 
   my $ih = yt_get_info($v);
 
-  if($ih =~ /^ERROR:/){
+  if ($ih =~ /^ERROR:/) {
     udp_ack($jid, $ih);
     return 0;
   }
 
   my $lock_file = sprintf("/var/run/homebot/lock/%s", $v);
   my $lock_fh = FileHandle->new();
-  if(!$lock_fh->open($lock_file, O_WRONLY|O_CREAT|O_EXCL)){
+  if (!$lock_fh->open($lock_file, O_WRONLY|O_CREAT|O_EXCL)) {
     udp_ack($jid, "Error: fetch already in progress for $v, '" .
             $ih->{title} . "'");
     return 0;
@@ -523,45 +656,45 @@ sub do_fetch {
   return 0 if($fetch_result =~ /^ERROR/);
   return 1;
 
- #$ih->{retval} = 1;
- #
- #my ($hd, $hd_msg, $hd_pfx) = (0, "", "");
- #my $suffix="flv";
- #my $hd_url_suffix="";
- #if($ih->{fmt_map} =~ /^6\/720000\/7\/0\/0$/){
- #$hd=1;
- #$hd_msg = "HIGH DEF AVAILABLE\n";
- #$hd_pfx = "HD-";
- #$suffix="mp4";
- #$hd_url_suffix="&fmt=22";
- #}
- #
- #my $save_file = sprintf("/home/tv/media/youtube/%s%s.%s.%s",
- #$hd_pfx, $ih->{title}, $v, $suffix);
- #
- #my $vid_url=sprintf("%s/get_video?video_id=%s&t=%s%s",
- #$yt, $v, $ih->{token}, $hd_url_suffix);
- #
- #if( -r $save_file){
- #udp_ack($jid, "VIDEO ALREADY DOWNLOADED\nvideo id: " . $v . "\n" .
- #$ih->{title} . "\n" . $len . "\n");
- #return;
- #}
- #
- #udp_ack($jid, "video id: " . $v . "\n" . $ih->{title} . "\n" .
- #$len . "\n" . $hd_msg . "Starting fetch\n");
- #
- #syslog(LOG_INFO, "about to call mechanize: '%s' to '%s'",
- #$vid_url, $save_file);
- #$resp = $m->get($vid_url, ":content_file" => $save_file);
- #syslog(LOG_INFO, "back from mechanize!, %s", $resp->status_line);
- #
- #if(! ($resp->is_success() and -r $save_file)){
- #udp_ack($jid, $ih->{title} . " fetch failed\n" . $resp->status_line);
- #}
- #
- #udp_ack($jid, "'" . $ih->{title} .
- #"' download complete. On tivo, see\nlambic.tursom.org->youtube");
+  #$ih->{retval} = 1;
+  #
+  #my ($hd, $hd_msg, $hd_pfx) = (0, "", "");
+  #my $suffix="flv";
+  #my $hd_url_suffix="";
+  #if($ih->{fmt_map} =~ /^6\/720000\/7\/0\/0$/){
+  #$hd=1;
+  #$hd_msg = "HIGH DEF AVAILABLE\n";
+  #$hd_pfx = "HD-";
+  #$suffix="mp4";
+  #$hd_url_suffix="&fmt=22";
+  #}
+  #
+  #my $save_file = sprintf("/home/tv/media/youtube/%s%s.%s.%s",
+  #$hd_pfx, $ih->{title}, $v, $suffix);
+  #
+  #my $vid_url=sprintf("%s/get_video?video_id=%s&t=%s%s",
+  #$yt, $v, $ih->{token}, $hd_url_suffix);
+  #
+  #if( -r $save_file){
+  #udp_ack($jid, "VIDEO ALREADY DOWNLOADED\nvideo id: " . $v . "\n" .
+  #$ih->{title} . "\n" . $len . "\n");
+  #return;
+  #}
+  #
+  #udp_ack($jid, "video id: " . $v . "\n" . $ih->{title} . "\n" .
+  #$len . "\n" . $hd_msg . "Starting fetch\n");
+  #
+  #syslog(LOG_INFO, "about to call mechanize: '%s' to '%s'",
+  #$vid_url, $save_file);
+  #$resp = $m->get($vid_url, ":content_file" => $save_file);
+  #syslog(LOG_INFO, "back from mechanize!, %s", $resp->status_line);
+  #
+  #if(! ($resp->is_success() and -r $save_file)){
+  #udp_ack($jid, $ih->{title} . " fetch failed\n" . $resp->status_line);
+  #}
+  #
+  #udp_ack($jid, "'" . $ih->{title} .
+  #"' download complete. On tivo, see\nlambic.tursom.org->youtube");
 }
 
 sub udp_ack {
@@ -587,7 +720,7 @@ sub ack_back {
   my ($jid, $body) = split(/\|\|/, $msg);
   $jid = bare_jid($jid);
 
-  $cl_handle->send_message($body => $jid, undef, 'chat');
+  $cl_handle->send_message($body, $jid, undef, 'chat');
 }
 
 sub length_trans {
@@ -634,7 +767,7 @@ sub catch_stop {
 
   my $body = "Homebot shutdown at " . gmtime(time()) . " GMT";
 
-  $cl->send_message($body => $startup_inform, undef, "chat");
+  $cl->send_message($body, $startup_inform, undef, "chat");
 
   my $conn = $cl->get_account($hb->{jid})->connection();
   die "can't find jid $hb->{jid}" unless defined $conn;
