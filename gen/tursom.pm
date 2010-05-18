@@ -16,6 +16,9 @@
 
 package tursom;
 use strict;
+
+use AnyEvent;
+use AnyEvent::HTTP;
 use LWP::UserAgent;
 use URI::Escape;
 use HTML::Entities;
