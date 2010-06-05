@@ -16,10 +16,10 @@
 # and limitations und
 
 use strict;
+use utf8;
 use XML::Simple;
 use AnyEvent::XMPP;
 use Data::Dumper;
-# use WWW::Mechanize;
 use URI::Escape;
 use IO::Socket;
 use Socket;
@@ -74,7 +74,6 @@ if ((-r $pidfile) and ($NUKEPID or $STOP)) {
 my $pid_fh = new FileHandle;
 $pid_fh->open($pidfile, O_WRONLY|O_CREAT|O_EXCL|O_TRUNC) or
   die "pidfile or can't write to it! plz clean up manually!\n";
-# flock($fh, LOCK_EX|LOCK_NB) or die "can't lock lockfile: $!";
 
 openlog("homebot", "pid", LOG_LOCAL3) or die "can't open log: $!";
 
@@ -145,27 +144,6 @@ my $sock_server =
 chown(5186, 100, $bot_sock) or die $!;
 chmod(0760, $bot_sock);
 
-#my $uaddr = sockaddr_un($bot_sock);
-#unless(socket(SOCK_SERVER, PF_UNIX, SOCK_DGRAM, 0)) {
-#  my $err = $!;
-#  unlink($bot_sock);
-#  unlink($pidfile);
-#  die "socket: $err";
-#}
-#
-#unless(bind(SOCK_SERVER, $uaddr)) {
-#  my $err = $!;
-#  unlink($bot_sock);
-#  unlink($pidfile);
-#  die "bind: $err";
-#}
-
-#unless(listen(SOCK_SERVER, SOMAXCONN)){
-#  my $err = $!;
-#  unlink($bot_sock);
-#  unlink($pidfile);
-#  die "listen: $!";
-#}
 umask($old_umask);
 
 syslog(LOG_DEBUG, "about to not dup stdout\n");
@@ -198,15 +176,12 @@ $cl_ping->auto_timeout (60);
 
 my $w_c;
 $w_c = AnyEvent->io (
-                     # fh => \*SOCK_SERVER,
                      fh => $sock_server,
                      poll => 'r',
                      cb => sub {
                        my $return_msg = "";
-                       #  recv(SOCK_SERVER, $return_msg, 192, 0);
                        $sock_server->recv($return_msg, 192, 0);
                        ack_back($cl, $return_msg);
-                       # $j_c->send if defined($j_c);
                      },
                     );
 
@@ -260,28 +235,17 @@ $cl->reg_cb
      syslog(LOG_NOTICE, "connected: %s:%d", $host, $port);
    },
 
-   
-
    iq_xml => sub {
      my ($cl, $acc, $node) = @_;
      my $ns = defined($node->namespace()) ? $node->namespace() : "NULL";
      my $from = defined($node->attr("from")) ? $node->attr("from") : "SERVER";
 
      my @nr = $node->nodes;
-     # my @names = map { $_->name } @nr;
      my $names_str = join(":", map { $_->name } @nr);
 
      syslog(LOG_NOTICE, "IQ:%d:from:%s, ns %s, nodes:%s",
             scalar(time()), $from, $ns, $names_str);
 
-     #my $child_list = Dumper($node->nodes);
-     #foreach my $child (@{$node->nodes}){
-     #  syslog(LOG_NOTICE, "have child %s", Dumper($child));
-     #  my $child_ns = defined($child->namespace) ? $child->namespace : "NULL";
-     #  $child_list .= $child->name . "-" . $child->namespace() . ";";
-     #}
-
-     #syslog(LOG_NOTICE, "IQ: from:%s, CHILDREN:%s", $child_list);
 
    },
 
@@ -366,7 +330,8 @@ $cl->reg_cb
 
      my $vid = yt_get_video_id($msg->body());
      if (!defined($vid)) {
-       $body = "Hi, I'm homebot\@tursom.org.\nSend me a youtube URL.";
+       $body = "Hi, I'm homebot\@tursom.org.\nSend me a youtube URL, not " .
+         $msg->body;
        $cl->send_message($body, $from_jid, undef, 'chat');
        syslog(LOG_INFO, "other msg from %s: %s", $from_jid, $msg->body());
        return;
@@ -374,7 +339,8 @@ $cl->reg_cb
      return unless($msg->body() =~ /./);
 
      my $info_url =
-       sprintf("http://www.youtube.com/get_video_info?video_id=%s", $vid);
+       sprintf("http://www.youtube.com/get_video_info?video_id=%s&el=%s",
+               $vid, "vevo");
      my $info_req;
      $info_req = http_get $info_url, recurse => 0, sub {
        undef $info_req;
@@ -399,9 +365,12 @@ $cl->reg_cb
          my ($key, $val) = split(/\=/, $kv);
          $val =~ s/\+/ /g;
          $md{$key} = uri_unescape($val);
+         utf8::decode($md{$key});
+         $md{$key} =~ s/\x{FEFF}//g;
        }
 
        $md{title} =~ s,/,-,g;
+       $md{title} =~ s/^\.+/_/;
        if ($md{status} !~ /^ok/i) {
          $xmpp_msg = "Video $vid NOT OK: $body";
          $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
@@ -418,13 +387,12 @@ $cl->reg_cb
          return;
        }
        my $len = length_trans($md{length_seconds});
-       $xmpp_msg = sprintf("video id: %s, %s\n%s\nStarting Fetch!\n",
-                           $vid, $len, $md{title});
+       $xmpp_msg = "video id: $vid, $len\n$md{title}\nStarting Fetch!\n";
        $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
 
-       my $fetch_url =
-         sprintf("http://www.youtube.com/get_video?video_id=%s&t=%s&fmt=%d",
-                 $vid, $md{token}, 18);
+       my $fetch_url_base =
+         sprintf("http://www.youtube.com/get_video?video_id=%s&t=%s",
+                 $vid, $md{token});
 
        my $save_dir = "/afs/tursom/u/tv/media/youtube/";
        my $out_file = sprintf("%s%s.%s.mp4", $save_dir, $md{title}, $vid);
@@ -439,99 +407,61 @@ $cl->reg_cb
        my $out_fh = new FileHandle;
        $out_fh->open("> $out_file");
 
+       my $fmt = [{id => -1, ext => "flv"},  {id => 6, ext => "flv"},
+                  {id => 18, ext => "mp4"}, {id => 22, ext => "mp4"}
+                 ];
+                       
+       sub down_the_hole {
+         my ($fmt_list, $from_jid, $fetch_url_base, $out_fh, $lock_fh, $out_file,
+             $lock_file, $cl, $md, $data, $hdr) = @_;
+
+         my $xmpp_msg;
+         if ($hdr->{Status} =~ /^4/) {
+           if ($#{$fmt_list} < 0) {
+             $out_fh->close(); $lock_fh->close(); unlink($lock_file);
+
+             $xmpp_msg = "Failed on $md->{title}: can't find valid format";
+             $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+             return;
+           }
+             
+           my $new_fmt = pop @{$fmt_list};
+           my $fetch_url = $fetch_url_base . "&fmt=" . $new_fmt->{id};
+           my $req_ctx;
+           $req_ctx = http_get $fetch_url, timeout => 600,
+             on_body => sub { $out_fh->print($_[0]) if(length($_[0]) > 0); },
+               sub { undef $req_ctx;
+                     down_the_hole($fmt_list, $from_jid, $fetch_url_base, $out_fh,
+                                   $lock_fh, $out_file, $lock_file, $cl, $md, @_);
+                     
+                   };
+         } else {
+
+           $out_fh->close(); $lock_fh->close(); unlink($lock_file);
+           
+           if ($hdr->{Status} =~ /^59/) {
+             $xmpp_msg = "Vid Fetch error: " . $hdr->{Reason};
+             $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+             return;
+           }
+           $xmpp_msg = "Succes!  Saved $md->{title}\n$out_file";
+           $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+         }
+       }
+
        my $fetch_req;
        $fetch_req =
-         http_get $fetch_url, recurse => 10, timeout => 600,
+         http_get $fetch_url_base . "&fmt=37", recurse => 10, timeout => 600,
            on_body => sub { $out_fh->print($_[0]) if(length($_[0]) > 0); },
-           sub {
-             undef $fetch_req;
-             $out_fh->print($_[0]);
-             $cl->send_message(Dumper($_[1]), $from_jid, undef, 'chat');
-             my $hdr = $_[1];
-
-             $out_fh->close();
-             $lock_fh->close();
-             unlink($lock_file);
-             if ($hdr->{Status} =~ /^59/) {
-               $xmpp_msg = "Vid Fetch error: " . $hdr->{Reason};
-               $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
-               return;
-             }
-             $xmpp_msg = "Succes!  Saved $md{title}\n$out_file";
-             $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
-           };
+             sub { undef $fetch_req;
+                   down_the_hole($fmt, $from_jid, $fetch_url_base, $out_fh,
+                                 $lock_fh, $out_file, $lock_file, $cl, \%md, @_);
+                 };
      };
-
-##     sub down_the_hole {
-##       my ($req_ctx, $fmt, $from_jid, $fetch_url_base,
-##           $out_fh, $lock_fh, $lock_file, $cl, $md, $data, $hdr ) = @_;
-##       return sub {
-##         undef $req_ctx;
-##
-##         if ($hdr->{Status} =~ /^4/){
-##           if($#{$fmt} < 0){
-##             $out_fh->close(); $lock_fh->close(); unlink($lock_file);
-##
-##             $xmpp_msg = "Failed on $md->{title}: can't find valid format";
-##             $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
-##             return;
-##           }
-##             
-##           my $new_fmt = unshift @$fmt;
-##           my $fetch_url = $fetch_url_base . "&fmt=" . $new_fmt->{id};
-##           $req_ctx = http_get $fetch_url, timeout => 600,
-##             on_body => sub { $out_fh->print($_[0]) if(length($_[0]) > 0); },
-##               down_the_hole($req_ctx, $fmt, $from_jid, $fetch_url_base,
-##                             $out_fh, $lock_fh, $lock_file, $cl, $md);
-##         } else {
-##
-##           $out_fh->print($_[0]);
-##           $cl->send_message(Dumper($_[1]), $from_jid, undef, 'chat');
-##           my $hdr = $_[1];
-##
-##           $out_fh->close(); $lock_fh->close(); unlink($lock_file);
-##           
-##           if ($hdr->{Status} =~ /^59/) {
-##             $xmpp_msg = "Vid Fetch error: " . $hdr->{Reason};
-##             $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
-##             return;
-##           }
-##           $xmpp_msg = "Succes!  Saved $md{title}\n$out_file";
-##           $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
-##         }
-##       };
-##     }
-
-     
-     # XXX
-     ##         my $child = fork();
-     ##     if ($child == 0) {
-     ##       $am_child = $$;
-     ##       #close(SOCK_SERVER);
-     ##       $sock_server->close();
-     ##       close($cl->get_account($hb->{jid})->connection()->{socket});
-     ##       #my $conn = $cl->get_account($hb->{jid})->connection();
-     ##       #close($conn->{socket});
-     ##
-     ##       foreach my $exit_sig ("INT", "TERM", "QUIT"){
-     ##         $SIG{$exit_sig} = \&catch_null;
-     ##       }
-     ##
-     ##       $j = undef;
-     ##       $j_c = undef;
-     ##       my $ih = do_fetch($from_jid, $video_id);
-     ##
-     ##       udp_ack("homebot\@tursom.org", "what's going on?");
-     ##       
-     ##       exit(0);
-     ##     }
-     ##     AnyEvent::XMPP::IM::Connection->new()->ping($cl);
-     ##     $j_c = AnyEvent->condvar;
-
    }
-  );
-  
-
+);
+     
+     
 while (!$exit_normal) {
   $cl->start;
   syslog(LOG_NOTICE, "homebot connected");
@@ -556,7 +486,6 @@ exit 0;
 sub bare_jid {
   my $from = defined($_[0]) ? shift : "";
   $from =~ s/\/.*$//g;
-  #  printf("other me!\n");
   return $from;
 }
 
@@ -572,7 +501,6 @@ sub is_youtube {
 
     $msg =~ /http:\/\/(www.|)youtube\.com\/.*watch\?([\w\d_\.\%\&\(\)\;=-]+)/;
     my $url_arg_string = $2;
-    # syslog(LOG_INFO, "1: %s, 2: '%s'", $1, $2);
     my @url_args = split(/\&/, $url_arg_string);
     my %kv = ();
     foreach my $kv (@url_args) {
@@ -588,11 +516,6 @@ sub is_youtube {
 
   return 0;
 
-  #if ($msg =~ /http:\/\/(www.|)youtube.com\/watch\?v=/) {
-  #   return 1;
-  #} else {
-  #  return 0;
-  #}
 }
 
 sub do_fetch {
@@ -616,22 +539,6 @@ sub do_fetch {
     return 0;
   }
 
-  #my $m = WWW::Mechanize->new;
-
-  #my $yt = "http://www.youtube.com";
-  #my $resp = $m->get("$yt/get_video_info?video_id=$v");
-  #if (! $resp->is_success) {
-  #  udp_ack($jid, "get_video_info returned errror: " . $resp->status_line);
-  #  return;
-  #}
-
-  #my @info = split(/&/, $resp->content());
-
-  #foreach my $arg (@info) {
-  #  my ($key, $val) = split(/=/, $arg);
-  #  $ih->{$key} = uri_unescape($val);
-  #}
-
   if ($ih->{status} !~ /^ok/i) {
     udp_ack($jid, "video status for $v is NOT OK");
     unlink($lock_file);
@@ -643,8 +550,7 @@ sub do_fetch {
   udp_ack($jid, "video id: " . $v . "\n" . $ih->{title} . "\n" .
           $len . "\nStarting fetch.  This will take a few minutes.\n");
 
-  # my $save_dir = "/home/tv/media/youtube/";
-  my $save_dir = "/afs/tursom/u/tv/media/youtube/";
+  my $save_dir = "/afs/tursom.org/u/tv/media/youtube/";
   my $fetch_result = yt_fetch_vid($v, $ih, $save_dir);
   syslog(LOG_INFO, "%s fetching %s for %s", $fetch_result, $v, $jid);
   $fetch_result =~ s/$save_dir//;
@@ -655,46 +561,6 @@ sub do_fetch {
 
   return 0 if($fetch_result =~ /^ERROR/);
   return 1;
-
-  #$ih->{retval} = 1;
-  #
-  #my ($hd, $hd_msg, $hd_pfx) = (0, "", "");
-  #my $suffix="flv";
-  #my $hd_url_suffix="";
-  #if($ih->{fmt_map} =~ /^6\/720000\/7\/0\/0$/){
-  #$hd=1;
-  #$hd_msg = "HIGH DEF AVAILABLE\n";
-  #$hd_pfx = "HD-";
-  #$suffix="mp4";
-  #$hd_url_suffix="&fmt=22";
-  #}
-  #
-  #my $save_file = sprintf("/home/tv/media/youtube/%s%s.%s.%s",
-  #$hd_pfx, $ih->{title}, $v, $suffix);
-  #
-  #my $vid_url=sprintf("%s/get_video?video_id=%s&t=%s%s",
-  #$yt, $v, $ih->{token}, $hd_url_suffix);
-  #
-  #if( -r $save_file){
-  #udp_ack($jid, "VIDEO ALREADY DOWNLOADED\nvideo id: " . $v . "\n" .
-  #$ih->{title} . "\n" . $len . "\n");
-  #return;
-  #}
-  #
-  #udp_ack($jid, "video id: " . $v . "\n" . $ih->{title} . "\n" .
-  #$len . "\n" . $hd_msg . "Starting fetch\n");
-  #
-  #syslog(LOG_INFO, "about to call mechanize: '%s' to '%s'",
-  #$vid_url, $save_file);
-  #$resp = $m->get($vid_url, ":content_file" => $save_file);
-  #syslog(LOG_INFO, "back from mechanize!, %s", $resp->status_line);
-  #
-  #if(! ($resp->is_success() and -r $save_file)){
-  #udp_ack($jid, $ih->{title} . " fetch failed\n" . $resp->status_line);
-  #}
-  #
-  #udp_ack($jid, "'" . $ih->{title} .
-  #"' download complete. On tivo, see\nlambic.tursom.org->youtube");
 }
 
 sub udp_ack {
@@ -777,7 +643,6 @@ sub catch_stop {
 
   $exit_normal = 1;
   $j->broadcast();
-  # $cl->disconnect();
 }
 
 sub catch_null {
@@ -785,4 +650,3 @@ sub catch_null {
 }
 
 sub catch_child { wait (); }
-
