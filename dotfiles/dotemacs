@@ -126,7 +126,7 @@
            nil))
    html-helper-address-string 
    "Tom Maher 
-    &lt;<a href=\"mailto:tmaher@watson.org\">tmaher@watson.org</a>&gt; <br>"
+    &lt;<a href=\"mailto:tmaher@tursom.org\">tmaher@tursom.org</a>&gt; <br>"
    ;; tnt is the emacs AOL instant messanger client
    tnt-default-username "tkmaher3"
    tnt-separator "\n"
@@ -269,7 +269,7 @@ and makes them work properly."
   (fsf/x (scroll-bar-mode -1) nil)
   (fsf/x nil (custom-set-variables
               '(load-home-init-file t t)
-              '(user-mail-address "Tom Maher <tmaher@watson.org>" t)
+              '(user-mail-address "Tom Maher <tmaher@tursom.org>" t)
               '(toolbar-visible-p nil)
               '(query-user-mail-address nil)))
   (fsf/x (let ()
@@ -300,7 +300,7 @@ and makes them work properly."
  '(nxhtml-skip-welcome t)
  '(query-user-mail-address nil)
  '(toolbar-visible-p nil)
- '(user-mail-address "Tom Maher <tmaher@watson.org>"))
+ '(user-mail-address "Tom Maher <tmaher@tursom.org>"))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
