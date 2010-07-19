@@ -1,5 +1,4 @@
 ;;; -*- emacs-lisp -*-
-;;; $Id$
 
 ;;; gc-cons-threshold should be mega-high during initialization
 (if (boundp 'tmaher-system-gc-cons-threshold) ()
@@ -39,7 +38,7 @@
 ;; (fsf/x nil (require 'zephyr-setup))
 ;; (require 'tnt) ;;; I am such a tool of the man
 ;; (require 'html-helper-mode)
-(require 'plsql)
+;; (require 'plsql)
 
 ;;; Add some stubs so this works in both FSF & X Emacs.
 (if (fboundp 'scroll-bar-mode) nil
@@ -112,6 +111,8 @@
    auto-mode-alist (append (list '("\\.pl$" . cperl-mode)
                                  '("\\.txt$" . text-mode)
                                  '("\\.+rc$" . shell-script-mode)
+                                 '("\\.+php$" . php-mode)
+                                 '("\\.+inc$" . php-mode)
                                  ) auto-mode-alist)
    frame-title-format (format "%S: %%b"(fsf/x 'emacs 'xemacs))
    next-line-add-newlines nil  ;;; rms is a twit
