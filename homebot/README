@@ -1,5 +1,3 @@
-# $Id$
-
 Homebot: An XMPP bot for fetching YouTube videos to my home server.
 
 Given a regular old YouTube URL, for example (work-safe):
@@ -37,7 +35,7 @@ Authorization: JIDs listed in the conf file (homebot.xml).
 
 ****************************************
 
-Copyright 2010, Tom Maher <tmaher@watson.org>
+Copyright 2010, Tom Maher <tmaher@tursom.org>
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may
 not use this file except in compliance with the License. You may obtain
