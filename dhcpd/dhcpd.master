@@ -86,4 +86,8 @@ group {
     hardware ethernet 00:1f:5b:b5:3c:27;
     fixed-address 192.168.123.58;
   }
+  host ursopod {
+    hardware ethernet d8:a2:5e:11:3f:a9;
+    fixed-address 192.168.123.59;
+  }
 }
