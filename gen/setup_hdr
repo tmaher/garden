@@ -1,5 +1,4 @@
 # -*- shell-script -*-
-# $Id$
 
 INST="/usr/bin/install"
 INST_N="${INST} -o root -g root"
@@ -12,6 +11,8 @@ elif [ $EUID = "0" ] && [ x"${NOROOT}" != "x" ]; then
   echo "ERROR: no root was specified, but we are root!" >&2
   exit 1
 fi
+
+HOST_SHORT=`/bin/hostname | cut -f 1 -d \. | tr A-Z a-z`
 
 DIR=`dirname "$0"`
 cd "$DIR"
