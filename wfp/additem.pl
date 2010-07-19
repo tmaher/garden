@@ -6,7 +6,7 @@ use POSIX;
 
 my $TMPLMP3 =<<EOL
  <item>
-  <title>The World's Fair Podcast, Episode __ENUM__: __TITLE__</title>
+  <title>__ENUM__: __TITLE__</title>
   <description>__EDESC__</description>
   <itunes:summary>__EDESC__</itunes:summary>
   <guid>http://www.worldsfairpodcast.com/mp3/WFP-__ENUM3__.mp3</guid>
@@ -19,7 +19,7 @@ EOL
 
 my $TMPLM4A = <<EOL
 <item>
-  <title>The World's Fair Podcast, Episode __ENUM__: __TITLE__</title>
+  <title>__ENUM__: __TITLE__</title>
   <description>__EDESC__</description>
   <itunes:summary>__EDESC__</itunes:summary>
   <guid>http://www.worldsfairpodcast.com/itunes/WFP-__ENUM3__.m4a</guid>
@@ -102,8 +102,8 @@ $TMPLM4A =~ s/__TITLE__/$title/g;
 
 print "\n\n";
 printf(" <pubDate>%s</pubDate>\n", $build_time);
+printf(" <lastBuildDate>%s</lastBuildDate>\n\n", $build_time);
 if($mode eq "mp3"){
-  printf(" <lastBuildDate>%s</lastBuildDate>\n\n", $build_time);
   print $TMPLMP3;
 } elsif($mode eq "itunes"){
   print "\n\n" . $TMPLM4A;
