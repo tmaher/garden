@@ -390,11 +390,32 @@ $cl->reg_cb
        $xmpp_msg = "video id: $vid, $len\n$md{title}\nStarting Fetch!\n";
        $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
 
-       my $fetch_url_base =
-         sprintf("http://www.youtube.com/get_video?video_id=%s&t=%s",
-                 $vid, $md{token});
+       my %fmt_urls = ();
+       my @fmt_prefs = (22, 18, 35, 34, 6, 5);
+       my @fmt_urls_ordered = ();
 
-       my $save_dir = "/afs/tursom/u/tv/media/youtube/";
+       if(defined($md{fmt_url_map})){
+         @kvs = split(/,/, $md{fmt_url_map});
+         foreach my $kv (@kvs){
+           my ($f_val, $url) = split(/\|/, $kv);
+           $fmt_urls{$f_val} = $url;
+         }
+         foreach my $pick (@fmt_prefs){
+           if(defined($fmt_urls{$pick})){
+             push(@fmt_urls_ordered, $fmt_urls{$pick});
+           }
+         }
+       } else {
+         my $fetch_url_base =
+           sprintf("http://www.youtube.com/get_video?video_id=%s&t=%s",
+                   $vid, $md{token});
+         foreach my $fmt (@fmt_prefs){
+           push(@fmt_urls_ordered, $fetch_url_base . "&fmt=" . $fmt);
+         }
+       }
+
+
+       my $save_dir = "/afs/tursom.org/u/tv/media/youtube/";
        my $out_file = sprintf("%s%s.%s.mp4", $save_dir, $md{title}, $vid);
        if (-s $out_file) {
          $lock_fh->close();
@@ -406,32 +427,28 @@ $cl->reg_cb
        }
        my $out_fh = new FileHandle;
        $out_fh->open("> $out_file");
-
-       my $fmt = [{id => -1, ext => "flv"},  {id => 6, ext => "flv"},
-                  {id => 18, ext => "mp4"}, {id => 22, ext => "mp4"}
-                 ];
                        
+
        sub down_the_hole {
-         my ($fmt_list, $from_jid, $fetch_url_base, $out_fh, $lock_fh, $out_file,
+         my ($candidate_urls, $from_jid, $out_fh, $lock_fh, $out_file,
              $lock_file, $cl, $md, $data, $hdr) = @_;
 
          my $xmpp_msg;
          if ($hdr->{Status} =~ /^4/) {
-           if ($#{$fmt_list} < 0) {
+           if ($#{$candidate_urls} < 0) {
              $out_fh->close(); $lock_fh->close(); unlink($lock_file);
 
              $xmpp_msg = "Failed on $md->{title}: can't find valid format";
              $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
              return;
            }
-             
-           my $new_fmt = pop @{$fmt_list};
-           my $fetch_url = $fetch_url_base . "&fmt=" . $new_fmt->{id};
+
+           my $fetch_url = shift(@{$candidate_urls});
            my $req_ctx;
            $req_ctx = http_get $fetch_url, timeout => 600,
              on_body => sub { $out_fh->print($_[0]) if(length($_[0]) > 0); },
                sub { undef $req_ctx;
-                     down_the_hole($fmt_list, $from_jid, $fetch_url_base, $out_fh,
+                     down_the_hole($candidate_urls, $from_jid, $out_fh,
                                    $lock_fh, $out_file, $lock_file, $cl, $md, @_);
                      
                    };
@@ -450,11 +467,12 @@ $cl->reg_cb
        }
 
        my $fetch_req;
+       my $first_url = shift(@fmt_urls_ordered);
        $fetch_req =
-         http_get $fetch_url_base . "&fmt=37", recurse => 10, timeout => 600,
+         http_get $first_url, recurse => 10, timeout => 600,
            on_body => sub { $out_fh->print($_[0]) if(length($_[0]) > 0); },
              sub { undef $fetch_req;
-                   down_the_hole($fmt, $from_jid, $fetch_url_base, $out_fh,
+                   down_the_hole(\@fmt_urls_ordered, $from_jid, $out_fh,
                                  $lock_fh, $out_file, $lock_file, $cl, \%md, @_);
                  };
      };
