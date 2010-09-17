@@ -54,11 +54,13 @@ group {
   # laptops/phones
 
   host doubtfeet-lm {
-    hardware ethernet 00:1b:63:a5:3e:06;
+    hardware ethernet c4:2c:03:33:3a:d9;
+    # macbook pro 2008 hardware ethernet 00:1b:63:a5:3e:06;
     fixed-address 192.168.123.51;
   }
   host doubtfeet-lm-wireless {
-    hardware ethernet 00:1c:b3:c3:d1:62;
+    hardware ethernet 60:33:4b:14:23:80;
+    # macbook pro 2008 hardware ethernet 00:1c:b3:c3:d1:62;
     fixed-address 192.168.123.52;
   }
   host grover {
