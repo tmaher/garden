@@ -3,7 +3,7 @@
 
 export SCREEN_ACTUAL="/usr/bin/tmux"
 export TD="/tmp/${USER}/ssh-agent-tmux-${UID}"
-cexport WRAP_AGENT="${TD}/agent"
+export WRAP_AGENT="${TD}/agent"
 
 reset
 resize
