@@ -1,2 +1,3 @@
 set-option -g prefix C-o
 set-option -g status-right ""
+set-option -g status-left "#S|"
