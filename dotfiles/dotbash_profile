@@ -1,7 +1,8 @@
 # -*- shell-script -*-
 # $Id$
 
-PATH=$HOME/bin:$HOME/sbin:/opt/emacs-23.0.95/bin:/usr/local/bin:/usr/local/sbin
+PATH=$HOME/bin:$HOME/sbin:/opt/emacs/bin:/opt/nodejs/bin
+PATH=$PATH:/usr/local/bin:/usr/local/sbin
 PATH=$PATH:/usr/bin:/usr/sbin:/bin/sbin
 PATH=$PATH:/opt/heimdal/bin:/opt/heimdal/sbin
 PATH=$PATH:/usr/kerberos/bin:/usr/kerberos/sbin:/bin:/sbin:/usr/X11R6/bin
