@@ -1,0 +1,34 @@
+#!/opt/nodejs/bin/node
+// -*- js -*-
+
+var u = require("util");
+
+var _VERSION = "{version : '0.1', cmd : 'whoami'}";
+var _USAGE = "Usage: whoami [OPTION]...\n\
+Print the user name associated with the current effective user ID.\n\
+Same as id -un.\n\
+\n\
+      --help     display this help and exit\n\
+      --version  output version information and exit\n\
+";
+
+var interpreter = process.argv.shift();
+var path = process.argv.shift();
+var arg;
+
+while(arg = process.argv.shift()){
+    if(arg.match(/^--version$/i)){
+        console.log(_VERSION);
+        process.exit(0);
+    } else if(arg.match(/^--help$/i)){
+        console.log(_USAGE);
+        process.exit(0);
+    }
+    console.error(_USAGE);
+    process.exit(1);
+}
+
+var g = require("gpw");
+console.log(g.getpwuid(process.getuid()).name);
+
+process.exit(0);

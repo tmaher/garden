@@ -1,0 +1,35 @@
+#!/opt/nodejs/bin/node
+// -*- js -*-
+
+var _VERSION = "{version : '0.1', cmd : 'yes'}";
+var _USAGE = "Usage: yes [STRING]...\n\
+  or:  yes OPTION\n\
+Repeatedly output a line with all specified STRING(s), or `y'.\n\
+\n\
+      --help     display this help and exit\n\
+      --version  output version information and exit\n\
+";
+
+var interpreter = process.argv.shift();
+var path = process.argv.shift();
+var arg;
+var repeat = "y";
+
+while(arg = process.argv.shift()){
+    if(arg.match(/^--version$/i)){
+        console.log(_VERSION);
+        process.exit(0);
+    } else if(arg.match(/^--help$/i)){
+        console.log(_USAGE);
+        process.exit(0);
+    } else {
+        repeat = arg;
+        break;
+    }
+    console.error(_USAGE);
+    process.exit(1);
+}
+
+while(1){
+    console.log(repeat);
+}
