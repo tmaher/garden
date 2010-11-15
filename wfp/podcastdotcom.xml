@@ -1,0 +1,8 @@
+<?xml version='1.0' ?>
+<methodCall>
+<methodName>weblogUpdates.ping</methodName>
+    <params>
+        <param><value>The World's Fair Podcast</value></param>
+        <param><value>http://www.worldsfairpodcast.com/mp3/feed.xml</value></param>
+    </params>
+</methodCall>
