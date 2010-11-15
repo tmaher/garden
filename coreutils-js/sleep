@@ -1,0 +1,54 @@
+#!/opt/nodejs/bin/node
+// -*- js -*-
+
+var _VERSION = "{version : '0.1', cmd : 'sleep'}";
+var _USAGE = "Usage: sleep NUMBER[SUFFIX]...\n\
+  or:  sleep OPTION\n\
+\n\
+Pause for NUMBER seconds.  SUFFIX may be `s' for seconds (the default),\n\
+`m' for minutes, `h' for hours or `d' for days.  Unlike most implementations\n\
+that require NUMBER be an integer, here NUMBER may be an arbitrary floating\n\
+point number.\n\
+";
+
+
+var interpreter = process.argv.shift();
+var path = process.argv.shift();
+var arg = "";
+var m; var duration;
+
+while(arg = process.argv.shift()){
+    if(arg.match(/^--version$/i)){
+        console.log(_VERSION);
+        process.exit(0);
+    } else if(arg.match(/^--help$/i)){
+        console.log(_USAGE);
+        process.exit(0);
+    } else if(m = arg.match(/^(\d+)([smhd]|)$/)){
+        duration = m[1];
+        switch(m[2]){
+        case "m":
+            duration *= 60;
+            break;
+        case "h":
+            duration *= 3600;
+            break;
+        case "d":
+            duration *= 86400;
+            break;
+        }
+        break;
+    }
+    console.log(_USAGE);
+    process.exit(1);
+}
+
+if(duration === undefined){
+    console.log("Specify a duration!");
+    console.log(_USAGE);
+    process.exit(1);
+}
+
+duration *= 1000;
+
+setTimeout(function (){ process.exit(0) }, duration);
