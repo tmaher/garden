@@ -1,0 +1,7 @@
+#!/bin/sh
+
+/usr/bin/curl -H 'Content-type: text/xml' -X POST -D - \
+   --data-binary @/home/tmaher/garden/wfp/podcastdotcom.xml \
+   'http://ping.podcast.com/ping.php'
+
+/usr/bin/curl 'https://phobos.apple.com/WebObjects/MZFinance.woa/wa/pingPodcast?id=346502335'
