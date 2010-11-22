@@ -1,0 +1,88 @@
+#!/usr/local/bin/perl -w
+
+use strict;
+use POSIX;
+use Data::Dumper;
+
+my $RW_PARTS = [{"server" => "lambic",
+                 "parts" => [{"part" => "a",
+                              "ro_server" => "steam",
+                              "ro_part" => "a"},
+                             {"part" => "b",
+                              "ro_server" => "steam",
+                              "ro_part" => "b"},
+                            ]}];
+
+
+my $sadness = [];
+foreach my $sh (@{$RW_PARTS}){
+  my $rw_server = $sh->{server};
+  foreach my $rw_plex (@{$sh->{parts}}){
+    my $rw_vols = parse_vols($rw_server, $rw_plex->{part});
+    my $ro_vols = parse_vols($rw_plex->{ro_server}, $rw_plex->{ro_part});
+    # print(Dumper($rw_vols));
+    foreach my $v_rw (sort(keys(%{$rw_vols}))){
+      if(! $rw_vols->{$v_rw}->{ro} ){
+        push(@{$sadness}, sprintf("same-patition readonly vol absent: %s %s %s",
+                                  $rw_server, $rw_plex->{part}, $v_rw,));
+      }
+      if(! $rw_vols->{$v_rw}->{rw} ){
+        push(@{$sadness}, sprintf("readonly vol on rw partition, no rw vol: %s %s %s",
+                                  $rw_server, $rw_plex->{part}, $v_rw));
+      }
+      if(!defined($ro_vols->{$v_rw})){
+        push(@{$sadness},
+             sprintf("volume absent from designated backup part: rw %s %s %s, ro %s %s",
+                     $rw_server, $rw_plex->{part}, $v_rw, $rw_plex->{ro_server},
+                     $rw_plex->{ro_part}));
+      }
+    }
+    foreach my $v_ro (sort(keys(%{$ro_vols}))){
+      if($ro_vols->{$v_ro}->{rw}){
+        push(@{$sadness},
+             sprintf("readonly partition has rw vol: %s %s %s",
+                     $rw_plex->{ro_server}, $rw_plex->{ro_part}, $v_ro));
+      }
+      if(!defined($rw_vols->{$v_ro})){
+        push(@{$sadness},
+             sprintf("ro part has vol absent from designated rw part: ro %s %s %s, rw %s %s",
+                     $rw_plex->{ro_server}, $rw_plex->{ro_part}, $v_ro,
+                     $rw_server, $rw_plex->{part}));
+
+      } elsif(!($rw_vols->{$v_ro}->{rw})){
+        push(@{$sadness},
+             sprintf("ro part has vol without rw master on designated rw part: ro %s %s %s, rw %s %s",
+                     $rw_plex->{ro_server}, $rw_plex->{ro_part}, $v_ro,
+                     $rw_server, $rw_plex->{part}));
+      }
+    }
+  }
+}
+
+foreach my $sad (@{$sadness}){
+  printf("%s\n", $sad);
+}
+
+exit(0);
+
+sub parse_vols {
+  my $server = shift;
+  my $part = shift;
+
+  my @vol_list = `vos listvol $server $part -quiet | cut -d \\  -f 1`;
+  map(chomp, @vol_list);
+
+  my %vols = ();
+  foreach my $v (@vol_list) {
+    next if($v =~ /\.backup$/);
+    my $is_ro = 0;
+    my $v_rw = $v;
+    $v_rw =~ s/\.readonly$//;
+    if(!defined($vols{$v_rw})) { $vols{$v_rw} = {ro => 0, rw => 0}; }
+                                 
+    if($v ne $v_rw){ $vols{$v_rw}->{ro} = 1; }
+    else { $vols{$v_rw}->{rw} = 1; }
+  }
+  
+  return \%vols;
+}
