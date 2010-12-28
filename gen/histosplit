@@ -1,0 +1,66 @@
+#!/usr/local/bin/perl -w
+
+use strict;
+use DirHandle;
+use POSIX ;
+use Data::Dumper;
+
+my $FANOUT = 6;
+my $PARENT_DIR = ".";
+
+# For the purposes of this script, we want to pretend all files start
+# with a character 0-9, A-Z.  Anything outside that range is rare in my
+# personal collection, and can get shoved into the "0-9" pile.
+
+my @CRANGE = ();
+
+# magic numbers for ASCII "0" thru ASCII "9"
+for(my $i = 48; $i < 58; $i += 1){  push(@CRANGE, chr($i)); }
+
+# magic numbers for ASCII "a" thru ASCII "z"
+for(my $i = 97; $i < 123; $i += 1){ push(@CRANGE, chr($i)); }
+
+my %histo = ();
+my $d = DirHandle->new($PARENT_DIR);
+my $child_count = 0;
+if(defined($d)){
+  while(defined(my $child = $d->read())){
+    my $char = lc(substr($child, 0, 1));
+    next if $char eq ".";
+    if($char !~ /[0-9a-zA-Z]/){
+      printf(STDERR "Can't deal with characters outside of 0-9A-Za-z.  Bailing!\n");
+      exit(1);
+    }
+    if(!defined($histo{$char})) { $histo{$char} = 0; }
+    $histo{$char} += 1;
+    $child_count += 1;
+  }
+}
+$d->close();
+
+my $fanout_target = ceil($child_count / $FANOUT);
+if($fanout_target < 3){
+  printf(STDERR "fanout target is under 3.  Bailing!\n");
+  exit(1);
+}
+
+my $currcount = 0;
+my $curr_range = {"min" => "0"};
+my @ranges = ();
+foreach my $p (@CRANGE){
+  if(!defined($curr_range->{min})){ $curr_range->{min} = $p; }
+  next unless defined($histo{$p});
+
+  $currcount += $histo{$p};
+  if($currcount >= $fanout_target){
+    $curr_range->{max} = $p;
+    $curr_range->{count} = $currcount;
+    push(@ranges, $curr_range);
+    $curr_range = {};
+    $currcount = 0;
+  }
+}
+
+foreach my $r (@ranges){
+  printf(Dumper($r));
+}
