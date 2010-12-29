@@ -36,6 +36,13 @@ group {
     #next-server 192.168.123.2;
     #filename "pxelinux.0";
   }
+  host amber {
+    hardware ethernet 90:FB:A6:3D:07:2E;
+    fixed-address 192.168.123.4;
+    option host-name "amber";
+    next-server 192.168.123.2;
+    filename "pxelinux.0";
+  }
   host hippie {
     hardware ethernet 00:1A:4B:14:A9:6F;
     fixed-address hippie.tursom.org;
