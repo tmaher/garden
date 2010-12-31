@@ -20,3 +20,4 @@ ${INST_RO} named.root /etc/
 ${INST_RO} named.root /var/named/chroot/var/named/
 
 ${INST_RO} db.127.0.0 /var/named/chroot/var/named/
+${INST_RO} db.192.168.123 /var/named/chroot/var/named/
