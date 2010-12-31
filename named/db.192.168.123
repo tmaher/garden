@@ -1,0 +1,31 @@
+$TTL 345600
+@       IN      SOA     localhost. root.localhost.  (
+1       ; Serial
+86400    ; Refresh
+7200     ; Retry
+2592000  ; Expire
+345600 ) ; Minimum
+123.168.192.in-addr.arpa.       IN NS   localhost.
+;; servers
+1                               IN PTR  ipa.tursom.org.
+2                               IN PTR  lambic.tursom.org.
+3                               IN PTR  steam.tursom.org.
+4                               IN PTR  amber.tursom.org.
+;; appliances
+10                              IN PTR  hippie.tursom.org.
+11                              IN PTR  office-tivo.tursom.org.
+12                              IN PTR  living-tivo.tursom.org.
+13                              IN PTR  erdrick.tursom.org.
+;; laptops/phones
+51                              IN PTR  doubtfeet-lm.tursom.org.
+52                              IN PTR  doubtfeet-lm-wireless.tursom.org.
+53                              IN PTR  grover.tursom.org.
+54                              IN PTR  grover-wireless.tursom.org.
+55                              IN PTR  datagasm.tursom.org.
+56                              IN PTR  ursophone.tursom.org.
+;; 57 is free
+;; 58 is free
+59                              IN PTR  ursopad.tursom.org.
+;; network gear
+253                             IN PTR  office-ap.tursom.org.
+254                             IN PTR  gw-home.tursom.org.
