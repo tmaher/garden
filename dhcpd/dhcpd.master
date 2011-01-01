@@ -47,6 +47,10 @@ group {
     hardware ethernet 00:1A:4B:14:A9:6F;
     fixed-address hippie.tursom.org;
   }
+  host erdrick {
+    hardware ethernet { 00:1F:A7:3E:EF:DF;
+    fixed-address erdrick.tursom.org;
+  }
   host office-tivo {
     hardware ethernet 00:11:d9:0f:0f:f2;
     fixed-address office-tivo.tursom.org;
