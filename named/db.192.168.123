@@ -23,7 +23,7 @@ $TTL 345600
 54                              IN PTR  grover-wireless.tursom.org.
 55                              IN PTR  datagasm.tursom.org.
 56                              IN PTR  ursophone.tursom.org.
-;; 57 is free
+57                              IN PTR  hoegaarden.tursom.org.
 ;; 58 is free
 59                              IN PTR  ursopad.tursom.org.
 ;; network gear

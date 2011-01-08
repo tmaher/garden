@@ -90,14 +90,11 @@ group {
     hardware ethernet 00:26:08:aa:ed:b2;
     fixed-address 192.168.123.56;
   }
-  host cesis {
-    hardware ethernet 00:1f:f3:52:f3:e2;
+  host hoegaarden {
+    hardware ethernet 10:93:e9:03:94:d8;
     fixed-address 192.168.123.57;
-  } 
-  host cesis-wireless {
-    hardware ethernet 00:1f:5b:b5:3c:27;
-    fixed-address 192.168.123.58;
   }
+  # FREE - 192.168.123.58
   host ursopad {
     hardware ethernet d8:a2:5e:11:3f:a9;
     fixed-address 192.168.123.59;
