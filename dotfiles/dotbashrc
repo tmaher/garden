@@ -2,14 +2,6 @@
 # $Id$
 
 umask 022
-if [ "$PS1" != "" ]
-then
-	PS1="\h \t \w \$ "
-	  setenv ()  { export $1="$2"; }
-	unsetenv ()  { unset $*; }
-fi
-#===   end of automatically maintained lines (do not delete)===
-# per-user custom comands go here...
 
 if [ x"${PATH_NO_REALLY}" != "x" ]; then
   export PATH=${PATH_NO_REALLY}
@@ -29,11 +21,7 @@ function tbar () {
   echo -ne '\033]0;'${TITLE_BAR}'\007'
 }
 
-if [ "x$YROOT_NAME" != "x" ]; then
-  YRP=`echo ":${YROOT_NAME}" | tr a-z A-Z`
-fi
-
-export TITLE_BAR_DFT="${USER}@${HOST_SHORT:-${HOSTNAME:-`hostname`}}$YRP"
+export TITLE_BAR_DFT="${USER}@${HOST_SHORT:-${HOSTNAME:-`hostname`}}"
 export TITLE_BAR=${TITLE_BAR_DFT}
 
 if [ "x$DISPLAY" != "x" ] || \
@@ -44,12 +32,15 @@ if [ "x$DISPLAY" != "x" ] || \
   export PROMPT_COMMAND="tbar"
 fi
 
-export PS1='\u@\h${YRP}:\w\$ '
+export PS1='\u@\h:\w\$ '
 
 # Make my aliases work correctly
 if [ -r $HOME/.alias ];then
     . $HOME/.alias 2>/dev/null
     if [ -r /home/$USER/private/.localalias ]; then
         . /home/$USER/private/.localalias
+    fi
+    if [ -r "${HOME}/private/.localalias" ]; then
+        . "${HOME}/private/.localalias"
     fi
 fi
