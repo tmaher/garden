@@ -2,45 +2,68 @@
 
 IFS="
 "; export IFS
-VOL=$1
 
 TARGET_RW_PART="amber.tursom.org a"
 TARGET_RO_PART="steam.tursom.org a"
 
-LOCS=`vos ex "${VOL}" 2>/dev/null| grep 'Site\ *$' | sed -e 's/^\ *//gm' | cut -f 2,4,5 -d ' ' | sed -e 's,/vicep,,'`
+VOL=$1
+
+if [ -z "${VOL}" ]; then
+    echo "plz specify a volume; bail"
+    exit 1
+fi
+
+VOS=/usr/sbin/vos
+if [ -x "${VOS}" ]; then
+    echo "${VOS} isn't there; bail" >&2
+    exit 1
+fi
+
+if ! klist -t; then
+    echo "no tickets; bail" >&2
+    exit 1
+fi
+
+ADMIN_PRINC=`klist | grep Principal: | grep /admin@`
+if [ -z "${ADMIN_PRINC}" ]; then
+    echo "need an admin principal; bail" >&2
+    exit 1
+fi
+
+LOCS=`/usr/sbin/vos examine "${VOL}" 2>/dev/null| grep 'Site\ *$' | sed -e 's/^\ *//gm' | cut -f 2,4,5 -d ' ' | sed -e 's,/vicep,,'`
 
 if [ -z "${LOCS}" ]; then
-    echo "${VOL} not found"
+    echo "${VOL} not found: $LOCS" >&2
     exit 1
 fi
 
 RO_LOCS=`echo "${LOCS}" | grep 'RO$' | sed -e 's/ RO//gm'`
 
 if [ -z "${RO_LOCS}" ]; then
-    echo "${VOL} has no readonly sites; bail"
+    echo "${VOL} has no readonly sites; bail" >&2
     exit 1
 fi
 
 RW_LOC=`echo "${LOCS}" | grep 'RW$' | sed -e 's/ RW//gm'`
 
 if [ -z "${RW_LOC}" ]; then
-    echo "${VOL} has no master site, wtf?; bail"
+    echo "${VOL} has no master site, wtf?; bail" >&2
     exit 1
 fi
 
 if [ "${RW_LOC}" == "${TARGET_RW_PART}" ]; then
-    echo "${VOL} master already lives on ${TARGET_RW_PART}; bail"
+    echo "${VOL} master already lives on ${TARGET_RW_PART}; bail" >&2
     exit 1
 fi
 
 for old_ro_loc in ${RO_LOCS}; do
-    echo "want to vos remove $old_ro_loc ${VOL}.readonly"
+    ${VOS} remove $old_ro_loc ${VOL}.readonly
 done
 
-echo "want to vos adds ${TARGET_RW_PART} ${VOL}"
-echo "want to vos adds ${TARGET_RO_PART} ${VOL}"
+${VOS} addsite ${TARGET_RW_PART} ${VOL}
+${VOS} addsite ${TARGET_RO_PART} ${VOL}
 
-echo "want to vos move ${VOL} ${RW_LOC} ${TARGET_RW_PART}"
-echo "want to vos release ${VOL}"
+${VOS} move ${VOL} ${RW_LOC} ${TARGET_RW_PART}
+${VOS} release ${VOL}
 
 exit 0
