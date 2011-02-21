@@ -1,0 +1,46 @@
+#!/bin/bash
+
+IFS="
+"; export IFS
+VOL=$1
+
+TARGET_RW_PART="amber.tursom.org a"
+TARGET_RO_PART="steam.tursom.org a"
+
+LOCS=`vos ex "${VOL}" 2>/dev/null| grep 'Site\ *$' | sed -e 's/^\ *//gm' | cut -f 2,4,5 -d ' ' | sed -e 's,/vicep,,'`
+
+if [ -z "${LOCS}" ]; then
+    echo "${VOL} not found"
+    exit 1
+fi
+
+RO_LOCS=`echo "${LOCS}" | grep 'RO$' | sed -e 's/ RO//gm'`
+
+if [ -z "${RO_LOCS}" ]; then
+    echo "${VOL} has no readonly sites; bail"
+    exit 1
+fi
+
+RW_LOC=`echo "${LOCS}" | grep 'RW$' | sed -e 's/ RW//gm'`
+
+if [ -z "${RW_LOC}" ]; then
+    echo "${VOL} has no master site, wtf?; bail"
+    exit 1
+fi
+
+if [ "${RW_LOC}" == "${TARGET_RW_PART}" ]; then
+    echo "${VOL} master already lives on ${TARGET_RW_PART}; bail"
+    exit 1
+fi
+
+for old_ro_loc in ${RO_LOCS}; do
+    echo "want to vos remove $old_ro_loc ${VOL}.readonly"
+done
+
+echo "want to vos adds ${TARGET_RW_PART} ${VOL}"
+echo "want to vos adds ${TARGET_RO_PART} ${VOL}"
+
+echo "want to vos move ${VOL} ${RW_LOC} ${TARGET_RW_PART}"
+echo "want to vos release ${VOL}"
+
+exit 0
