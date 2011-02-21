@@ -14,7 +14,7 @@ if [ -z "${VOL}" ]; then
 fi
 
 VOS=/usr/sbin/vos
-if [ -x "${VOS}" ]; then
+if [ ! -x "${VOS}" ]; then
     echo "${VOS} isn't there; bail" >&2
     exit 1
 fi
