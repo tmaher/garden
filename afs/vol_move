@@ -1,10 +1,14 @@
 #!/bin/bash
 
-IFS="
-"; export IFS
+SYS_IFS="${IFS}"
+LF_IFS="
+"
+IFS="${LF_IFS}"
 
-TARGET_RW_PART="amber.tursom.org a"
-TARGET_RO_PART="steam.tursom.org a"
+TARGET_RW_SERVER="amber.tursom.org"
+TARGET_RW_PART="a"
+TARGET_RO_SERVER="steam.tursom.org"
+TARGET_RO_PART="a"
 
 VOL=$1
 
@@ -44,26 +48,34 @@ if [ -z "${RO_LOCS}" ]; then
     exit 1
 fi
 
-RW_LOC=`echo "${LOCS}" | grep 'RW$' | sed -e 's/ RW//gm'`
+RW_LOC_SERVER=`echo "${LOCS}" | grep 'RW$' | awk '{print $1}'`
+RW_LOC_PART=`echo "${LOCS}" | grep 'RW$' | awk '{print $2}' | sed -e 's,/vicep,,'`
 
-if [ -z "${RW_LOC}" ]; then
+if [ -z "${RW_LOC_SERVER}" ] || [ -z  "${RW_LOC_PART}" ]; then
     echo "${VOL} has no master site, wtf?; bail" >&2
     exit 1
 fi
 
-if [ "${RW_LOC}" == "${TARGET_RW_PART}" ]; then
+if [ "${RW_LOC_SERVER}" == "${TARGET_RW_SERVER}" ] && \
+    [ "${RW_LOC_PART}" == "${TARGET_RW_PART}" ]; then
     echo "${VOL} master already lives on ${TARGET_RW_PART}; bail" >&2
     exit 1
 fi
 
 for old_ro_loc in ${RO_LOCS}; do
-    ${VOS} remove $old_ro_loc ${VOL}.readonly
+    export IFS="${SYS_IFS}"
+    ${VOS} remove $old_ro_loc -id "${VOL}.readonly"
+    export IFS="${LF_IFS}"
 done
 
-${VOS} addsite ${TARGET_RW_PART} ${VOL}
-${VOS} addsite ${TARGET_RO_PART} ${VOL}
+${VOS} addsite -server ${TARGET_RW_SERVER} \
+    -partition ${TARGET_RW_PART}  -id "${VOL}"
+${VOS} addsite -server ${TARGET_RO_SERVER} \
+    -partition ${TARGET_RO_PART} -id "${VOL}"
 
-${VOS} move ${VOL} ${RW_LOC} ${TARGET_RW_PART}
-${VOS} release ${VOL}
+${VOS} move -id "${VOL}" \
+    -fromserver "${RW_LOC_SERVER}" -frompartition "${RW_LOC_PART}" \
+    -toserver "${TARGET_RW_SERVER}" -topartition "${TARGET_RW_PART}"
+${VOS} release -id "${VOL}"
 
 exit 0

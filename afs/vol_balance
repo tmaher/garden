@@ -6,12 +6,18 @@ use Data::Dumper;
 
 my $RW_PARTS = [{"server" => "lambic",
                  "parts" => [{"part" => "a",
-                              "ro_server" => "steam",
-                              "ro_part" => "a"},
+                              "ro_server" => "amber",
+                              "ro_part" => "b"},
                              {"part" => "b",
                               "ro_server" => "steam",
                               "ro_part" => "b"},
-                            ]}];
+                            ]},
+                {"server" => "amber",
+                 "parts" => [{"part" => "a",
+                              "ro_server" => "steam",
+                              "ro_part" => "a"},
+                            ]},
+               ];
 
 
 my $sadness = [];

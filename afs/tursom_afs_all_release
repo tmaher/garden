@@ -10,8 +10,10 @@ PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
 VOLS=`vos listvldb -localauth | grep '^[a-tv-z]'`
 
 for vol in ${VOLS}; do
-#    echo "releasing $vol";
+    date
+    /bin/echo -n "    ${vol}: "
     vos rel "$vol" -localauth 2>&1
 done
+date
 
 exit 0
