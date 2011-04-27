@@ -1,0 +1,49 @@
+#!/bin/bash
+
+BDIR="/afs/tursom.org/ma/music"
+SOURCES="tom unclean urso"
+SYS_IFS="$IFS"; export SYS_IFS
+LF_IFS="
+"; export LF_IFS
+
+cd "$BDIR/all" || exit 1
+
+for L in 0-9 a b c d e f g h i j k l m n o p q r s t u v w x y z _OTHER; do
+    cd "$BDIR/all"
+
+    LUP=`echo $L | tr a-z A-Z`
+    [ -d $L ] || mkdir $L
+    if [ ! -d $L ]; then
+        echo "Perms wrong? BAILING"
+        exit 1
+    fi
+    cd $L
+    if [ $L == _OTHER ]; then
+        L=""
+        LUP="^0-9a-zA-Z"
+    fi
+    for SOURCE in $SOURCES; do
+        for ARTIST_PATH in "${BDIR}/${SOURCE}/"[${L}${LUP}]*; do
+            [ -r "${ARTIST_PATH}" ] || continue
+
+            ARTIST=`echo $ARTIST_PATH | sed -e "s,^$BDIR/$SOURCE/,,"`
+            [ -d "$ARTIST" ] || mkdir "${ARTIST}"
+            if [ !  -d "$ARTIST" ]; then
+                echo "Unable to create artist directory for $ARTIST_PATH"
+                exit 1
+            fi
+            cd "${ARTIST}"
+            for ALBUM_PATH in "${ARTIST_PATH}/"*; do
+                [ -r "${ALBUM_PATH}" ] || continue
+                #APE=`echo ${ARTIST_PATH} | sed -e 's,([\\\[\]]),\\$1,g'`
+                #ALBUM=`echo $ALBUM_PATH | sed -e "s%${ARTIST_PATH}/%%"`
+                #[ "${ALBUM_PATH}" == "${ALBUM}" ] && echo "sed weird on $ALBUM_PATH"
+                #[ -r "${ALBUM}" ] && continue
+                ln -s "${ALBUM_PATH}"
+            done
+            cd ..
+        done
+    done
+done
+
+
