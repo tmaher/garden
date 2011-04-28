@@ -24,7 +24,7 @@ $TTL 345600
 55                              IN PTR  datagasm.tursom.org.
 56                              IN PTR  ursophone.tursom.org.
 57                              IN PTR  hoegaarden.tursom.org.
-;; 58 is free
+58                              IN PTR  neil-phone.tursom.org.
 59                              IN PTR  ursopad.tursom.org.
 ;; network gear
 253                             IN PTR  office-ap.tursom.org.
