@@ -7,7 +7,7 @@ ddns-update-style none;
 subnet 192.168.123.0 netmask 255.255.255.0 {
   pool {
     failover peer "dhcp";
-    range 192.168.123.128 192.168.123.191;
+    range 192.168.123.100 192.168.123.228;
     deny dynamic bootp clients;
   }
   default-lease-time 7200;
