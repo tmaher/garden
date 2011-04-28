@@ -94,7 +94,10 @@ group {
     hardware ethernet 10:93:e9:03:94:d8;
     fixed-address 192.168.123.57;
   }
-  # FREE - 192.168.123.58
+  host neil-phone {
+    hardware ethernet dc:2b:61:15:dc:8b;
+    fixed-address 192.168.123.58;
+  }
   host ursopad {
     hardware ethernet d8:a2:5e:11:3f:a9;
     fixed-address 192.168.123.59;
