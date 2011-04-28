@@ -39,7 +39,7 @@ for L in 0-9 a b c d e f g h i j k l m n o p q r s t u v w x y z _OTHER; do
                 #ALBUM=`echo $ALBUM_PATH | sed -e "s%${ARTIST_PATH}/%%"`
                 #[ "${ALBUM_PATH}" == "${ALBUM}" ] && echo "sed weird on $ALBUM_PATH"
                 #[ -r "${ALBUM}" ] && continue
-                ln -s "${ALBUM_PATH}"
+                ln -s "${ALBUM_PATH}" 2>/dev/null
             done
             cd ..
         done
