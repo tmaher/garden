@@ -102,4 +102,8 @@ group {
     hardware ethernet d8:a2:5e:11:3f:a9;
     fixed-address 192.168.123.59;
   }
+  host zenodotus {
+    hardware ethernet 98:4b:4a:b5:20:a3;
+    fixed-address 192.168.123.60;
+  }
 }
