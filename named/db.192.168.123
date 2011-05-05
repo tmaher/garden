@@ -1,6 +1,6 @@
 $TTL 345600
 @       IN      SOA     localhost. root.localhost.  (
-1       ; Serial
+2011050401   ; Serial
 86400    ; Refresh
 7200     ; Retry
 2592000  ; Expire
@@ -26,6 +26,7 @@ $TTL 345600
 57                              IN PTR  hoegaarden.tursom.org.
 58                              IN PTR  neil-phone.tursom.org.
 59                              IN PTR  ursopad.tursom.org.
+60                              IN PTR  zenodotus.tursom.org.
 ;; network gear
 253                             IN PTR  office-ap.tursom.org.
 254                             IN PTR  gw-home.tursom.org.
