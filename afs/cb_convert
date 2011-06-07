@@ -12,7 +12,7 @@ if [ ! -d "$CONV_DIR" ] || [ ! -r "$CONV_DIR" ]; then
     exit 1
 fi
 
-STAGING=`mktemp -d`
+STAGING=`mktemp -d /tmp/cb_convert.XXXXXXXX`
 if [ ! -d $STAGING ]; then
    echo "FATAL: Can't create staging dir $STAGING"
    exit 1
@@ -33,5 +33,5 @@ for cbr in `find "$CONV_DIR" -type f -name \*.cbr`; do
         echo "FATAL: Can't create a cbz!"
         exit 1
     fi
-    rm "${f}
+    rm "${f}"
 done
