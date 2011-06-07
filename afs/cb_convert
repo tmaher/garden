@@ -39,8 +39,15 @@ for cbr in `find "$CONV_DIR" -type f -name \*.cbr`; do
     rm -rf *
     if [ ! -s "${basename}.cbz" ]; then
         echo "FATAL: Can't create a cbz!"
+        cd /
+        rmdir $STAGING
         exit 1
     fi
     rm "${cbr}"
     echo "finished $basename"
 done
+
+cd /
+rmdir $STAGING
+
+exit 0
