@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $1 == "" ]; then
+if [ x$1 == "x" ]; then
     echo "FATAL: specify a directory to convert"
     exit 1
 fi
