@@ -29,9 +29,9 @@ fi
 
 for cbr in `find "$CONV_DIR" -type f -name \*.cbr`; do
     basename=`echo $cbr | sed -e 's/\.cbr$//'`
-    ftype=`file -b "${f}"`
+    ftype=`file -b "${cbr}"`
     if [ x$ftype != "xRAR archive data" ]; then
-        echo "SKIPPING misnamed archive $f"
+        echo "SKIPPING misnamed archive $cbr"
         continue
     fi
     unrar x -inul "$cbr"
@@ -41,6 +41,6 @@ for cbr in `find "$CONV_DIR" -type f -name \*.cbr`; do
         echo "FATAL: Can't create a cbz!"
         exit 1
     fi
-    rm "${f}"
-    echo "finished $b"
+    rm "${cbr}"
+    echo "finished $basename"
 done
