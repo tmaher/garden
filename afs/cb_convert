@@ -29,6 +29,11 @@ fi
 
 for cbr in `find "$CONV_DIR" -type f -name \*.cbr`; do
     basename=`echo $cbr | sed -e 's/\.cbr$//'`
+    ftype=`file -b "${f}"`
+    if [ x$ftype != "xRAR archive data" ]; then
+        echo "SKIPPING misnamed archive $f"
+        continue
+    fi
     unrar x -inul "$cbr"
     zip -qr "${basename}.cbz" .
     rm -rf *
@@ -37,4 +42,5 @@ for cbr in `find "$CONV_DIR" -type f -name \*.cbr`; do
         exit 1
     fi
     rm "${f}"
+    echo "finished $b"
 done
