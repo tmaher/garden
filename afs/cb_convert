@@ -1,0 +1,37 @@
+#!/bin/bash
+
+if [ $1 == "" ]; then
+    echo "FATAL: specify a directory to convert"
+    exit 1
+fi
+
+CONV_DIR=$1
+
+if [ ! -d "$CONV_DIR" ] || [ ! -r "$CONV_DIR" ]; then
+    echo "FATAL: $CONV_DIR isn't a readable directory"
+    exit 1
+fi
+
+STAGING=`mktemp -d`
+if [ ! -d $STAGING ]; then
+   echo "FATAL: Can't create staging dir $STAGING"
+   exit 1
+fi
+
+cd $STAGING
+if [ $? != 0 ]; then
+    echo "FATAL: Can't cd to $STAGING"
+    exit 1
+fi
+
+for cbr in `find "$CONV_DIR" -type f -name \*.cbr`; do
+    basename=`echo $cbr | sed -e 's/\.cbr$//'`
+    unrar x -inul "$cbr"
+    zip -qr "${basename}.cbz" .
+    rm -rf *
+    if [ ! -s "${basename}.cbz" ]; then
+        echo "FATAL: Can't create a cbz!"
+        exit 1
+    fi
+    rm "${f}
+done
