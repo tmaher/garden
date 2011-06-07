@@ -30,7 +30,7 @@ fi
 for cbr in `find "$CONV_DIR" -type f -name \*.cbr`; do
     basename=`echo $cbr | sed -e 's/\.cbr$//'`
     ftype=`file -b "${cbr}"`
-    if [ ! x$ftype =~ "^xRAR archive data" ]; then
+    if [[ ! x$ftype =~ "^xRAR archive data" ]]; then
         echo "SKIPPING misnamed archive $cbr"
         continue
     fi
