@@ -1,0 +1,108 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 5 (0x5)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C=US, ST=California, L=San Francisco, O=Tursom Foundation, CN=Tursom Foundation CA
+        Validity
+            Not Before: Oct 17 01:43:48 2010 GMT
+            Not After : Oct 17 01:43:48 2011 GMT
+        Subject: C=US, ST=California, O=Tursom Foundation, CN=gw-home.tursom.org
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+            RSA Public Key: (2048 bit)
+                Modulus (2048 bit):
+                    00:d7:55:95:92:2f:b6:c9:8a:81:a2:d6:c8:22:64:
+                    cb:8b:26:ea:d5:3e:d9:03:f4:18:0c:43:74:93:87:
+                    f1:1e:ec:4c:2c:72:b6:9b:61:c7:b2:71:b7:93:39:
+                    0c:f4:57:48:ed:63:c6:5f:4f:45:d6:bd:a5:ab:79:
+                    c4:bd:96:2c:76:6e:6e:22:4a:6d:51:4e:f4:5a:d0:
+                    6c:8f:c1:44:2c:1c:e0:40:89:51:c0:31:a0:ff:c9:
+                    14:66:3a:12:14:dc:66:7c:3f:fc:e9:a1:6e:cf:9e:
+                    79:47:80:00:ed:09:57:0b:ff:46:5a:e2:dc:75:7b:
+                    8c:7f:5b:db:55:90:0e:a9:db:ea:a0:71:06:15:4a:
+                    27:32:ab:dc:c1:93:5a:9a:17:f3:df:6f:85:45:6d:
+                    9c:68:99:da:8b:2f:76:ff:5c:e3:04:2e:86:df:a0:
+                    c2:59:95:6b:f0:80:eb:24:48:fa:a4:5c:cd:48:ba:
+                    93:29:d5:e5:3d:f5:84:65:e9:c5:5f:49:16:31:2f:
+                    a4:c1:73:0a:d5:e4:11:e9:01:ff:af:05:c0:be:9a:
+                    35:08:9d:04:fb:e8:ed:c9:ac:3d:37:71:65:c1:88:
+                    59:88:1b:19:d8:67:0b:a9:9c:4b:fa:45:74:e7:48:
+                    0b:97:4e:77:fd:a7:ad:26:00:03:10:83:ca:29:6e:
+                    02:07
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            Netscape Comment: 
+                OpenSSL Generated Certificate
+            X509v3 Subject Key Identifier: 
+                EB:CF:15:62:D9:75:13:40:81:BB:D6:78:60:39:62:BB:08:5D:E9:86
+            X509v3 Authority Key Identifier: 
+                keyid:9A:5D:21:51:68:DD:D2:3D:56:0F:B7:BA:9B:BA:2C:07:04:E3:D4:D9
+                DirName:/C=US/ST=California/L=San Francisco/O=Tursom Foundation/CN=Tursom Foundation CA
+                serial:BC:23:FD:EE:BD:79:AE:69
+
+            X509v3 Key Usage: 
+                Digital Signature, Non Repudiation, Key Encipherment
+    Signature Algorithm: sha1WithRSAEncryption
+        55:37:f6:c6:24:f5:bc:31:48:04:7c:b6:37:b4:14:ac:ee:9c:
+        e2:c6:ab:47:67:c8:a2:82:02:a8:06:ee:57:35:ae:ad:f2:95:
+        9d:41:d5:8d:c5:8b:50:cf:59:4e:76:a4:b5:16:5d:75:74:ac:
+        3f:b5:01:b8:ce:b4:5b:74:51:4d:9a:be:33:e3:7b:f2:2c:ff:
+        23:82:5e:97:0b:8d:af:ac:7e:27:00:d5:ab:4e:26:9b:14:0f:
+        d9:d5:9c:7b:cb:26:8d:69:47:bf:9b:d2:d8:7b:1b:35:35:bb:
+        c9:2b:a7:a0:cb:76:9a:81:eb:2b:d9:38:fd:d7:bd:96:03:83:
+        fb:25:6b:ca:30:66:a2:14:89:d8:36:f2:64:1f:7c:13:82:8c:
+        c5:5c:c3:b2:b5:62:4e:07:b1:c5:4f:cd:12:17:d7:52:ee:2a:
+        7f:27:91:53:b7:d8:c4:ac:12:51:cb:9c:77:2e:31:20:90:3b:
+        bf:08:f8:f9:e5:a1:d3:cb:f8:85:68:bb:9e:37:6a:a3:91:b8:
+        d3:1e:3c:e1:38:6e:66:ae:30:8a:27:76:62:0a:37:e4:16:0c:
+        63:1f:7d:f9:f5:e4:92:17:a2:ed:e7:b3:26:67:b8:88:85:38:
+        19:bb:13:22:5d:cf:56:08:91:70:13:db:12:c6:ff:5e:b3:29:
+        44:c4:2f:21:26:82:a3:22:b8:7b:a1:05:8a:1f:ae:cb:c4:d8:
+        26:56:eb:9c:ed:d3:ae:a6:dd:d9:74:11:da:67:bd:bb:ea:00:
+        ea:b3:ca:32:9c:a1:ce:e4:71:39:ba:6d:5b:1d:25:79:75:d3:
+        e7:ec:cc:24:9c:f3:81:9b:dd:ff:8e:79:d0:07:e4:1b:cc:8f:
+        63:8c:dd:ad:5b:7b:b3:00:4a:85:fb:d5:48:a8:9a:96:23:e1:
+        b0:85:e3:96:0c:37:ed:bf:2c:0f:65:51:a5:77:a8:4e:c2:a8:
+        a5:cb:a4:74:45:93:2c:be:ce:53:01:ae:88:08:2c:22:4e:06:
+        a0:7f:ea:29:b8:a6:a4:d5:5f:08:6b:95:b7:fb:c7:4d:39:0b:
+        66:90:e8:e0:5e:65:6b:b3:28:55:90:9e:7c:d7:90:b4:fc:aa:
+        84:83:1e:88:e1:90:a1:1e:83:90:c8:db:44:1d:c7:0a:b6:5e:
+        e7:a9:89:59:99:42:75:7d:14:21:be:b4:5b:3e:13:d6:0d:59:
+        cd:68:17:23:3c:25:f3:2d:cd:48:e5:73:ba:13:af:c6:80:96:
+        24:89:9a:47:8b:2b:a0:a8:ff:a6:89:46:d9:ee:7b:fe:78:76:
+        2f:7d:86:7c:08:86:dc:f1:85:bd:c9:3c:99:97:ae:56:48:e4:
+        c4:70:27:82:33:fc:3a:7d
+-----BEGIN CERTIFICATE-----
+MIIFYDCCA0igAwIBAgIBBTANBgkqhkiG9w0BAQUFADB1MQswCQYDVQQGEwJVUzET
+MBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZyYW5jaXNjbzEaMBgG
+A1UEChMRVHVyc29tIEZvdW5kYXRpb24xHTAbBgNVBAMTFFR1cnNvbSBGb3VuZGF0
+aW9uIENBMB4XDTEwMTAxNzAxNDM0OFoXDTExMTAxNzAxNDM0OFowWzELMAkGA1UE
+BhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExGjAYBgNVBAoTEVR1cnNvbSBGb3Vu
+ZGF0aW9uMRswGQYDVQQDExJndy1ob21lLnR1cnNvbS5vcmcwggEiMA0GCSqGSIb3
+DQEBAQUAA4IBDwAwggEKAoIBAQDXVZWSL7bJioGi1sgiZMuLJurVPtkD9BgMQ3ST
+h/Ee7EwscrabYceycbeTOQz0V0jtY8ZfT0XWvaWrecS9lix2bm4iSm1RTvRa0GyP
+wUQsHOBAiVHAMaD/yRRmOhIU3GZ8P/zpoW7PnnlHgADtCVcL/0Za4tx1e4x/W9tV
+kA6p2+qgcQYVSicyq9zBk1qaF/Pfb4VFbZxomdqLL3b/XOMELobfoMJZlWvwgOsk
+SPqkXM1IupMp1eU99YRl6cVfSRYxL6TBcwrV5BHpAf+vBcC+mjUInQT76O3JrD03
+cWXBiFmIGxnYZwupnEv6RXTnSAuXTnf9p60mAAMQg8opbgIHAgMBAAGjggETMIIB
+DzAJBgNVHRMEAjAAMCwGCWCGSAGG+EIBDQQfFh1PcGVuU1NMIEdlbmVyYXRlZCBD
+ZXJ0aWZpY2F0ZTAdBgNVHQ4EFgQU688VYtl1E0CBu9Z4YDliuwhd6YYwgacGA1Ud
+IwSBnzCBnIAUml0hUWjd0j1WD7e6m7osBwTj1NmheaR3MHUxCzAJBgNVBAYTAlVT
+MRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMRow
+GAYDVQQKExFUdXJzb20gRm91bmRhdGlvbjEdMBsGA1UEAxMUVHVyc29tIEZvdW5k
+YXRpb24gQ0GCCQC8I/3uvXmuaTALBgNVHQ8EBAMCBeAwDQYJKoZIhvcNAQEFBQAD
+ggIBAFU39sYk9bwxSAR8tje0FKzunOLGq0dnyKKCAqgG7lc1rq3ylZ1B1Y3Fi1DP
+WU52pLUWXXV0rD+1AbjOtFt0UU2avjPje/Is/yOCXpcLja+sficA1atOJpsUD9nV
+nHvLJo1pR7+b0th7GzU1u8krp6DLdpqB6yvZOP3XvZYDg/sla8owZqIUidg28mQf
+fBOCjMVcw7K1Yk4HscVPzRIX11LuKn8nkVO32MSsElHLnHcuMSCQO78I+PnlodPL
++IVou543aqORuNMePOE4bmauMIondmIKN+QWDGMfffn15JIXou3nsyZnuIiFOBm7
+EyJdz1YIkXAT2xLG/16zKUTELyEmgqMiuHuhBYofrsvE2CZW65zt066m3dl0Edpn
+vbvqAOqzyjKcoc7kcTm6bVsdJXl10+fszCSc84Gb3f+OedAH5BvMj2OM3a1be7MA
+SoX71UiompYj4bCF45YMN+2/LA9lUaV3qE7CqKXLpHRFkyy+zlMBrogILCJOBqB/
+6im4pqTVXwhrlbf7x005C2aQ6OBeZWuzKFWQnnzXkLT8qoSDHojhkKEeg5DI20Qd
+xwq2XuepiVmZQnV9FCG+tFs+E9YNWc1oFyM8JfMtzUjlc7oTr8aAliSJmkeLK6Co
+/6aJRtnue/54di99hnwIhtzxhb3JPJmXrlZI5MRwJ4Iz/Dp9
+-----END CERTIFICATE-----
