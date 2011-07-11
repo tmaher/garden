@@ -27,6 +27,10 @@ export TIMESTAMP=`TZ=UTC date '+%Y-%m-%dT%H:%M:%SZ'`
 export KEYFILE="scoped-$TIMESTAMP.key"
 export CERTFILE="scoped-$TIMESTAMP.crt"
 
+echo ""
+echo "About to create new CA in $OUTDIR"
+echo ""
+
 openssl req -nodes $CFG -newkey rsa:2048 -x509 -days 1096 \
     -keyout "$KEYFILE" -out "$CERTFILE"
 
