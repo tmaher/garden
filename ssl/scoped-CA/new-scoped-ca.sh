@@ -31,8 +31,9 @@ echo ""
 echo "About to create new CA in $OUTDIR"
 echo ""
 
-openssl req -nodes $CFG -newkey rsa:2048 -x509 -days 1096 \
-    -keyout "$KEYFILE" -out "$CERTFILE"
+openssl genrsa -aes256 -out "$KEYFILE" 2048
+openssl req $CFG -new -x509 -days 1096 \
+    -key "$KEYFILE" -out "$CERTFILE"
 
 ls -l "$KEYFILE" >/dev/null
 ls -l "$CERTFILE" >/dev/null
