@@ -7,62 +7,11 @@ RANDFILE                = $PRIVATE/rand/randfile-global
 
 
 
-[ ca ]
-default_ca              = CA_default
-
-
-
-[ CA_default ]
-dir                     = $PRIVATE/bootstrap-CA-2
-certs		        = $dir/certs
-crl_dir		        = $dir/crl
-database                = $dir/index.txt
-new_certs_dir           = $dir/newcerts
-certificate             = $dir//tursom-bootstrap-ca.crt
-serial                  = $dir/bootstrap-CA/serial
-crl                     = $dir/crl.pem
-private_key             = $dir/tursom-bootstrap-ca.key
-RANDFILE                = $dir/../rand/randfile-global
-x509_extensions         = v3_ca
-name_opt                = ca_default
-cert_opt                = ca_default
-copy_extensions         = copy
-default_days            = 1096
-default_crl_days        = 30
-default_md              = sha256
-preserve                = no
-policy                  = policy_match
-prompt                  = no
-
-
-
-[ policy_match ]
-countryName		= match
-stateOrProvinceName	= match
-organizationName	= match
-organizationalUnitName	= optional
-commonName		= supplied
-emailAddress		= optional
-
-
-
-[ policy_anything ]
-countryName		= optional
-stateOrProvinceName	= optional
-localityName		= optional
-organizationName	= optional
-organizationalUnitName	= optional
-commonName		= supplied
-emailAddress		= optional
-
-
-
 [ req ]
 default_bits            = 2048
 default_keyfile         = tursom-scoped-ca.key
 distinguished_name      = req_distinguished_name
-attributes              = req_attributes
-x509_extensions         = v3_ca
+x509_extensions         = scoped_ca_req
 prompt                  = no
 string_mask             = nombstr
 default_md              = sha256
@@ -78,21 +27,8 @@ commonName              = Tursom Foundation Scoped CA, $ENV::TIMESTAMP
 
 
 
-[ req_attributes ]
-# challengePassword		= A challenge password
-# challengePassword_min		= 4
-# challengePassword_max		= 20
-# unstructuredName		= An optional company name
-
-
-
-[ v3_ca ]
-subjectKeyIdentifier            = hash
-authorityKeyIdentifier          = keyid:always,issuer:always
-basicConstraints                = critical,CA:true
-nameConstraints                 = critical,permitted;DNS:tursom.com;DNS:tursom.org;DNS:tursom.net;DNS:tursom.us;DNS:sqlbijection.com;DNS:sqlbijection.org;DNS:sqlbijection.net;DNS:thomaskmaher.com;DNS:tkmaher.com
-
-
-
-[ crl_ext ]
-authorityKeyIdentifier          = keyid:always,issuer:always
+[ scoped_ca_req ]
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid:always,issuer:always
+basicConstraints        = critical,CA:true
+nameConstraints         = critical,permitted;DNS:tursom.com;DNS:tursom.org;DNS:tursom.net;DNS:tursom.us;DNS:sqlbijection.com;DNS:sqlbijection.org;DNS:sqlbijection.net;DNS:thomaskmaher.com;DNS:tkmaher.com
