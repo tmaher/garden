@@ -2,11 +2,9 @@
 # https://github.com/tmaher/garden/tree/master/ssl
 
 HOME                            = $ENV::HOME/garden/ssl
+PRIVATE                         = $ENV::HOME/private/ssl
 oid_section                     = new_oids
-########
-# NOTE # - global RANDFILE lives outside of source control!!!
-########
-RANDFILE                        = $ENV::HOME/private/ssl/.randfile-global
+RANDFILE                        = $PRIVATE/rand/randfile-global
 
 
 
@@ -17,12 +15,16 @@ default_ca                      = CA_default
 
 [ CA_default ]
 dir                             = $HOME
-certs                           = $dir/certs
-crl_dir                         = $dir/crl
-database                        = $dir/scoped-CA/index.txt
-new_certs_dir                   = $dir/newcerts
-serial                          = $dir/scoped-CA/serial
-crl                             = $dir/crl.pem
+certs                           = $PRIVATE/certs
+crl_dir                         = $PRIVATE/crl
+database                        = $PRIVATE/index.txt
+new_certs_dir                   = $PRIVATE/newcerts
+serial                          = $PRIVATE/serial
+crl                             = $PRIVATE/crl.pem
+certificate                     = $PRIVATE/CA/tursom-scoped-ca.crt
+private_key                     = $PRIVATE/CA/tursom-scoped-ca.key
+RANDFILE                        = $PRIVATE/rand/randfile-ca
+
 x509_extensions	                = usr_cert
 name_opt                        = ca_default
 cert_opt                        = ca_default
@@ -30,13 +32,6 @@ default_days                    = 365      # how long to certify for
 default_crl_days                = 30       # how long before next CRL
 default_md                      = sha1     # which md to use.
 preserve                        = no       # keep passed DN ordering
-certificate                     = $dir/scoped-CA/tursom-scoped-ca.crt
-
-########
-# NOTE # - private key & CA's RANDFILE live outside of source control!!!
-########
-private_key                     = $ENV::HOME/private/ssl/tursom-scoped-ca.key
-RANDFILE                        = $ENV::HOME/private/ssl/.randfile-ca
 
 # Extension copying option.  If you explicitly trust all CSRs (e.g., you
 # create them yourself), and you're not worried about the CSR including
@@ -53,12 +48,10 @@ policy                          = policy_match
 
 [ policy_match ]
 # For the CA policy
-countryName                     = match
-stateOrProvinceName             = match
-organizationName                = match
-organizationalUnitName          = optional
+countryName                     = supplied
+stateOrProvinceName             = supplied
+organizationName                = supplied
 commonName                      = supplied
-emailAddress                    = optional
 
 
 
@@ -84,32 +77,21 @@ emailAddress                    = optional
 default_bits		        = 2048
 default_keyfile 	        = privkey.pem
 distinguished_name	        = req_distinguished_name
-attributes		        = req_attributes
+# attributes		        = req_attributes
 x509_extensions	                = v3_ca
 string_mask                     = nombstr
 req_extensions                  = v3_req
 default_md                      = sha1
+prompt                          = no
 
 
 
 [ req_distinguished_name ]
-countryName                     = Country Name (2 letter code)
-countryName_default             = US
-countryName_min                 = 2
-countryName_max                 = 2
-stateOrProvinceName             = State or Province Name (full name)
-stateOrProvinceName_default     = California
-localityName                    = Locality Name (eg, city)
-localityName_default            = San Francisco
-0.organizationName              = Organization Name (eg, company)
-0.organizationName_default      = Tursom Foundation
-organizationalUnitName          = Organizational Unit Name (eg, section)
-organizationalUnitName_default  =
-commonName			= Common Name (eg, FQDN)
-commonName_max			= 64
-emailAddress			= Email Address
-emailAddress_max		= 64
-# SET-ex3                       = SET extension number 3
+countryName                     = US
+stateOrProvinceName             = California
+localityName                    = San Francisco
+0.organizationName              = Tursom Foundation
+commonName			= $ENV::RECFQDN
 
 
 
@@ -174,13 +156,7 @@ authorityKeyIdentifier          = keyid,issuer:always
 # Extensions to add to a certificate request
 basicConstraints                = CA:FALSE
 keyUsage                        = nonRepudiation, digitalSignature, keyEncipherment
-#subjectAltName                  = @alt_names
-
-
-
-[ alt_names ]
-#DNS.1 = bock.tursom.org
-#DNS.2 = lambic.tursom.org
+subjectAltName                  = $ENV::SUBJECTALTNAME
 
 
 
