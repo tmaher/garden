@@ -1,31 +1,79 @@
-#!/usr/local/bin/node
+#!/opt/node/bin/node
 
 var https = require('https');
 
 var screen_name="ExpoMuseum";
 
-var options = {
-    host: 'api.twitter.com',
-    path: '/1/statuses/user_timeline.json?screen_name=' + screen_name
+var base_path = "/1/statuses/user_timeline.json" +
+    "?screen_name=" + screen_name +
+    "&trim_user=true" +
+    "&include_rts=false";
+
+var options = { host: 'api.twitter.com' };
+
+var digest_tweets = function (t){
+    var creation_out = new Date(Date.parse(t["created_at"])).toString();
+    var out = creation_out + "\n" + t["text"] + "\n\n";
+
+    return out;
 };
 
-options = {
-    host: "www.tursom.org",
-    path: "/sample.js"
-};
+function process_tweets(all_tweets){
+    for(t in all_tweets){
+        console.log(digest_tweets(all_tweets[t]));
+    }
+}
 
-var tweets;
-var req = https.get(options, function(res) {
-    var all_data;
-    res.on("data", function(d){ all_data += d;  });
+function get_all_since_limit(limit) {
+    var all_tweets = [];
 
-    var finished = function(){
-        JSON.parse(all_data);
-        process.stdout.write(all_data);
-    };
+    var maxfetch = 6;
+    var currfetch = 0;
+
+    function get_all_helper(currpage, limit){
+        options["path"] = base_path + "&page=" + currpage;
+        var req = https.get(options, function(res) {
+            var all_chunks = "";
+            res.on("data", function(c){ all_chunks += c;  });
+            
+            var finished = function(){
+                currfetch += 1;
+                var these_tweets = JSON.parse(all_chunks);
+                if(these_tweets.length < 1){ return; }
+
+                var oldest_tweet = these_tweets.pop();
+                var oldest_ts =
+                    new Date(Date.parse(oldest_tweet["created_at"])).getTime();
+                these_tweets.push(oldest_tweet);
+                if((oldest_ts > limit) &&
+                   (these_tweets.length > 0) &&
+                   (currfetch < maxfetch)){
+                    all_tweets = all_tweets.concat(these_tweets);
+                    get_all_helper(currpage + 1, limit);
+                } else {
+                    console.log("completed in %d requests", currfetch);
+                    console.log("%d (oldest)\n%d (limit)", oldest_ts, limit);
+                    
+                    var is_oldest;
+                    do {
+                        is_oldest = these_tweets.pop();
+                        o_ts = new Date(Date.parse(is_oldest["created_at"])).getTime();
+                    } while(o_ts <= limit && these_tweets.length >= 1);
+                    if(o_ts > limit){ these_tweets.push(is_oldest); }
+                    all_tweets = all_tweets.concat(these_tweets);
+                    process_tweets(all_tweets);
+                }
+            };
     
-    res.on("end", finished);
-    res.on("close", finished);
-});
+            res.on("end", finished);
+            res.on("close", finished);
+        });
+        
+        req.end();
+    }
 
-req.end();
+    get_all_helper(1, limit);
+}
+
+var oldest_ts_for_me = new Date().getTime() - (86400 * 1000);
+get_all_since_limit(oldest_ts_for_me);
