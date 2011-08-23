@@ -1,43 +1,64 @@
 #!/bin/bash
-# $Id$
 
-export SCREEN_ACTUAL="/usr/bin/tmux"
-export TD="/tmp/${USER}/ssh-agent-tmux-${UID}"
-export WRAP_AGENT="${TD}/agent"
+export TMUX_ACTUAL=`unalias tmux; type -p tmux`
+export TMUX_CRED_DIR="/tmp/${USER}/tmux-${UID}"
+
+export REAL_SSH_AUTH_SOCK="${SSH_AUTH_SOCK}"
+export WRAP_AGENT="${TMUX_CRED_DIR}/agent"
+
+export REAL_KRB5CCFILE=`echo $KRB5CCNAME | cut -f 2- -d :`
+export TMUX_KRB5CCFILE="${TMUX_CRED_DIR}/krb5cc_${UID}"
+export TMUX_KRB4CCFILE="${TMUX_CRED_DIR}/krb4cc_${UID}"
+
+export KRB5CCNAME="FILE:${TMUX_KRB5CCFILE}"
+export KRBTKFILE="${TMUX_KRB4CCFILE}"
+export SSH_AUTH_SOCK="${WRAP_AGENT}"
+afslog > /dev/null 2>&1
 
 reset
 resize
 
-if [ "x${SSH_AUTH_SOCK}" = "x" ]; then
-    export SSH_AUTH_SOCK="${WRAP_AGENT}"
-    exec ${SCREEN_ACTUAL} "$@"
+# If there's no SSH agent, and no tgt, don't bother setting up wrappers
+if ! `SSH_AUTH_SOCK=${REAL_SSH_AUTH_SOCK} ssh-add -l >/dev/null 2>&1` && \
+    ! `KRB5CCNAME="FILE:${REAL_KRB5CCFILE}" klist -s`; then
+    exec ${TMUX_ACTUAL} "$@"
 fi
 
-if [ ! -d "$TD" ]; then
-    mkdir -p "$TD"
-    chmod go-rwx "$TD"
+if [ ! -d "${TMUX_CRED_DIR}" ]; then
+    mkdir -p "${TMUX_CRED_DIR}"
+    chmod go-rwx "${TMUX_CRED_DIR}"
 fi
-
-if [ ! -d "$TD" ]; then
+if [ ! -d "${TMUX_CRED_DIR}" ]; then
     echo "OMG: can't create agent directory!" >&2
     exit 1
 fi
 
+# set up the wrapper for SSH agent forwarding
 if [ -L "${WRAP_AGENT}" ]; then
     rm -f "${WRAP_AGENT}"
 fi
-
-if [ -L "${WRAP_AGENT}" ]; then
+if [ -e "${WRAP_AGENT}" ]; then
     echo "OMG: can't unlink wrapper agent ${WRAP_AGENT}" >&2
     exit 1
 fi
-
-ln -s "${SSH_AUTH_SOCK}" "${WRAP_AGENT}"
-
+ln -s "${REAL_SSH_AUTH_SOCK}" "${WRAP_AGENT}"
 if [ ! -L "${WRAP_AGENT}" ]; then
     echo "OMG: can't create wrapper agent ${WRAP_AGENT}" >&2
     exit 1
 fi
 
-export SSH_AUTH_SOCK="${WRAP_AGENT}"
-exec ${SCREEN_ACTUAL} "$@"
+# set up the wrapper for KRB5 cred cache forwarding
+if [ -L "${TMUX_KRB5CCFILE}" ]; then
+    rm -f "${TMUX_KRB5CCFILE}"
+fi
+if [ -e "${TMUX_KRB5CCFILE}" ]; then
+    echo "OMG: can't unlink wrapper Kerb5 cred cache ${TMUX_KRB5CCFILE}" >&2
+    exit 1
+fi
+ln -s "${REAL_KRB5CCFILE}" "${TMUX_KRB5CCFILE}"
+if [ ! -L "${TMUX_KRB5CCFILE}" ]; then
+    echo "OMG: can't create wrapper Kerb5 cred cache ${TMUX_KRB5CCFILE}" >&2
+    exit 1
+fi
+
+exec ${TMUX_ACTUAL} "$@"
