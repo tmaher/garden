@@ -394,23 +394,54 @@ $cl->reg_cb
        my @fmt_prefs = (22, 18, 35, 34, 6, 5);
        my @fmt_urls_ordered = ();
 
-       if(defined($md{fmt_url_map})){
-         @kvs = split(/,/, $md{fmt_url_map});
-         foreach my $kv (@kvs){
-           my ($f_val, $url) = split(/\|/, $kv);
-           $fmt_urls{$f_val} = $url;
+       my @fmt_prefs_descriptive =
+         ("hd1080", "hd720", "large", "medium", "small");
+       if(defined($md{url_encoded_fmt_stream_map})){
+         my @assets_raw = split(/,/, $md{url_encoded_fmt_stream_map});
+         my @assets = ();
+         foreach my $asset (@assets_raw){
+           my $asset = {};
+           @kvs = split(/\&/, $asset);
+           foreach my $kv (@kvs) {
+             my ($key, $val) = split(/\=/, $kv);
+             $val =~ s/\+/ /g;
+             $asset->{$key} = uri_unescape($val);
+             utf8::decode($asset->{$key});
+             $asset->{$key} =~ s/\x{FEFF}//g;
+           }
+           push(@assets, $asset);
          }
-         foreach my $pick (@fmt_prefs){
-           if(defined($fmt_urls{$pick})){
-             push(@fmt_urls_ordered, $fmt_urls{$pick});
+         foreach my $fmt (@fmt_prefs_descriptive){
+           foreach my $asset (@assets){
+             if($asset->{quality} == $fmt){
+               push(@fmt_urls_ordered, $asset->{url});
+             }
            }
          }
-       } else {
-         my $fetch_url_base =
-           sprintf("http://www.youtube.com/get_video?video_id=%s&t=%s",
-                   $vid, $md{token});
-         foreach my $fmt (@fmt_prefs){
-           push(@fmt_urls_ordered, $fetch_url_base . "&fmt=" . $fmt);
+       }
+
+
+
+       if(0){
+         # old token-based code
+         if(defined($md{fmt_url_map})){
+           @kvs = split(/,/, $md{fmt_url_map});
+           foreach my $kv (@kvs){
+             my ($f_val, $url) = split(/\|/, $kv);
+             $fmt_urls{$f_val} = $url;
+           }
+           foreach my $pick (@fmt_prefs){
+             if(defined($fmt_urls{$pick})){
+               push(@fmt_urls_ordered, $fmt_urls{$pick});
+             }
+           }
+         } else {
+           my $fetch_url_base =
+             sprintf("http://www.youtube.com/get_video?video_id=%s&t=%s",
+                     $vid, $md{token});
+           foreach my $fmt (@fmt_prefs){
+             push(@fmt_urls_ordered, $fetch_url_base . "&fmt=" . $fmt);
+           }
          }
        }
 
