@@ -12,3 +12,5 @@ ${INST_N} homebot.xml /home/homebot/conf/
 ${INST_N} youtube_talk /usr/local/libexec
 
 ../gen/setup
+
+/sbin/service youtube_talk restart

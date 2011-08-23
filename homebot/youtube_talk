@@ -243,8 +243,8 @@ $cl->reg_cb
      my @nr = $node->nodes;
      my $names_str = join(":", map { $_->name } @nr);
 
-     syslog(LOG_NOTICE, "IQ:%d:from:%s, ns %s, nodes:%s",
-            scalar(time()), $from, $ns, $names_str);
+     #syslog(LOG_DEBUG, "IQ:%d:from:%s, ns %s, nodes:%s",
+     #       scalar(time()), $from, $ns, $names_str);
 
 
    },
@@ -374,6 +374,7 @@ $cl->reg_cb
        if ($md{status} !~ /^ok/i) {
          $xmpp_msg = "Video $vid NOT OK: $body";
          $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+         syslog(LOG_INFO, $from_jid . ": " . $xmpp_msg);
          return;
        }
 
@@ -384,24 +385,34 @@ $cl->reg_cb
            sprintf("Error: fetch already in progress for %s, '%s'",
                    $vid, $md{title});
          $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+         syslog(LOG_INFO, $from_jid . ": " . $xmpp_msg);
          return;
        }
        my $len = length_trans($md{length_seconds});
        $xmpp_msg = "video id: $vid, $len\n$md{title}\nStarting Fetch!\n";
        $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+       syslog(LOG_INFO, $from_jid . ": " . $xmpp_msg);
 
        my %fmt_urls = ();
        my @fmt_prefs = (22, 18, 35, 34, 6, 5);
        my @fmt_urls_ordered = ();
 
+
        my @fmt_prefs_descriptive =
          ("hd1080", "hd720", "large", "medium", "small");
+       my %human_quality = ("hd1080" => "1080i",
+                            "hd720" => "720p",
+                            "large" => "480p",
+                            "medium" => "360p",
+                            "small" => "240p");
+       my %url_filex = ();
+       my %url_quality = ();
        if(defined($md{url_encoded_fmt_stream_map})){
          my @assets_raw = split(/,/, $md{url_encoded_fmt_stream_map});
          my @assets = ();
-         foreach my $asset (@assets_raw){
+         foreach my $asset_raw (@assets_raw){
            my $asset = {};
-           @kvs = split(/\&/, $asset);
+           @kvs = split(/\&/, $asset_raw);
            foreach my $kv (@kvs) {
              my ($key, $val) = split(/\=/, $kv);
              $val =~ s/\+/ /g;
@@ -415,45 +426,60 @@ $cl->reg_cb
            foreach my $asset (@assets){
              if($asset->{quality} == $fmt){
                push(@fmt_urls_ordered, $asset->{url});
+               my $filex = $asset->{type};
+               $filex =~ s,;.*$,,;
+               $filex =~ s,^video/,,;
+               $md{$asset->{url}} = {filex => $filex,
+                                     quality => $human_quality{$fmt}
+                                    };
              }
            }
          }
        }
 
 
+       # old token-based code, pre 2011-08-22
+       #if(defined($md{fmt_url_map})){
+       #    @kvs = split(/,/, $md{fmt_url_map});
+       #    foreach my $kv (@kvs){
+       #      my ($f_val, $url) = split(/\|/, $kv);
+       #      $fmt_urls{$f_val} = $url;
+       #    }
+       #    foreach my $pick (@fmt_prefs){
+       #      if(defined($fmt_urls{$pick})){
+       #        push(@fmt_urls_ordered, $fmt_urls{$pick});
+       #      }
+       #    }
+       #  } else {
+       #    my $fetch_url_base =
+       #      sprintf("http://www.youtube.com/get_video?video_id=%s&t=%s",
+       #              $vid, $md{token});
+       #    foreach my $fmt (@fmt_prefs){
+       #      push(@fmt_urls_ordered, $fetch_url_base . "&fmt=" . $fmt);
+       #    }
+       #  }
+       #}
 
-       if(0){
-         # old token-based code
-         if(defined($md{fmt_url_map})){
-           @kvs = split(/,/, $md{fmt_url_map});
-           foreach my $kv (@kvs){
-             my ($f_val, $url) = split(/\|/, $kv);
-             $fmt_urls{$f_val} = $url;
-           }
-           foreach my $pick (@fmt_prefs){
-             if(defined($fmt_urls{$pick})){
-               push(@fmt_urls_ordered, $fmt_urls{$pick});
-             }
-           }
-         } else {
-           my $fetch_url_base =
-             sprintf("http://www.youtube.com/get_video?video_id=%s&t=%s",
-                     $vid, $md{token});
-           foreach my $fmt (@fmt_prefs){
-             push(@fmt_urls_ordered, $fetch_url_base . "&fmt=" . $fmt);
-           }
-         }
+       if($#fmt_urls_ordered < 0){
+         $xmpp_msg =
+           sprintf("Error!  No valid formats found for %s", $md{title});
+         $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+         syslog(LOG_INFO, $from_jid . ": " . $xmpp_msg);
+         return;
        }
 
 
        my $save_dir = "/afs/tursom.org/u/tv/media/youtube/";
-       my $out_file = sprintf("%s%s.%s.mp4", $save_dir, $md{title}, $vid);
+       my $filex = $md{$fmt_urls_ordered[0]}->{filex};
+       my $out_file = sprintf("%s%s.%s.%s", $save_dir, $md{title},
+                              $vid, $filex);
        if (-s $out_file) {
          $lock_fh->close();
          unlink($lock_file);
          $xmpp_msg =
            sprintf("Error: already have file\n'%s'", $out_file);
          $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+         syslog(LOG_INFO, $from_jid . ": " . $xmpp_msg);
          return;
        }
        my $out_fh = new FileHandle;
@@ -462,7 +488,8 @@ $cl->reg_cb
 
        sub down_the_hole {
          my ($candidate_urls, $from_jid, $out_fh, $lock_fh, $out_file,
-             $lock_file, $cl, $md, $data, $hdr) = @_;
+             $lock_file, $cl, $fetched_url, $md,
+             $data, $hdr) = @_;
 
          my $xmpp_msg;
          if ($hdr->{Status} =~ /^4/) {
@@ -471,16 +498,20 @@ $cl->reg_cb
 
              $xmpp_msg = "Failed on $md->{title}: can't find valid format";
              $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+             syslog(LOG_INFO, $from_jid . ": " . $xmpp_msg);
              return;
            }
 
            my $fetch_url = shift(@{$candidate_urls});
            my $req_ctx;
+
            $req_ctx = http_get $fetch_url, timeout => 600,
              on_body => sub { $out_fh->print($_[0]) if(length($_[0]) > 0); },
                sub { undef $req_ctx;
                      down_the_hole($candidate_urls, $from_jid, $out_fh,
-                                   $lock_fh, $out_file, $lock_file, $cl, $md, @_);
+                                   $lock_fh, $out_file, $lock_file, $cl,
+                                   $fetch_url,
+                                   $md, @_);
                      
                    };
          } else {
@@ -490,10 +521,15 @@ $cl->reg_cb
            if ($hdr->{Status} =~ /^59/) {
              $xmpp_msg = "Vid Fetch error: " . $hdr->{Reason};
              $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+             syslog(LOG_INFO, $from_jid . ": " . $xmpp_msg);
              return;
            }
-           $xmpp_msg = "Succes!  Saved $md->{title}\n$out_file";
+           $xmpp_msg = sprintf("Success!  Saved title '%s', ID %s, res %s)",
+                               $md->{title},
+                               $md->{video_id},
+                               $md->{$fetched_url}->{quality});
            $cl->send_message($xmpp_msg, $from_jid, undef, 'chat');
+           syslog(LOG_INFO, $from_jid . ": " . $xmpp_msg);
          }
        }
 
@@ -504,7 +540,8 @@ $cl->reg_cb
            on_body => sub { $out_fh->print($_[0]) if(length($_[0]) > 0); },
              sub { undef $fetch_req;
                    down_the_hole(\@fmt_urls_ordered, $from_jid, $out_fh,
-                                 $lock_fh, $out_file, $lock_file, $cl, \%md, @_);
+                                 $lock_fh, $out_file, $lock_file, $cl,
+                                 $first_url, \%md, @_);
                  };
      };
    }
