@@ -25,9 +25,10 @@ function get_all_since_limit(screen_name, limit) {
         "?screen_name=" + screen_name +
         "&trim_user=true" +
         "&include_rts=false";
+    var currpage = 1;
 
-    function get_all_helper(currpage, limit){
-        options["path"] = base_path + "&page=" + currpage;
+    function get_all_helper(){
+        options["path"] = base_path + "&page=" + currpage++;
         var req = https.get(options, function(res) {
             var all_chunks = "";
             res.on("data", function(c){ all_chunks += c;  });
@@ -44,7 +45,7 @@ function get_all_since_limit(screen_name, limit) {
                    (these_tweets.length > 0) &&
                    (currfetch < maxfetch)){
                     all_tweets = all_tweets.concat(these_tweets);
-                    get_all_helper(currpage + 1, limit);
+                    get_all_helper();
                 } else {
                     console.log("completed in %d requests", currfetch);
                     console.log("%d (oldest)\n%d (limit)", oldest_ts, limit);
@@ -69,8 +70,8 @@ function get_all_since_limit(screen_name, limit) {
         req.end();
     }
 
-    get_all_helper(1, limit);
+    get_all_helper();
 }
 
-var oldest_ts_for_me = new Date().getTime() - (86400 * 1000);
+var oldest_ts_for_me = new Date().getTime() - (86400 * 1000 * 7);
 get_all_since_limit("ExpoMuseum", oldest_ts_for_me);
