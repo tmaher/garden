@@ -30,11 +30,11 @@ group {
     option host-name "lambic";
   }
   host steam {
-    hardware ethernet 00:40:63:F9:6F:6C;
+    hardware ethernet 90:FB:A6:3D:04:D1;
     fixed-address 192.168.123.3;
     option host-name "steam";
-    #next-server 192.168.123.2;
-    #filename "pxelinux.0";
+    next-server 192.168.123.2;
+    filename "pxelinux.0";
   }
   host amber {
     hardware ethernet 90:FB:A6:3D:07:2E;
