@@ -14,9 +14,10 @@ SHORTHOST=`echo $HOSTNAME | cut -f 1 -d \. `
 if [ ! -d /etc/dhcp ]; then
     mkdir /etc/dhcp
 fi
-${INST_RO} dhcpd.master /etc/dhcp
+${INST_RO} dhcpd.master /etc/dhcp/
 ${INST_RO} dhcpd.conf.${SHORTHOST} /etc/dhcp/dhcpd.conf
 if [ ! -L /etc/dhcpd.conf ]; then
+    if [ -r /etc/dhcpd.conf]; then rm -f /etc/dhcpd.conf; fi
     ln -s /etc/dhcp/dhcpd.conf /etc/dhcpd.conf
 fi
 if [ -r /etc/dhcpd.master ]; then
