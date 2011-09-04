@@ -1,11 +1,10 @@
 #!/bin/bash
-# $Id$
-#
 ### BEGIN INIT INFO
 # Provides:          transmission-daemon
-# Required-Start:    networking
-# Required-Stop:     networking
-# Default-Start:     2 3 5
+# Required-Start:    networking $remote_fs
+# Required-Stop:     networking $remote_fs
+# Should-Start:      openafs-client
+# Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Start the transmission BitTorrent daemon client.
 ### END INIT INFO
@@ -14,7 +13,7 @@
 # description: transmission bt daemon
 #
 
-. /etc/init.d/functions
+. /lib/lsb/init-functions
 
 
 # Original Author: Lennart A. JÃŒtte, based on Rob Howell's script
@@ -61,7 +60,7 @@ PATH=/opt/xmit/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 DESC="bittorrent client"
 NAME=transmission-daemon
 DAEMON=$(which $NAME)
-PIDFILE=/var/run/$NAME.pid
+PIDFILE=/var/run/xmit/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
 # Exit if the package is not installed
@@ -86,17 +85,24 @@ do_start()
     if [ -n "$TRANSMISSION_WEB_HOME" ]; then
           export TRANSMISSION_WEB_HOME
     fi
+    unset KRB5CCNAME
+    if [ -x /usr/local/bin/krenew ]; then
+          su $USERNAME /usr/local/bin/krenew
+    fi
 
     # Return
     #   0 if daemon has been started
     #   1 if daemon was already running
     #   2 if daemon could not be started
 
-    daemon --user $USERNAME --pidfile $PIDFILE $DAEMON
+    #daemon --user $USERNAME --pidfile $PIDFILE $DAEMON --pid-file $PIDFILE
 
-    #start-stop-daemon --chuid $USERNAME --start --pidfile $PIDFILE --make-pidfile \
-    #        --exec $DAEMON --background --test -- -f $TRANSMISSION_ARGS > /dev/null \
-    #        || return 1
+    start-stop-daemon --chuid $USERNAME --user $USERNAME \
+         --pidfile $PIDFILE  \
+         --exec $DAEMON  --start -- \
+         $TRANSMISSION_ARGS > /dev/null \
+         || return 1
+
     #start-stop-daemon --chuid $USERNAME --start --pidfile $PIDFILE --make-pidfile \
     #        --exec $DAEMON --background -- -f $TRANSMISSION_ARGS \
     #        || return 2
@@ -112,9 +118,11 @@ do_stop()
         #   1 if daemon was already stopped
         #   2 if daemon could not be stopped
         #   other if a failure occurred
-        #start-stop-daemon --stop --quiet --retry=TERM/10/KILL/5 --pidfile $PIDFILE --name $NAME
+        start-stop-daemon --stop --exec $DAEMON \
+            --pidfile $PIDFILE --quiet --retry=TERM/30/KILL/20
+            
 
-        killproc -p $PIDFILE $DAEMON
+        #killproc -p $PIDFILE $DAEMON
         RETVAL="$?"
         [ "$RETVAL" = 2 ] && return 2
 
@@ -125,12 +133,12 @@ do_stop()
         # needed by services started subsequently.  A last resort is to
         # sleep for some time.
 
-        # start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
-        killproc -p $PIDFILE $DAEMON
+         start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
+        #killproc -p $PIDFILE $DAEMON
         [ "$?" = 2 ] && return 2
 
         # Many daemons don't delete their pidfiles when they exit.
-        rm -f $PIDFILE
+        #rm -f $PIDFILE
 
         return "$RETVAL"
 }
