@@ -7,6 +7,10 @@ cd `dirname $0` && SSLDIR="$PWD" && cd - >/dev/null
 CFGFILE="$SSLDIR/scoped-CA/openssl.cnf"
 CFG="-config $CFGFILE"
 
+if [ ! -d "$HOME/private/ssl/hosts" ]; then
+    mkdir -p "$HOME/private/ssl/hosts"
+fi
+
 cd "$HOME/private/ssl/hosts"
 
 if [ ! -r $CFGFILE ]; then
@@ -19,6 +23,23 @@ if  [ x$1 == "x-h" ] || [ x$1 == "x--h" ] || [ x$1 == "x--help" ] || \
   echo "usage: $0 fqdn [fqdn2 [fqdn3 [fqdn4 ...]]]"
   exit 1
 fi
+
+if [ ! -d "$HOME/private/ssl/newcerts" ]; then
+    mkdir "$HOME/private/ssl/newcerts"
+fi
+
+if [ ! -d "$HOME/private/rand" ]; then
+    mkdir "$HOME/private/rand"
+fi
+
+if [ ! -r "$HOME/private/ssl/index.txt" ]; then
+    touch "$HOME/private/ssl/index.txt"
+fi
+
+if [ ! -r "$HOME/private/ssl/serial" ]; then
+    echo "00" > "$HOME/private/ssl/serial"
+fi
+
 
 export RECFQDN="$1"
 
