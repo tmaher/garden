@@ -2,7 +2,8 @@
 
 var https = require('https');
 var mysql = require('mysql');
-var querystring = require('querystring');  
+var querystring = require('querystring');
+var m = require('tweet_markup');
 
 var get_creds = require('get_creds').get_creds;
 
@@ -30,6 +31,7 @@ client.query("select * from oauthcreds where id=1", function(err, ra){
         post_blog(r['access_token'], blog_payload);
     }
 });
+
 
 var post_blog = function(token, payload){
     console.log("token: " + token);
