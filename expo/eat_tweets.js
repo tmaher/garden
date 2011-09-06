@@ -19,7 +19,7 @@ gt.get_all_limit(screen_name, oldest_ts, function(tweets){
         return;
     }
     var body = tweets.reduce(function(a,b){ return a+m.markup(b);}, "");
-    bw.post(2, date_title, body);
+    bw.post(5, date_title, body);
 });
 
 /*
