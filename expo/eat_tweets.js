@@ -7,7 +7,7 @@ var gt = require('get_tweets');
 var sprintf = require('sprintf').sprintf;
 var err_log = function(){ process.stderr.write(sprintf.apply(null, arguments)); };
 
-var oldest_ts = new Date().getTime() - (86400 * 1000 * 7);
+var oldest_ts = new Date().getTime() - (86400 * 1000 * 1);
 var screen_name = 'ExpoMuseum';
 var now = new Date();
 var date_title = sprintf("@ExpoMueum Twitter: %s",
