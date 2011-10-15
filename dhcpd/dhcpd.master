@@ -83,7 +83,7 @@ group {
     fixed-address 192.168.123.54;
   }
   host datagasm {
-    hardware ethernet 00:21:e9:58:62:50;
+    hardware ethernet F0:CB:A1:1C:90:4F;
     fixed-address 192.168.123.55;
   }
   host ursophone {
