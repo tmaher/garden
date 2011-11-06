@@ -108,4 +108,12 @@ group {
     hardware ethernet 98:4b:4a:b5:20:a3;
     fixed-address 192.168.123.60;
   }
+  host grover-old {
+    hardware ethernet 00:1e:c2:0a:d7:06;
+    fixed-address 192.168.123.53;
+  }
+  host grover-old-wireless {
+    hardware ethernet 00:1e:52:75:58:a7;
+    fixed-address 192.168.123.54;
+  }
 }
