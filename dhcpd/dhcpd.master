@@ -75,11 +75,13 @@ group {
     fixed-address 192.168.123.52;
   }
   host grover {
-    hardware ethernet 00:1e:c2:0a:d7:06;
+    hardware ethernet 3c:07:54:36:a9:8f;
+    # macbook pro 2008 hardware ethernet 00:1e:c2:0a:d7:06;
     fixed-address 192.168.123.53;
   }
   host grover-wireless {
-    hardware ethernet 00:1e:52:75:58:a7;
+    hardware ethernet b8:8d:12:2f:68:ca;
+    # macbook pro 2008 hardware ethernet 00:1e:52:75:58:a7;
     fixed-address 192.168.123.54;
   }
   host datagasm {
