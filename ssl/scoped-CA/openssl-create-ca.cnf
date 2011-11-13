@@ -31,4 +31,4 @@ commonName              = Tursom Foundation Scoped CA, $ENV::TIMESTAMP
 subjectKeyIdentifier    = hash
 authorityKeyIdentifier  = keyid:always,issuer:always
 basicConstraints        = critical,CA:true
-nameConstraints         = critical,permitted;DNS:tursom.com;DNS:tursom.org;DNS:tursom.net;DNS:tursom.us;DNS:sqlbijection.com;DNS:sqlbijection.org;DNS:sqlbijection.net;DNS:thomaskmaher.com;DNS:tkmaher.com
+# nameConstraints         = critical,permitted;DNS:tursom.com;DNS:tursom.org;DNS:tursom.net;DNS:tursom.us;DNS:sqlbijection.com;DNS:sqlbijection.org;DNS:sqlbijection.net;DNS:thomaskmaher.com;DNS:tkmaher.com
