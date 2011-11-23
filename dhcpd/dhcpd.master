@@ -110,10 +110,10 @@ group {
   }
   host grover-old {
     hardware ethernet 00:1e:c2:0a:d7:06;
-    fixed-address 192.168.123.53;
+    fixed-address 192.168.123.63;
   }
   host grover-old-wireless {
     hardware ethernet 00:1e:52:75:58:a7;
-    fixed-address 192.168.123.54;
+    fixed-address 192.168.123.64;
   }
 }
