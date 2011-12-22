@@ -3,10 +3,10 @@
  next-line-add-newlines nil  ;;; rms is a twit
  delete-key-deletes-forward nil
  minibuffer-max-depth nil
- default-fill-column 72
- default-tab-width 8
+ fill-column 72
+ tab-width 8
  require-final-newline t
- mm-inline-media-tests 
+ warning-suppress-types nil
  )
 
 (setq-default
