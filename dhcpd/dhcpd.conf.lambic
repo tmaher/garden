@@ -1,4 +1,3 @@
-# $Id$
 # DHCP conf file for lambic, the master
 
 failover peer "dhcp" {
@@ -14,4 +13,4 @@ failover peer "dhcp" {
    load balance max seconds 3;
 }
 
-include "/etc/dhcpd.master";
+include "/etc/dhcp/dhcpd.master";

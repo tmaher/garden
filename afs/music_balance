@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BDIR="/afs/tursom.org/ma/music"
-SOURCES="tom unclean urso"
+SOURCES="tom urso"
 SYS_IFS="$IFS"; export SYS_IFS
 LF_IFS="
 "; export LF_IFS

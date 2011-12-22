@@ -27,6 +27,10 @@ $TTL 345600
 58                              IN PTR  neil-phone.tursom.org.
 59                              IN PTR  ursopad.tursom.org.
 60                              IN PTR  zenodotus.tursom.org.
+;; 61 is free
+;; 62 is free
+63                              IN PTR  grover-old.tursom.org.
+64                              IN PTR  grover-old-wireless.tursom.org.
 ;; network gear
 253                             IN PTR  office-ap.tursom.org.
 254                             IN PTR  gw-home.tursom.org.

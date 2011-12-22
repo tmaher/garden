@@ -1,0 +1,2 @@
+MAILTO=tmaher@tursom.org
+55 23 * * * $HOME/garden/expo/eat_tweets.sh

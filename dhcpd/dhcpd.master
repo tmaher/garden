@@ -30,11 +30,11 @@ group {
     option host-name "lambic";
   }
   host steam {
-    hardware ethernet 00:40:63:F9:6F:6C;
+    hardware ethernet 90:FB:A6:3D:04:D1;
     fixed-address 192.168.123.3;
     option host-name "steam";
-    #next-server 192.168.123.2;
-    #filename "pxelinux.0";
+    next-server 192.168.123.2;
+    filename "pxelinux.0";
   }
   host amber {
     hardware ethernet 90:FB:A6:3D:07:2E;
@@ -75,15 +75,17 @@ group {
     fixed-address 192.168.123.52;
   }
   host grover {
-    hardware ethernet 00:1e:c2:0a:d7:06;
+    hardware ethernet 3c:07:54:36:a9:8f;
+    # macbook pro 2008 hardware ethernet 00:1e:c2:0a:d7:06;
     fixed-address 192.168.123.53;
   }
   host grover-wireless {
-    hardware ethernet 00:1e:52:75:58:a7;
+    hardware ethernet b8:8d:12:2f:68:ca;
+    # macbook pro 2008 hardware ethernet 00:1e:52:75:58:a7;
     fixed-address 192.168.123.54;
   }
   host datagasm {
-    hardware ethernet 00:21:e9:58:62:50;
+    hardware ethernet F0:CB:A1:1C:90:4F;
     fixed-address 192.168.123.55;
   }
   host ursophone {
@@ -105,5 +107,13 @@ group {
   host zenodotus {
     hardware ethernet 98:4b:4a:b5:20:a3;
     fixed-address 192.168.123.60;
+  }
+  host grover-old {
+    hardware ethernet 00:1e:c2:0a:d7:06;
+    fixed-address 192.168.123.63;
+  }
+  host grover-old-wireless {
+    hardware ethernet 00:1e:52:75:58:a7;
+    fixed-address 192.168.123.64;
   }
 }

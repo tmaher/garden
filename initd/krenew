@@ -1,0 +1,36 @@
+#!/bin/sh
+# Linux Standard Base comments
+### BEGIN INIT INFO
+# Provides:          krenew
+# Required-Start:    $local_fs $network $remote_fs
+# Required-Stop:     $local_fs $network $remote_fs
+# Should-Start:
+# Should-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: krenew
+# Description:       set up afs token for root
+### END INIT INFO
+
+USER=`whoami` export USER
+
+case "$1" in
+start)
+	/usr/local/bin/krenew
+	;;
+stop)
+	/usr/local/bin/krenew
+	;;
+restart)
+	/usr/local/bin/krenew
+	;;
+status)
+	klist
+    tokens
+	;;
+*) 	
+	echo "Usage: $0 <start|stop|restart|status>" >&2
+	exit 3
+	;;
+esac
+exit 0
