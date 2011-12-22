@@ -1,0 +1,35 @@
+
+;; ----- smex-history -----
+(
+ byte-compile-file
+ emacs-lisp-mode
+ package-install
+ esk-indent-buffer
+ package-list-packages
+ package-initialize
+ customize-face
+)
+
+;; ----- smex-data -----
+(
+ (customize-face . 14)
+ (package-install . 10)
+ (next-match . 1)
+ (package-list-packages . 4)
+ (jsp-html-mumamo-mode . 2)
+ (fundamental-mode . 1)
+ (flymake-mode . 2)
+ (flyspell-mode . 1)
+ (emacs-version . 1)
+ (indent-region . 2)
+ (revert-buffer . 2)
+ (byte-compile-file . 14)
+ (bibtex-mode . 1)
+ (indent-buffer . 3)
+ (esk-indent-buffer . 3)
+ (base64-decode-region . 1)
+ (font-lock-mode . 2)
+ (package-initialize . 1)
+ (actionscript-mode . 1)
+ (emacs-lisp-mode . 1)
+)
