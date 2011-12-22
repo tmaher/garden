@@ -1,18 +1,18 @@
 
 ;; ----- smex-history -----
 (
+ emacs-version
+ customize-face
  byte-compile-file
  emacs-lisp-mode
  package-install
  esk-indent-buffer
  package-list-packages
- package-initialize
- customize-face
 )
 
 ;; ----- smex-data -----
 (
- (customize-face . 14)
+ (customize-face . 15)
  (package-install . 10)
  (next-match . 1)
  (package-list-packages . 4)
@@ -20,7 +20,7 @@
  (fundamental-mode . 1)
  (flymake-mode . 2)
  (flyspell-mode . 1)
- (emacs-version . 1)
+ (emacs-version . 2)
  (indent-region . 2)
  (revert-buffer . 2)
  (byte-compile-file . 14)
