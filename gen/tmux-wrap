@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export TMUX_ACTUAL=`unalias tmux; type -p tmux`
+export TMUX_ACTUAL=`unalias tmux >/dev/null 2>&1; type -p tmux`
 export TMUX_CRED_DIR="/tmp/${USER}/tmux-${UID}"
 
 export REAL_SSH_AUTH_SOCK="${SSH_AUTH_SOCK}"
