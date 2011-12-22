@@ -63,5 +63,6 @@
 (add-hook 'java-mode-hook (lambda () (setq c-basic-offset 2
                                       indent-tabs-mode nil)))
 
+(server-start)
 (add-hook' term-setup-hook (lambda () (tmaher-init-keybind)))
 (add-hook' term-setup-hook (lambda ()  (message "What is thy bidding, my master?")))
