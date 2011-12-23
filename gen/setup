@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 
 . `dirname "$0"`/../gen/setup_hdr
 
@@ -8,6 +7,9 @@ if [ ! -r tursom.pm ]; then
   exit 1
 fi
 
-${INST_N} tursom.pm /usr/lib/perl5/site_perl/ 
+if [ -d /usr/lib/perl5/site_perl ]; then
+  ${INST_N} tursom.pm /usr/lib/perl5/site_perl/ 
+fi
 ${INST_N} screen-wrap /usr/local/bin/
 ${INST_N} tmux-wrap /usr/local/bin/
+${INST} -o ${SUDO_UID} -g ${SUDO_GID} emacs $HOME/bin/

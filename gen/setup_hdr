@@ -1,8 +1,8 @@
 # -*- shell-script -*-
 
 INST="/usr/bin/install"
-INST_N="${INST} -o root -g root"
-INST_RO="${INST} -o root -g root -m 0444"
+INST_N="${INST} -o 0 -g 0"
+INST_RO="${INST} -o 0 -g 0 -m 0444"
 
 if [ $EUID != "0" ] && [ x"${NOROOT}" = "x" ]; then
   echo "ERROR: must run as root/sudo" >&2

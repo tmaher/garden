@@ -6,6 +6,11 @@
     ))
 (setq load-path (append tmaher-load-path tmaher-system-load-path))
 
+;; emacsclient flails if this isn't defined
+(if (functionp 'tool-bar-mode) (tool-bar-mode 0)
+  (defun tool-bar-mode (x) "tmaher unimplemented stub" nil)
+  )
+
 (require 'cl)
 (require 'timer)
 (require 'vc)

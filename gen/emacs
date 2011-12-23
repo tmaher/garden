@@ -1,0 +1,32 @@
+#!/bin/bash
+
+CANDIDATE_PATHS="/opt/emacs/bin /usr/local/bin /usr/bin"
+
+EMACS_BINARY="x"
+CLIENT_BINARY="x"
+for cp in ${CANDIDATE_PATHS}; do
+    if [ -x "${cp}/emacs" ]; then
+        if [ -x "${cp}/emacsclient" ] || [ -x "${cp}/bin/emacsclient" ]; then
+            export EMACS_BINARY="${cp}/emacs"
+            export CLIENT_BINARY="${cp}/emacsclient"
+            break
+        fi
+    fi
+done
+
+if [ "${EMACS_BINARY}" == "x" ]; then
+    echo "ABORTING: unable to find emacs in..." >&2
+    echo "${CANDIDATE_PATHS}" >&2
+    exit 1
+fi
+
+# is emacs already running?
+EMACS_PID=`ps axuww | grep "^${USER} " | grep -v grep | grep -v "$0" | grep emacs | awk '{print $2}'`
+
+if [ "x${EMACS_PID}" == "x" ]; then
+    #echo "pid is $EMACS_PID - starting emacs"
+    exec ${EMACS_BINARY} -nw $@
+else
+    #echo "pid is $EMACS_PID - starting client"
+    exec ${CLIENT_BINARY} -t $@
+fi
