@@ -6,6 +6,10 @@ export TMUX_CRED_DIR="/tmp/${USER}/tmux-${UID}"
 export REAL_SSH_AUTH_SOCK="${SSH_AUTH_SOCK}"
 export WRAP_AGENT="${TMUX_CRED_DIR}/agent"
 
+if [ x"$KRB5CCNAME" == "x" ]; then
+    export KRB5CCNAME="FILE:/tmp/krb5cc_${UID}"
+fi
+
 export REAL_KRB5CCFILE=`echo $KRB5CCNAME | cut -f 2- -d :`
 export TMUX_KRB5CCFILE="${TMUX_CRED_DIR}/krb5cc_${UID}"
 export TMUX_KRB4CCFILE="${TMUX_CRED_DIR}/krb4cc_${UID}"
