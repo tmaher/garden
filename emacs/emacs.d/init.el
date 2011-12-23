@@ -2,6 +2,7 @@
   (defvar tmaher-system-load-path load-path))
 (defvar tmaher-load-path 
   '("~/.emacs.d/misc"
+    "~/.emacs.d/zephyr"
     ;;; "~/.emacs.d/nxhtml"
     ))
 (setq load-path (append tmaher-load-path tmaher-system-load-path))
@@ -15,6 +16,7 @@
 (require 'timer)
 (require 'vc)
 (require 'actionscript-mode)
+(require 'zephyr-setup)
 (load "~/.emacs.d/nxhtml/autostart")
 
 (require 'package)
