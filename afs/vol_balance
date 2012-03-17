@@ -6,16 +6,24 @@ use Data::Dumper;
 
 my $RW_PARTS = [{"server" => "lambic",
                  "parts" => [{"part" => "a",
-                              "ro_server" => "amber",
-                              "ro_part" => "b"},
-                             {"part" => "b",
                               "ro_server" => "steam",
-                              "ro_part" => "b"},
+                              "ro_part" => "c"},
+                             {"part" => "b",
+                              "ro_server" => "amber",
+                              "ro_part" => "c"},
                             ]},
                 {"server" => "amber",
                  "parts" => [{"part" => "a",
                               "ro_server" => "steam",
                               "ro_part" => "a"},
+                             {"part" => "b",
+                              "ro_server" => "steam",
+                              "ro_part" => "c"},
+                            ]},
+                {"server" => "steam",
+                 "parts" => [{"part" => "b",
+                              "ro_server" => "amber",
+                              "ro_part" => "c"},
                             ]},
                ];
 
@@ -50,10 +58,10 @@ foreach my $sh (@{$RW_PARTS}){
                      $rw_plex->{ro_server}, $rw_plex->{ro_part}, $v_ro));
       }
       if(!defined($rw_vols->{$v_ro})){
-        push(@{$sadness},
-             sprintf("ro part has vol absent from designated rw part: ro %s %s %s, rw %s %s",
-                     $rw_plex->{ro_server}, $rw_plex->{ro_part}, $v_ro,
-                     $rw_server, $rw_plex->{part}));
+        #push(@{$sadness},
+        #     sprintf("ro part has vol absent from designated rw part: ro %s %s %s, rw %s %s",
+        #             $rw_plex->{ro_server}, $rw_plex->{ro_part}, $v_ro,
+        #             $rw_server, $rw_plex->{part}));
 
       } elsif(!($rw_vols->{$v_ro}->{rw})){
         push(@{$sadness},
