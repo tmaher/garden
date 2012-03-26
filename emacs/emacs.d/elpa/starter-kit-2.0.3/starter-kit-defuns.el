@@ -159,12 +159,14 @@
   (interactive)
   (message (if (y-or-n-p "Do you have a test for that? ") "Good." "Bad!")))
 
-(defun esk-paredit-nonlisp ()
-  "Turn on paredit mode for non-lisps."
-  (interactive)
-  (set (make-local-variable 'paredit-space-for-delimiter-predicates)
-       '((lambda (endp delimiter) nil)))
-  (paredit-mode 1))
+(defun esk-paredit-nonlisp () t)
+;;(defun esk-paredit-nonlisp ()
+;;  "Turn on paredit mode for non-lisps."
+;;  (interactive)
+;;(set (make-local-variable 'paredit-space-for-delimiter-predicates)
+;;     '((lambda (endp delimiter) nil))
+;;; (paredit-mode 1)
+
 
 ;; A monkeypatch to cause annotate to ignore whitespace
 (defun vc-git-annotate-command (file buf &optional rev)

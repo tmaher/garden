@@ -1,0 +1,82 @@
+;;; -*- coding: utf-8 -*-
+
+;; ----- ido-last-directory-list -----
+(
+ ("~/.emacs.d/" . "auto-save-list/")
+ ("/Users/tmaher/.old_emacs/.emacs.d/" . "auto-save-list/")
+ ("/Users/tmaher/.old_emacs/" . ".emacs.d/")
+ ("/Users/tmaher/.emacs.d/tmaher/color-theme/" . "themes/")
+ ("/Users/tmaher/.emacs.d/tmaher/" . "color-theme/")
+ ("/Users/tmaher/.emacs.d/elpa/" . "color-theme-6.6.1/")
+ ("/Users/tmaher/.emacs.d/" . "tmaher/")
+ ("/Users/tmaher/src/" . "elisp/")
+ ("/Users/tmaher/" . ".emacs.d/")
+)
+
+;; ----- ido-work-directory-list -----
+(
+ "/Users/tmaher/.emacs.d/"
+ "/Users/tmaher/.emacs.d/tmaher/"
+ "/Users/tmaher/"
+ "/Users/tmaher/.old_emacs/"
+ "~/.emacs.d/"
+ "/Users/tmaher/.emacs.d/tmaher/color-theme/themes/"
+ "/Users/tmaher/.emacs.d/elpa/color-theme-6.6.1/"
+ "/Users/tmaher/src/elisp/"
+)
+
+;; ----- ido-work-file-list -----
+(
+ "tmaher.el"
+ "tmaher-theme.el"
+ "init.el"
+ ".bashrc"
+ ".bash_profile"
+ "color-theme-tmaher.el"
+ "bindings.el"
+ "zenburn-theme.el"
+ "tmaher.eltmaher"
+ "misc-functions.el"
+)
+
+;; ----- ido-dir-file-cache -----
+(
+ ("/Users/tmaher/.emacs.d/tmaher/" (20169 46585) "tmaher-theme.el" "misc-functions.el" "bindings.el" "../" "./")
+
+ ("/Users/tmaher/.emacs.d/" (20206 24054) "tmaher.el" "tmaher/" "places" "init.el" "elpa/" "backups/" "auto-save-list/" ".smex-items" "../" "./")
+
+ ("~/" (20206 23705) "tubbers/" "tmp/" "taxes/" "src/" "Sites/" "rails/" "Public/" "pub/" "private/" "Pictures/" "Photos/" "paros/" "office-key" "node/" "Music/" "Movies/" "mbox" "Library/" "heroku/" "hello.rb" "github/" "garden/" "flex/" "Downloads/" "Documents/" "Desktop/" "dbdump" "creds/" "Convergence/" "Calibre Library/" "burp/" "bug" "bt/" "bin/" "bh/" "bad/" "apps" "Applications/" "afs" ".zenmap-etc/" ".zenmap/" ".Xresources" ".Xcode/" ".Xauthority" ".wireshark-etc/" ".wireshark/" ".vimrc" ".viminfo" ".Trashes/" ".Trash/" ".tmux.conf" ".tivodecode_mak" ".tivo/" ".TemporaryItems/" ".subversion/" ".ssh/" ".sqlite_history" ".spumux/" ".Spotlight-V100/" ".signature" ".sh_history" ".serverauth.7125" ".serverauth.596" ".serverauth.1545" ".screenrc" ".RSA/" ".rnd" ".recently-used.xbel" ".recentf" ".rbenv/" ".parallels_settings" ".orpui/" ".old_emacs/" ".npmrc" ".npm/" ".node_libraries/" ".mplayer/" ".matlab/" ".MacOSX/" ".lesshst" ".ldaprc" ".irb_history" ".install4j" ".inputrc" ".ingrc" ".ido.last" ".heroku/" ".gstreamer-0.10/" ".gpg-agent-info" ".gnupg/" ".gitconfig" ".gem/" ".fseventsd/" ".fonts/" ".fontconfig/" ".emacs.d/" ".dvdcss/" ".DS_Store" ".dropbox/" ".dir_colors" ".davmail.properties" ".cvspass" ".cups/" ".cpan/" ".cookie-headers.swp" ".config/" ".CFUserTextEncoding" ".calibre-fontconfig/" ".bitpim-files/" ".bashrc_osx" ".bashrc" ".bash_profile_osx" ".bash_profile" ".bash_history" ".aws-secrets" ".avidemux-etc/" ".avidemux/" ".android/" ".alias" ".abbrev_defs" "../" "./")
+
+ ("~/.emacs.d/auto-save-list/" (20171 10395) ".saves-44929-hoegaarden.tursom.org~" "../" "./")
+
+ ("~/.emacs.d/" (20169 48018) "tmaher.el" "tmaher/" "places" "init.el" "elpa/" "backups/" "auto-save-list/" ".smex-items" "../" "./")
+
+ ("/Users/" (20188 54162) "tmaher/" "Shared/" "pac/" "admin/" ".tmaher/" ".localized" "../" "./")
+
+ ("/Users/tmaher/.emacs.d/auto-save-list/" (20171 10395) ".saves-44929-hoegaarden.tursom.org~" "../" "./")
+
+ ("/Users/tmaher/" (20206 23705) "tubbers/" "tmp/" "taxes/" "src/" "Sites/" "rails/" "Public/" "pub/" "private/" "Pictures/" "Photos/" "paros/" "office-key" "node/" "Music/" "Movies/" "mbox" "Library/" "heroku/" "hello.rb" "github/" "garden/" "flex/" "Downloads/" "Documents/" "Desktop/" "dbdump" "creds/" "Convergence/" "Calibre Library/" "burp/" "bug" "bt/" "bin/" "bh/" "bad/" "apps" "Applications/" "afs" ".zenmap-etc/" ".zenmap/" ".Xresources" ".Xcode/" ".Xauthority" ".wireshark-etc/" ".wireshark/" ".vimrc" ".viminfo" ".Trashes/" ".Trash/" ".tmux.conf" ".tivodecode_mak" ".tivo/" ".TemporaryItems/" ".subversion/" ".ssh/" ".sqlite_history" ".spumux/" ".Spotlight-V100/" ".signature" ".sh_history" ".serverauth.7125" ".serverauth.596" ".serverauth.1545" ".screenrc" ".RSA/" ".rnd" ".recently-used.xbel" ".recentf" ".rbenv/" ".parallels_settings" ".orpui/" ".old_emacs/" ".npmrc" ".npm/" ".node_libraries/" ".mplayer/" ".matlab/" ".MacOSX/" ".lesshst" ".ldaprc" ".irb_history" ".install4j" ".inputrc" ".ingrc" ".ido.last" ".heroku/" ".gstreamer-0.10/" ".gpg-agent-info" ".gnupg/" ".gitconfig" ".gem/" ".fseventsd/" ".fonts/" ".fontconfig/" ".emacs.d/" ".dvdcss/" ".DS_Store" ".dropbox/" ".dir_colors" ".davmail.properties" ".cvspass" ".cups/" ".cpan/" ".cookie-headers.swp" ".config/" ".CFUserTextEncoding" ".calibre-fontconfig/" ".bitpim-files/" ".bashrc_osx" ".bashrc" ".bash_profile_osx" ".bash_profile" ".bash_history" ".aws-secrets" ".avidemux-etc/" ".avidemux/" ".android/" ".alias" ".abbrev_defs" "../" "./")
+
+ ("/Users/tmaher/.old_emacs/.emacs.d/auto-save-list/" (20169 31758) ".saves-86553-hoegaarden.local~" ".saves-76565-hoegaarden.tursom.org~" ".saves-41542-doubtfeet-lm.tursom.org~" ".saves-37432-hoegaarden.tursom.org~" ".saves-30978-hoegaarden.tursom.org~" ".saves-26217-doubtfeet-lm~" ".saves-18702-hoegaarden.tursom.org~" ".saves-13694-hoegaarden.tursom.org~" "../" "./")
+
+ ("/Users/tmaher/.old_emacs/.emacs.d/" (18514 52623) "auto-save-list/" "../" "./")
+
+ ("/Users/tmaher/.emacs.d/tmaher/./" (20169 46164) "tmaher-theme.el" "misc-functions.el" "bindings.el" "../" "./")
+
+ ("/Users/tmaher/.old_emacs/" (20169 44761) "color-theme-tmaher.el" ".emacs~" ".emacs.d/" ".emacs" "../" "./")
+
+ ("/Users/tmaher/.emacs.d/tmaher/color-theme/themes/" (17529 43599) "color-theme-library.el" "color-theme-example.el" "../" "./")
+
+ ("/Users/tmaher/.emacs.d/tmaher/color-theme/" (17529 43612) "themes/" "README" "Makefile.defs" "Makefile" "HACKING" "COPYING" "configure-stamp" "color-theme.el" "color-theme-autoloads.in" "color-theme-autoloads.elc" "color-theme-autoloads.el" "ChangeLog" "build-stamp" "BUGS" "AUTHORS" "../" "./")
+
+ ("/Users/tmaher/.emacs.d/elpa/color-theme-6.6.1/" (20169 36261) "color-theme.elc" "color-theme.el" "color-theme-pkg.elc" "color-theme-pkg.el" "color-theme-autoloads.el" "../" "./")
+
+ ("/Users/tmaher/.emacs.d/elpa/" (20169 36559) "starter-kit-ruby-2.0/" "starter-kit-lisp-2.0.3/" "starter-kit-js-2.0.1/" "starter-kit-eshell-2.0.2/" "starter-kit-bindings-2.0.2/" "starter-kit-2.0.3/" "smex-1.1.1/" "paredit-22/" "magit-1.0.0/" "ido-ubiquitous-0.7/" "idle-highlight-mode-1.1.2/" "find-file-in-project-3.0/" "elisp-slime-nav-0.2/" "color-theme-zenburn-0.3/" "color-theme-6.6.1/" "archives/" "../" "./")
+
+ ("/Users/tmaher/src/elisp/" (17552 45813) "zlocate-finger.el" "zephyr.elc" "zephyr.el" "zephyr-zwgc.el" "zephyr-url.el" "zephyr-style-strip.el" "zephyr-ssh.el" "zephyr-setup.el" "zephyr-remote.el" "zephyr-logging.el" "trampcache.el" "tramp.elc" "tramp.el" "tramp-vc.elc" "tramp-vc.el" "tocstr.elc" "toc.elc" "tnt.elc" "tmaher-gnus.el~" "tmaher-gnus.el" "tardis-gnus.el~" "tardis-gnus.el" "sweet-magus-macs.el" "sweet-ezephyr/" "src/" "sieve-mode.el" "RCS/" "new-gnus.el" "Makefile" "magus-macs.el" "magus-gnus.el" "jmck-gnus.el" "html-helper-mode.elc" "html-helper-mode.el" "gnus-setup.el" "gnus/" "fsfemacs.el~" "fsfemacs.el" "FSF-timer.el" "format-spec.elc" "format-spec.el" "ezephyr/" "expect.elc" "emacs.elc" "emacs.el" "custom/" "base64.elc" "base64.el" "#gnus-setup.el#" "../" "./")
+
+ ("/Users/tmaher/src/" (20120 37334) "tmux-1.3.tar.gz" "tivodecode-0.2pre4.tar.gz" "swftools-2010-08-14-1108.tgz" "swftools-2010-08-14-1108/" "smash/" "node-v0.3.0.tar.gz" "node-v0.3.0/" "jpegsrc.v8b.tgz" "jpeg-8b/" "john-1.7.8.tar.bz2" "john-1.7.8/" "ike-scan-1.9.tar.gz" "ike-scan-1.9/" "giflib-4.1.6.tar.bz2" "giflib-4.1.6/" "fauxauth/" "elisp/" "as_app" "../" "./")
+)
+
+;; ----- ido-unc-hosts-cache -----
+t

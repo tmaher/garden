@@ -63,6 +63,17 @@
 (add-hook 'java-mode-hook (lambda () (setq c-basic-offset 2
                                       indent-tabs-mode nil)))
 
+;; Mumamo is making emacs 23.3 freak out:
+(when (and (equal emacs-major-version 23)
+           (equal emacs-minor-version 3))
+  (eval-after-load "bytecomp"
+    '(add-to-list 'byte-compile-not-obsolete-vars
+                  'font-lock-beginning-of-syntax-function))
+  ;; tramp-compat.el clobbers this variable!
+  (eval-after-load "tramp-compat"
+    '(add-to-list 'byte-compile-not-obsolete-vars
+                                    'font-lock-beginning-of-syntax-function)))
+
 (server-start)
 (add-hook' term-setup-hook (lambda () (tmaher-init-keybind)))
 (add-hook' term-setup-hook (lambda ()  (message "What is thy bidding, my master?")))
