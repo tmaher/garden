@@ -4,8 +4,11 @@ set -o errexit
 umask 0077
 
 cd `dirname $0` && SSLDIR="$PWD" && cd - >/dev/null
-CFGFILE="$SSLDIR/scoped-CA/openssl.cnf"
-CFG="-config $CFGFILE"
+MY_CFGFILE="$SSLDIR/scoped-CA/openssl.cnf"
+if [ "x$OPENSSL_CFG_FILE" != "x" ]; then
+    MY_CFGFILE="$OPENSSL_CFG_FILE"
+fi
+CFG="-config $MY_CFGFILE"
 
 if [ ! -d "$HOME/private/ssl/hosts" ]; then
     mkdir -p "$HOME/private/ssl/hosts"
@@ -13,8 +16,8 @@ fi
 
 cd "$HOME/private/ssl/hosts"
 
-if [ ! -r $CFGFILE ]; then
-  echo "can't find config file $CFGFILE under $SSLDIR"
+if [ ! -r $MY_CFGFILE ]; then
+  echo "can't find config file $MY_CFGFILE under $SSLDIR"
   exit 1
 fi
 
