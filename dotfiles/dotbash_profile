@@ -1,7 +1,4 @@
-# -*- shell-script -*-
-# $Id$
-
-PATH=$HOME/bin:$HOME/sbin:/opt/emacs/bin:/opt/nodejs/bin
+PATH=$HOME/bin:$HOME/sbin:$HOME/.rbenv/bin:$HOME/.rbenv/shims
 PATH=$PATH:/usr/local/bin:/usr/local/sbin
 PATH=$PATH:/usr/bin:/usr/sbin:/bin/sbin
 PATH=$PATH:/opt/heimdal/bin:/opt/heimdal/sbin
@@ -14,20 +11,43 @@ MANPATH=$MANPATH:/opt/heimdal/share/man
 MANPATH=$MANPATH:/usr/man:/usr/kerberos/man:/usr/X11R6/man
 export MANPATH
 
-export EDITOR=vim
-export SVN_EDITOR=$EDITOR
+EDITOR=emacs
+SVN_EDITOR=$EDITOR
 export EDITOR
 export SVN_EDITOR
 
-PAGER=less; export PAGER
-BLOCKSIZE=K; export BLOCKSIZE
+export PAGER=less
+export BLOCKSIZE=K
 
-HOST_SHORT=`hostname | tr A-Z a-z`
+HOST_SHORT=`hostname | tr A-Z a-z | sed  -e 's/\.tursom\.org$//'`
 export HOST_SHORT
 
 if readlink /bin/sh | grep bash >/dev/null; then
   ENV="$HOME/.bashrc"
   export ENV
+fi
+
+source "/Users/tmaher/.rbenv/libexec/../completions/rbenv.bash"
+rbenv rehash 2>/dev/null
+function rbenv() {
+  command="$1"
+  if [ "$#" -gt 0 ]; then
+    shift
+  fi
+
+  case "$command" in
+  shell)
+    eval `rbenv "sh-$command" "$@"`;;
+  *)
+    command rbenv "$command" "$@";;
+  esac
+}
+
+export EC2_PRIVATE_KEY="$HOME/.ec2/pk.pem"
+export EC2_CERT="$HOME/.ec2/cert.pem"
+if [ `uname` == 'Darwin' ]; then
+  export JAVA_HOME="$(/usr/libexec/java_home)"
+  export EC2_HOME="/usr/local/Cellar/ec2-api-tools/1.5.2.4/jars"
 fi
 
 . $HOME/.bashrc
