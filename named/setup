@@ -10,13 +10,15 @@ fi
 
 SHORTHOST=`hostname | cut -f 1 -d \. `
 
+if [ ! -d /var/log/named ]; then
+  mkdir -p /var/log/named
+  chown bind:bind /var/log/named
+fi
+
 ${INST_RO} resolv.conf.${SHORTHOST} /etc/resolv.conf
 
 ${INST_RO} named.conf /etc/bind/
-${INST_RO} named.conf /var/named/chroot/etc/
 
-${INST_RO} named.root /etc/bind/
-${INST_RO} named.root /var/named/chroot/var/named/
-
-${INST_RO} db.127.0.0 /var/named/chroot/var/named/
-${INST_RO} db.192.168.123 /var/named/chroot/var/named/
+${INST_RO} named.root /var/lib/bind/
+${INST_RO} db.127.0.0 /var/lib/bind/
+${INST_RO} db.192.168.123 /var/lib/bind/
