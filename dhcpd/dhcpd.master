@@ -28,6 +28,8 @@ group {
     hardware ethernet 00:21:9B:19:76:19;
     fixed-address 192.168.123.2;
     option host-name "lambic";
+    next-server 192.168.123.3;
+    filename "pxelinux.0";
   }
   host steam {
     hardware ethernet 90:FB:A6:3D:04:D1;
