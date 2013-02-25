@@ -6,7 +6,7 @@ FFMPEG="ffmpeg"
 
 if [ "x$1" == "x" ]; then
     echo "Usage: $0 src [dest]"
-    exit 0
+    exit 1
 fi
 
 src="$1"
@@ -25,7 +25,7 @@ fi
 
 if [ "x$src" == "x$dest" ]; then
     echo "src and dest must be different files!"
-    exit 0
+    exit 1
 fi
 
 
