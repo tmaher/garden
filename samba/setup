@@ -1,0 +1,14 @@
+#!/bin/bash
+# $Id$
+
+. `dirname "$0"`/../gen/setup_hdr
+
+if [ ! -d /etc/samba ]; then
+  echo "ERROR: can't find stuff"
+  exit 1
+fi
+
+${INST_RO} smb.conf /etc/samba/
+
+restart smbd
+restart nmbd
