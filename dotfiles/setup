@@ -13,6 +13,7 @@ ${INST} dotbash_profile "${HOME}/.bash_profile"
 ${INST} dotbash_logout "${HOME}/.bash_logout"
 ${INST} dotscreenrc "${HOME}/.screenrc"
 ${INST} dottmuxdotconf "${HOME}/.tmux.conf"
+${INST} dotalias "${HOME}/.alias"
 
 if [ -r /etc/debian_version ]; then
   ${INST} dotinputrc "${HOME}/.inputrc"

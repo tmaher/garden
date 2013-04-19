@@ -1,0 +1,8 @@
+alias lambic="ssh lambic"
+alias stout="ssh stout"
+alias bismuth="ssh bismuth"
+alias cobalt="ssh cobalt"
+alias tmux="tmux-wrap"
+alias h="ruby /usr/bin/heroku"
+alias less="less -R"
+alias irb="pry"
