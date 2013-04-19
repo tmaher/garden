@@ -46,3 +46,4 @@
  '(mode-line ((t (:background "blue" :foreground "yellow"))))
  '(mumamo-background-chunk-major ((((class color) (min-colors 8)) nil)))
  '(mumamo-background-chunk-submode1 ((((class color) (min-colors 8)) nil))))
+(put 'ido-exit-minibuffer 'disabled nil)
