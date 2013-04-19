@@ -16,6 +16,8 @@ SVN_EDITOR=$EDITOR
 export EDITOR
 export SVN_EDITOR
 
+CC=gcc export CC
+
 export PAGER=less
 export BLOCKSIZE=K
 
@@ -47,7 +49,11 @@ export EC2_PRIVATE_KEY="$HOME/.ec2/pk.pem"
 export EC2_CERT="$HOME/.ec2/cert.pem"
 if [ `uname` == 'Darwin' ]; then
   export JAVA_HOME="$(/usr/libexec/java_home)"
-  export EC2_HOME="/usr/local/Cellar/ec2-api-tools/1.5.2.4/jars"
+  export EC2_HOME="/usr/local/Cellar/ec2-api-tools/1.6.1.2/jars"
+  export AWS_IAM_HOME="/usr/local/Cellar/aws-iam-tools/1.5.0/jars"
+  export AWS_CREDENTIAL_FILE="/Volumes/tmprv/heroku/master-creds-for-iam-tools.txt"
 fi
+
+PGHOST="/var/pgsql_socket"; export PGHOST
 
 . $HOME/.bashrc
