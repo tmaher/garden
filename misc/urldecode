@@ -1,0 +1,28 @@
+#!/usr/bin/python
+
+import urllib
+import fileinput
+import sys
+
+def cmd_arg ():
+    print urllib.unquote(sys.argv[1])
+    return
+
+def read_stdin ():
+    running = ""
+    for line in fileinput.input():
+        running += line
+    print urllib.unquote(running)
+    return
+
+modes = {'arg' : cmd_arg,
+         'stdin' : read_stdin,
+         }
+
+mode = 'arg'
+try:
+    sys.argv[1]
+except IndexError:
+    mode = 'stdin'
+
+modes[mode]()
