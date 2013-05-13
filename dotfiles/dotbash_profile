@@ -29,7 +29,7 @@ if readlink /bin/sh | grep bash >/dev/null; then
   export ENV
 fi
 
-source "/Users/tmaher/.rbenv/libexec/../completions/rbenv.bash"
+source "${HOME}/.rbenv/libexec/../completions/rbenv.bash"
 rbenv rehash 2>/dev/null
 function rbenv() {
   command="$1"
