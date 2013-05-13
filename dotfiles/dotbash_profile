@@ -56,4 +56,6 @@ fi
 
 PGHOST="/var/pgsql_socket"; export PGHOST
 
+krenew >/dev/null 2>&1
+
 . $HOME/.bashrc
