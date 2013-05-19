@@ -1,0 +1,17 @@
+#!/bin/bash
+
+URL=$1
+
+VID_ID=`echo $URL | cut -f 2- -d =`
+
+echo "I have $VID_ID"
+
+ASSET=`curl -s "http://www.xtube.com/find_video.php?video_id=${VID_ID}" | cut -f 2- -d = | urldecode`
+
+echo "asset url $ASSET"
+ 
+FILE=`echo $ASSET | cut -f 1 -d ? | cut -f 3- -d / | xargs basename`
+echo "I like $FILE"
+
+krenew
+curl -o "/ma/tv/pr0n/${FILE}" "${ASSET}"

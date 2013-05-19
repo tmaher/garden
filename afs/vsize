@@ -1,0 +1,29 @@
+#!/usr/local/bin/perl -w
+# -*- cperl -*-
+
+use strict;
+use Data::Dumper;
+use POSIX;
+
+my @vol = ();
+while(defined($_ = shift @ARGV)){
+  push(@vol, $_);
+}
+if($#vol < 0){
+  printf(STDERR "usage: $0 vol1 [vol2 [vol3 ...[]]]\n");
+  exit(1);
+}
+
+foreach my $_vol (@vol){
+  my $data = `vos ex $_vol | grep ^$_vol 2>/dev/null`;
+  #next unless ($data =~ /^(\w+)\s+(\d+)\s+(\w+)\s+(\d+)\s+\w+\s+(\w+)\s*$/);
+  next unless ($data =~ /^([\w\.]+)\s+(\d+)\s+/);
+  my %d;
+
+  $d{name} = $1;
+  $d{id} = $2;
+  #$d{type} = $3;
+  #$d{size} = $4;
+  #$d{status} = $5;
+  printf("%s\n", Dumper \%d);
+}
