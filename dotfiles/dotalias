@@ -6,3 +6,6 @@ alias tmux="tmux-wrap"
 alias h="ruby /usr/bin/heroku"
 alias less="less -R"
 alias irb="pry"
+if [ `uname` = "Linux" ]; then
+    alias ls="ls --color=auto"
+fi
