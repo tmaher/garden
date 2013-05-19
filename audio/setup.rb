@@ -8,7 +8,7 @@ require 'fileutils'
 MYDIR = File.dirname(File.expand_path __FILE__)
 SHAIRDIR = File.join(MYDIR, "shairport")
 SHAIRPORT_NAME = "Sonos-#{Socket.gethostname.split('.')[0]}"
-SEKRIT = SecureRandom.hex(4)
+SEKRIT = SecureRandom.hex(16)
 AUDIO_USER = "icecast2"
 AUDIO_GROUP = "icecast"
 

@@ -19,7 +19,7 @@
 NAME="shairport"
 DAEMON="/usr/local/bin/shairport.pl"
 PIDFILE=/var/run/shairport/$NAME.pid
-DAEMON_ARGS="-d -w $PIDFILE -a \"<%= SHAIRPORT_NAME %>\""
+DAEMON_ARGS="-d -w $PIDFILE -a <%= SHAIRPORT_NAME %>"
 
 [ -x $binary ] || exit 0
 
