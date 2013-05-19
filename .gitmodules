@@ -1,0 +1,3 @@
+[submodule "audio/shairport"]
+	path = audio/shairport
+	url = https://github.com/abrasive/shairport.git
