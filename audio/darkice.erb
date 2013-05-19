@@ -1,0 +1,13 @@
+# -*- shell-script -*-
+# Defaults for darkice initscript
+# sourced by /etc/init.d/darkice
+# installed at /etc/default/darkice by the maintainer scripts
+
+#
+# This is a POSIX shell fragment
+#
+RUN=yes
+# Additional options that are passed to the Daemon.
+DAEMON_OPTS="-c /etc/icecast2/darkice.cfg"
+USER=<%= AUDIO_USER %>
+GROUP=<%= AUDIO_GROUP %>

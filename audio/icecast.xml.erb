@@ -22,13 +22,13 @@
 
     <authentication>
         <!-- Sources log in with username 'source' -->
-        <source-password><%= SEKRIT =></source-password>
+        <source-password><%= SEKRIT %></source-password>
         <!-- Relays log in username 'relay' -->
-        <relay-password><%= SEKRIT =></relay-password>
+        <relay-password><%= SEKRIT %></relay-password>
 
         <!-- Admin logs in with the username given below -->
         <admin-user>admin</admin-user>
-        <admin-password>hackme</admin-password>
+        <admin-password><%= SEKRIT %></admin-password>
     </authentication>
 
     <!-- set the mountpoint for a shoutcast source to use, the default if not
@@ -65,7 +65,7 @@
     <!--<master-server>127.0.0.1</master-server>-->
     <!--<master-server-port>8001</master-server-port>-->
     <!--<master-update-interval>120</master-update-interval>-->
-    <!--<master-password>hackme</master-password>-->
+    <!--<master-password><%= SEKRIT %></master-password>-->
 
     <!-- setting this makes all relays on-demand unless overridden, this is
          useful for master relays which do not have <relay> definitions here.
@@ -90,7 +90,7 @@
         <mount-name>/example-complex.ogg</mount-name>
 
         <username>othersource</username>
-        <password>hackmemore</password>
+        <password><%= SEKRIT %></password>
 
         <max-listeners>1</max-listeners>
         <dump-file>/tmp/dump-example1.ogg</dump-file>
