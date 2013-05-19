@@ -16,8 +16,6 @@ SVN_EDITOR=$EDITOR
 export EDITOR
 export SVN_EDITOR
 
-CC=gcc export CC
-
 export PAGER=less
 export BLOCKSIZE=K
 
