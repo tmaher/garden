@@ -1,5 +1,4 @@
 # -*- shell-script -*-
-# $Id$
 
 umask 022
 
@@ -35,11 +34,8 @@ fi
 export PS1='\u@\h:\w\$ '
 
 # Make my aliases work correctly
-if [ -r $HOME/.alias ];then
-    . $HOME/.alias 2>/dev/null
-    if [ -r /home/$USER/private/.localalias ]; then
-        . /home/$USER/private/.localalias
-    fi
+if [ -r "${HOME}/.alias" ];then
+    . "${HOME}/.alias" 2>/dev/null
     if [ -r "${HOME}/private/.localalias" ]; then
         . "${HOME}/private/.localalias"
     fi
