@@ -9,7 +9,15 @@ if [ ! -r $KEYTAB ]; then
   exit 1
 fi
 
-kinit --renewable -l 29d -t $KEYTAB $PRINC >/dev/null 2>&1
+if [ "x${KRB5CCNAME}" != "x" ]; then
+    export CC_FILE=`echo $KRB5CCNAME | cut -f 2- -d :`
+    if [ -L "${CC_FILE}" ]; then
+        CC_FILE=`readlink -n ${KRB5CCNAME}`
+    fi
+fi
+    
+
+KRB5CCNAME="${CC_FILE}" kinit --renewable -l 29d -t $KEYTAB $PRINC >/dev/null 2>&1
 
 klist -s
 if [ $? != 0 ]; then
