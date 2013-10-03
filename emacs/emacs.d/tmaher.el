@@ -59,6 +59,7 @@
 
 (column-number-mode t)
 (line-number-mode t)
+(auto-fill-mode -1)
 
 (add-hook 'java-mode-hook (lambda () (setq c-basic-offset 2
                                       indent-tabs-mode nil)))
