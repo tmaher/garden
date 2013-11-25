@@ -1,0 +1,8 @@
+#!/bin/bash
+
+DIR="/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Caches"
+
+cd "$DIR" || (echo "ABORT - can't find"; echo "$DIR"; exit 1) || exit 1
+sudo rm -rf */HTTP.system
+
+exit 0
