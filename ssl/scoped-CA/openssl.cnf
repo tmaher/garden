@@ -21,8 +21,8 @@ database                        = $PRIVATE/index.txt
 new_certs_dir                   = $PRIVATE/newcerts
 serial                          = $PRIVATE/serial
 crl                             = $PRIVATE/crl.pem
-certificate                     = $PRIVATE/CA/tursom-scoped-ca.crt
-private_key                     = $PRIVATE/CA/tursom-scoped-ca.key
+certificate                     = $PRIVATE/CA/pw0n-ca.pem
+private_key                     = $PRIVATE/CA/pw0n-ca.key
 RANDFILE                        = $PRIVATE/rand/randfile-ca
 
 x509_extensions	                = usr_cert
@@ -90,7 +90,7 @@ prompt                          = no
 countryName                     = US
 stateOrProvinceName             = California
 localityName                    = San Francisco
-0.organizationName              = Tursom Foundation
+0.organizationName              = pw0n4g3 1ndus+r13z
 commonName			= $ENV::RECFQDN
 
 
