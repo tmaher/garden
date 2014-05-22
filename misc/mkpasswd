@@ -1,0 +1,3 @@
+#!/bin/bash
+
+dd if=/dev/urandom bs=15 count=1 2>/dev/null | openssl base64 | tr +/= ._-
