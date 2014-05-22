@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require 'json'
+
+begin
+  puts JSON.pretty_generate(JSON.parse($stdin.read))
+rescue Errno::EPIPE => e
+  # this gets thrown on pipes, e.g., `foo | json-pretty | head`,
+  # because |head results in the pipe closing before we finish writing
+  # to stdout
+end
