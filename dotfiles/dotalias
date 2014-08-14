@@ -1,5 +1,3 @@
-alias lambic="ssh lambic"
-alias stout="ssh stout"
 alias bismuth="ssh bismuth"
 alias cobalt="ssh cobalt"
 alias tmux="tmux-wrap"
@@ -9,3 +7,4 @@ alias irb="pry"
 if [ `uname` = "Linux" ]; then
     alias ls="ls --color=auto"
 fi
+alias ag="ag --pager $PAGER"
