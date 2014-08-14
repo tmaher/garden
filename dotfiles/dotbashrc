@@ -1,4 +1,4 @@
-# -*- shell-script -*-
+# https://github.com/tmaher/garden/blob/master/dotfiles/dotbashrc
 
 umask 022
 
@@ -29,6 +29,7 @@ if [ "x$DISPLAY" != "x" ] || \
   # In X, rename the window.
   # PS1='\[\033]2;\u@\h\007\]\u@\h:\w\$ '
   export PROMPT_COMMAND="tbar"
+  export LESS="R"
 fi
 
 export PS1='\u@\h:\w\$ '
