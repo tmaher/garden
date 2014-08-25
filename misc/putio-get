@@ -1,0 +1,8 @@
+#!/bin/bash
+
+TOKEN=`cat $HOME/private/putio_token`
+
+TARGET="$1"
+SRC="$2"
+
+curl -L -o "$TARGET" "${SRC}&oauth_token=${TOKEN}"
