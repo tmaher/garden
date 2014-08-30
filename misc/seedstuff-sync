@@ -22,9 +22,11 @@ if [ ! -r "${CA_FILE}" ]; then
   wget -O "${CA_FILE}" "${CA_URL}"
 fi
 
+cd "${TARGET_DIR}"
+
 wget --accept-regex '/$USER/' --ca-certificate="${CA_FILE}" \
-  -m https://${HOST}/${USER}/ "${TARGET_DIR}"
+  -m https://${HOST}/${USER}/
 
 # clean up the silly index files
-find "${TARGET_DIR}/${HOST}/" -name index.html* -print0 | \
+find "${HOST}" -name index.html* -print0 | \
   xargs -0 rm
