@@ -31,4 +31,4 @@ for SEEDBOX in `grep "machine .*\.seedstuff\.ca" "$HOME/.netrc" | \
   # clean up the silly index files
   find "${SEEDBOX}" -name index.html* -print0 | \
     xargs -0 rm
-fi
+done
