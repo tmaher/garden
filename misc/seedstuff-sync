@@ -24,7 +24,7 @@ fi
 
 cd "${TARGET_DIR}"
 
-wget --accept-regex '/$USER/' --ca-certificate="${CA_FILE}" \
+wget --accept-regex "/$USER/" --ca-certificate="${CA_FILE}" \
   -m https://${HOST}/${USER}/
 
 # clean up the silly index files
