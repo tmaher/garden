@@ -1,17 +1,8 @@
 #!/bin/bash -x
 
-HOST=`grep "machine .*\.seedstuff\.ca" "$HOME/.netrc" | cut -f 2 -d \  `
-USER=`grep -A 2 "machine .*\.seedstuff\.ca" "$HOME/.netrc" | \
-  sed -e 's/^ *//' | grep login | cut -f 2 -d \  `
+TARGET_DIR=${1:-"."}
 CA_URL="https://support.comodo.com/index.php?/Knowledgebase/Article/GetAttachment/943/30"
 CA_FILE="${HOME}/.seedstuff_ca.crt"
-
-TARGET_DIR=${1:-"."}
-
-if [ ! -d "${TARGET_DIR}" ]; then
-  echo "ERROR: No such directory: ${TARGET_DIR}" >&2
-  exit 1
-fi
 
 if ! type -p wget >/dev/null; then
   echo "ERROR: Need wget.  Please install" >&2
@@ -24,9 +15,20 @@ fi
 
 cd "${TARGET_DIR}"
 
-wget --accept-regex "/$USER/" --ca-certificate="${CA_FILE}" \
-  -m https://${HOST}/${USER}/
+for SEEDBOX in `grep "machine .*\.seedstuff\.ca" "$HOME/.netrc" | \
+    sed -e 's/^ *//' | cut -f 2 -d \  `; do
+  USER=`grep -A 2 "machine ${SEEDBOX}" "$HOME/.netrc" | \
+      sed -e 's/^ *//' | grep login | cut -f 2 -d \  `
 
-# clean up the silly index files
-find "${HOST}" -name index.html* -print0 | \
-  xargs -0 rm
+  if [ ! -d "${TARGET_DIR}" ]; then
+    echo "ERROR: No such directory: ${TARGET_DIR}" >&2
+    exit 1
+  fi
+
+  wget --accept-regex "/$USER/" --ca-certificate="${CA_FILE}" \
+    -m https://${SEEDBOX}/${USER}/
+
+  # clean up the silly index files
+  find "${SEEDBOX}" -name index.html* -print0 | \
+    xargs -0 rm
+fi
