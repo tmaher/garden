@@ -26,7 +26,7 @@ for SEEDBOX in `grep "machine .*\.seedstuff\.ca" "$HOME/.netrc" | \
   fi
 
   wget --accept-regex "/$USER/" --ca-certificate="${CA_FILE}" \
-    -m https://${SEEDBOX}/${USER}/
+    -nv -m https://${SEEDBOX}/${USER}/
 
   # clean up the silly index files
   find "${SEEDBOX}" -name index.html* -print0 | \
