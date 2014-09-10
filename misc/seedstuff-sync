@@ -1,7 +1,8 @@
 #!/bin/bash -x
 
 TARGET_DIR=${1:-"."}
-CA_URL="https://support.comodo.com/index.php?/Knowledgebase/Article/GetAttachment/943/30"
+#CA_URL="https://support.comodo.com/index.php?/Knowledgebase/Article/GetAttachment/943/30"
+CA_URL="https://support.comodo.com/index.php?/Knowledgebase/Article/GetAttachment/968/821025"
 CA_FILE="${HOME}/.seedstuff_ca.crt"
 
 if ! type -p wget >/dev/null; then
