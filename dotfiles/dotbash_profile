@@ -27,7 +27,8 @@ if readlink /bin/sh | grep bash >/dev/null; then
   export ENV
 fi
 
-# source "${HOME}/.rbenv/libexec/../completions/rbenv.bash"
+# Cribbed from rbenv 0.4.0, 2014-12-12
+# source "/usr/local/Cellar/rbenv/0.4.0/libexec/../completions/rbenv.bash"
 _rbenv() {
   COMPREPLY=()
   local word="${COMP_WORDS[COMP_CWORD]}"
@@ -35,27 +36,31 @@ _rbenv() {
   if [ "$COMP_CWORD" -eq 1 ]; then
     COMPREPLY=( $(compgen -W "$(rbenv commands)" -- "$word") )
   else
-    local command="${COMP_WORDS[1]}"
-    local completions="$(rbenv completions "$command")"
+    local words=("${COMP_WORDS[@]}")
+    unset words[0]
+    unset words[$COMP_CWORD]
+    local completions=$(rbenv completions "${words[@]}")
     COMPREPLY=( $(compgen -W "$completions" -- "$word") )
   fi
 }
-
 complete -F _rbenv rbenv
+
 rbenv rehash 2>/dev/null
-function rbenv() {
-  local command="$1"
+rbenv() {
+  typeset command
+  command="$1"
   if [ "$#" -gt 0 ]; then
     shift
   fi
 
   case "$command" in
-  shell)
+    rehash|shell)
     eval `rbenv "sh-$command" "$@"`;;
-  *)
+    *)
     command rbenv "$command" "$@";;
   esac
 }
+
 
 export EC2_PRIVATE_KEY="$HOME/.ec2/pk.pem"
 export EC2_CERT="$HOME/.ec2/cert.pem"
