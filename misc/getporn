@@ -14,4 +14,4 @@ FILE=`echo $ASSET | cut -f 1 -d ? | cut -f 3- -d / | xargs basename`
 echo "I like $FILE"
 
 krenew
-curl -o "/ma/tv/pr0n/${FILE}" "${ASSET}"
+curl -o "/ma/pr0n/xtube/${FILE}" "${ASSET}"
