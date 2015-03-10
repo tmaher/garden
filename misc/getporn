@@ -1,17 +1,23 @@
-#!/bin/bash
+#!/bin/bash -x
 
-URL=$1
+PDIR="/ma/porn/xtube"
+DL_CMD="youtube-dl --playlist-reverse --continue \
+  --write-info-json --write-description \
+  -o ${PDIR}/%(uploader)s/%(autonumber)s_%(id)s_%(title)s.%(ext)s"
 
-VID_ID=`echo $URL | cut -f 2- -d =`
+cd "${PDIR}"
 
-echo "I have $VID_ID"
+if [ "x$1" = "x" ]; then
+  SOURCES=`ls`
+else
+  SOURCES="$@"
+fi
 
-ASSET=`curl -s "http://www.xtube.com/find_video.php?video_id=${VID_ID}" | cut -f 2- -d = | urldecode`
-
-echo "asset url $ASSET"
- 
-FILE=`echo $ASSET | cut -f 1 -d ? | cut -f 3- -d / | xargs basename`
-echo "I like $FILE"
-
-krenew
-curl -o "/ma/pr0n/xtube/${FILE}" "${ASSET}"
+for src in $SOURCES; do
+  if [ `echo $src | cut -c 1-4` = "http" ]; then
+    url="${src}"
+  else
+    url="http://www.xtube.com/community/profile.php?user=${src}"
+  fi
+  ${DL_CMD} "${url}"
+done
