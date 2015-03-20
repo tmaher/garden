@@ -1,0 +1,20 @@
+#!/bin/bash -x
+
+export TZ=UTC
+
+cd /ma/seedstuff
+for h in *; do
+  cd $h/*
+  tmpfile=`mktemp`
+  TS=`date +"%Y-%m-%d %H:%M:%S"`
+  OLDTIME=`cat ../.timestamp`
+  : ${OLDTIME:="1970-01-01 00:00:00"}
+  cat <<__EOS > ${tmpfile}
+open -p 32001 $h
+cd /rtorrent/downloads
+mirror -c --newer-than="${OLDTIME}" --parallel=3 finished
+quit
+__EOS
+  lftp -f "${tmpfile}"
+  echo -n "${TS}" > ../.timestamp
+done
