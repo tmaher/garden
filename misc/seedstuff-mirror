@@ -3,8 +3,10 @@
 export TZ=UTC
 
 cd /ma/seedstuff
-for h in *; do
-  cd $h/*
+hosts=${@:-`ls`}
+
+for h in $hosts; do
+  cd /ma/seedstuff/$h/*
   tmpfile=`mktemp`
   TS=`date +"%Y-%m-%d %H:%M:%S"`
   OLDTIME=`cat ../.timestamp`
@@ -12,7 +14,7 @@ for h in *; do
   cat <<__EOS > ${tmpfile}
 open -p 32001 $h
 cd /rtorrent/downloads
-mirror -c --newer-than="${OLDTIME}" --parallel=3 finished
+mirror -c --newer-than="${OLDTIME}" --parallel=6 finished
 quit
 __EOS
   lftp -f "${tmpfile}"
