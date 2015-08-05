@@ -11,8 +11,10 @@ for h in $hosts; do
   TS=`date +"%Y-%m-%d %H:%M:%S"`
   OLDTIME=`cat ../.timestamp`
   : ${OLDTIME:="1970-01-01 00:00:00"}
+  if [ ! -s ../.port ] ; then echo 21 > ../.port ; fi
+  PORT=`cat ../.port`
   cat <<__EOS > ${tmpfile}
-open -p 32001 $h
+open -p $PORT $h
 cd /rtorrent/downloads
 mirror -c --newer-than="${OLDTIME}" --parallel=6 finished
 quit
