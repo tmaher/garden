@@ -7,4 +7,3 @@ alias irb="pry"
 if [ `uname` = "Linux" ]; then
     alias ls="ls --color=auto"
 fi
-alias ag="ag --pager $PAGER"

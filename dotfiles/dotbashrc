@@ -6,6 +6,9 @@ if [ x"${PATH_NO_REALLY}" != "x" ]; then
   export PATH=${PATH_NO_REALLY}
 fi
 
+# Make bash check its window size after a process completes
+shopt -s checkwinsize
+
 function tbar () {
   export TITLE_BAR=${1:-${TITLE_BAR:-""}}
 
@@ -25,6 +28,7 @@ export TITLE_BAR=${TITLE_BAR_DFT}
 
 if [ "x$DISPLAY" != "x" ] || \
    [ "x$TERM" = "xxterm" ] || \
+   [ "x$TERM" = "xxterm-256color" ] || \
    [ "x$TERM" = "xxterm-color" ]; then
   # In X, rename the window.
   # PS1='\[\033]2;\u@\h\007\]\u@\h:\w\$ '
