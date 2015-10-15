@@ -9,6 +9,7 @@ export PATH_NO_REALLY=$PATH
 MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 MANPATH=$MANPATH:/opt/heimdal/share/man
 MANPATH=$MANPATH:/usr/man:/usr/kerberos/man:/usr/X11R6/man
+MANPATH=$MANPATH:/Library/Developer/CommandLineTools/usr/share/man
 export MANPATH
 
 EDITOR=emacs
