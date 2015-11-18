@@ -28,7 +28,8 @@ if readlink /bin/sh | grep bash >/dev/null; then
   export ENV
 fi
 
-export RUBY_BUILD_DEFINITIONS="${HOME}/.rbenv/site-build-definitions
+export RUBY_BUILD_DEFINITIONS="${HOME}/.rbenv/site-build-definitions"
+export RUBY_CONFIGURE_OPTS="--with-arch=x86_64,i386 --with-openssl-dir=/usr/local/opt/openssl"
 
 # Cribbed from rbenv 0.4.0, 2014-12-12
 # source "/usr/local/Cellar/rbenv/0.4.0/libexec/../completions/rbenv.bash"
