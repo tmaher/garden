@@ -45,3 +45,6 @@ if [ -r "${HOME}/.alias" ];then
         . "${HOME}/private/.localalias"
     fi
 fi
+
+# SSH tab completion
+complete -W "$(echo `cat ~/.ssh/known_hosts | cut -f 1 -d ' ' | sed -e s/,.*//g | sort -u | grep -v "\["`;)" ssh
