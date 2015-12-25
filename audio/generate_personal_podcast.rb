@@ -74,6 +74,7 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   end
 
   item[:title] = "#{raw[:_track]}. #{(raw[:_title] || file_short)}".gsub(/^\. /, '')
+  item[:duration] = raw[:_duration_time] || raw[:duration].to_i
 
   # Aquiring source metadata
   item_text_artist = raw[:_artist] || ""
@@ -139,7 +140,7 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
           <pubDate>#{item_pub_date}</pubDate>
           <guid>#{item_guid}</guid>
           <itunes:author>#{item_author}</itunes:author>
-          <itunes:duration>#{item_duration}</itunes:duration>
+          <itunes:duration>#{item[:duration]}</itunes:duration>
       </item>
 HTML
 
