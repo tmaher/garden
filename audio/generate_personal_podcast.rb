@@ -39,7 +39,9 @@
 #    You'll need to have the binary installed (in /usr/bin on OS X).
 
 require 'date'
+require 'time'
 require 'erb'
+
 include ERB::Util
 
 # Set up user variables
@@ -149,7 +151,11 @@ Dir.entries('.').each do |file|
     item_url = "#{public_url_base.gsub("https", "http")}/#{url_encode(file)}"
     item_size_in_bytes = File.size(file).to_s
     item_duration = item_duration_source
-    item_pub_date = item_pub_date_source
+    item_pub_date = begin
+      Time.parse(item_pub_date_source).to_s
+    rescue Exception => e
+      Time.now.to_s
+    end
     item_guid = item_url + url_encode(podcast_pub_date)
 
 
