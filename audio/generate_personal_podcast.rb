@@ -130,18 +130,18 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   item_guid = item_url + url_encode(conf[:pub_date])
 
   item_content = <<-HTML
-      <item>
-          <title>#{item[:title]}</title>
-          <description>#{item_text_long}</description>
-          <itunes:subtitle>#{item_text_short}</itunes:subtitle>
-          <itunes:summary>#{item_text_short}</itunes:summary>
-          <enclosure url="#{item_url}" length="#{item_size_in_bytes}" type="audio/mpeg" />
-          <category>Podcasts</category>
-          <pubDate>#{item_pub_date}</pubDate>
-          <guid>#{item_guid}</guid>
-          <itunes:author>#{item_author}</itunes:author>
-          <itunes:duration>#{item[:duration]}</itunes:duration>
-      </item>
+    <item>
+      <title>#{item[:title]}</title>
+      <description>#{item_text_long}</description>
+      <itunes:subtitle>#{item_text_short}</itunes:subtitle>
+      <itunes:summary>#{item_text_short}</itunes:summary>
+      <enclosure url="#{item_url}" length="#{item_size_in_bytes}" type="audio/mpeg" />
+      <category>Podcasts</category>
+      <pubDate>#{item_pub_date}</pubDate>
+      <guid>#{item_guid}</guid>
+      <itunes:author>#{item_author}</itunes:author>
+      <itunes:duration>#{item[:duration]}</itunes:duration>
+    </item>
 HTML
 
   items_content << item_content
@@ -150,15 +150,15 @@ end
 # Build the whole file
 content = <<-HTML
 <rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
-    <channel>
-        <title>#{conf[:title]}</title>
-        <description>#{conf[:description]}</description>
-        <pubDate>#{conf[:pub_date]}</pubDate>
-        <itunes:image href="#{conf[:artwork]}"/>
-        <itunes:subtitle>#{conf[:description].to_s[0,254]}</itunes:subtitle>
-        <itunes:summary>#{conf[:description].to_s[0,3999]}</itunes:summary>
+  <channel>
+    <title>#{conf[:title]}</title>
+    <description>#{conf[:description]}</description>
+    <pubDate>#{conf[:pub_date]}</pubDate>
+    <itunes:image href="#{conf[:artwork]}"/>
+    <itunes:subtitle>#{conf[:description].to_s[0,254]}</itunes:subtitle>
+    <itunes:summary>#{conf[:description].to_s[0,3999]}</itunes:summary>
 #{items_content}
-    </channel>
+  </channel>
 </rss>
 HTML
 
