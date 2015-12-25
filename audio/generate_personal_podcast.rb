@@ -78,9 +78,10 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   item[:duration] = raw[:_duration_time] || raw[:duration].to_i
   item[:url] = "#{conf[:url_base]}/#{url_encode(file)}"
   item[:guid] = Digest::SHA256.file(file).hexdigest
+  item[:artist] = raw[:_artist] || raw[:_albumartist]
 
   # Aquiring source metadata
-  item_text_artist = raw[:_artist] || ""
+  #item_text_artist = raw[:_artist] || ""
   item_text_albumartist = raw[:_albumartist] || ""
   item_text_description = raw[:_description] || ""
   item_text_synopsis = raw[:_synopsis] || ""
@@ -88,11 +89,11 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   item_duration_source = raw[:_duration_time] || ""
 
   # Get correct artist; defaulting to artist
-  if item_text_artist == ""
-      item_text_artist = item_text_albumartist
-  elsif item_text_albumartist.include? item_text_artist
-      item_text_artist = item_text_albumartist
-  end
+  #if item_text_artist == ""
+  #    item_text_artist = item_text_albumartist
+  #elsif item_text_albumartist.include? item_text_artist
+  #    item_text_artist = item_text_albumartist
+  #end
 
   # Figure out short text
   item_text_short_array = [item_text_description, item_text_synopsis]
@@ -100,12 +101,14 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   if item_text_short == ""
     item_text_short = item_text_comment
     if item_text_short == ""
-      item_text_short = item_text_artist
+      #item_text_short = item_text_artist
+      item_text_short = item[:artist]
     end
   end
 
   # Eliminate duplicates for long text
-  item_text_long_array = [item_text_artist, item_text_description, item_text_synopsis, item_text_comment]
+  item_text_long_array = [item[:artist], item_text_description, item_text_synopsis, item_text_comment]
+  #item_text_long_array = [item_text_artist, item_text_description, item_text_synopsis, item_text_comment]
   item_text_long_array = item_text_long_array.select {|e|item_text_long_array.grep(Regexp.new(e)).size == 1}
   # Make sure that no component of long text is nil
   item_text_long_array.each { |snil| snil = snil.to_s }
@@ -115,10 +118,10 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   item_text_long = item_text_long.chomp()
 
   # Figure out author
-  item_author = item_text_artist
-  if item_author == ""
-    item_author = item_text_albumartist
-  end
+  #item_author = item_text_artist
+  #if item_author == ""
+  #  item_author = item_text_albumartist
+  #end
 
   # Set remaining metadata without logic
   #item_url = "#{conf[:url_base]}/#{url_encode(file)}"
@@ -140,7 +143,7 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
       <category>Podcasts</category>
       <pubDate>#{item[:pub_date]}</pubDate>
       <guid>#{item[:guid]}</guid>
-      <itunes:author>#{item_author}</itunes:author>
+      <itunes:author>#{item[:artist]}</itunes:author>
       <itunes:duration>#{item[:duration]}</itunes:duration>
     </item>
 HTML
