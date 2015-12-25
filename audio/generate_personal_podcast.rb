@@ -45,40 +45,47 @@ require 'erb'
 include ERB::Util
 
 # Set up user variables
-podcast_title = ""
-podcast_description = ""
-podcast_artwork = ""
-public_url_base = ""
+#podcast_title = ""
+#podcast_description = ""
+#podcast_artwork = ""
+#public_url_base = ""
+
+conf={}
+conf_regexp = /^\s*(\w[\w\_]\w*)\s*=\s*(.*)\s*$/
+IO.readlines("config.txt").select {|l| l.match(conf_regexp)}.each do |line|
+  key, val =  line.match(conf_regexp)[1,2]
+  conf[key.gsub(/^(podcast|public)_/, '').to_sym] = val.to_s
+end
 
 # Import configuration data
-podcast_infos = IO.readlines("config.txt")
-podcast_infos.select {|i|i.start_with?('#') == false} # Ignore comment lines in input
-podcast_infos.each {|i|
-    id = i.split("=")[0].gsub(' ', '')
-    case id
-    when "podcast_title"
-        podcast_title = i.split("=")[1].chomp
-    when "podcast_description"
-        podcast_description = i.split("=")[1].chomp
-    when "podcast_artwork"
-        podcast_artwork = i.split("=")[1].chomp
-    when "public_url_base"
-        public_url_base = i.split("=")[1].chomp
-    else
-        puts "Unrecognised config data: " + i
-    end
-}
+#podcast_infos = IO.readlines("config.txt")
+#podcast_infos.select {|i|i.start_with?('#') == false} # Ignore comment lines in input
+
+#podcast_infos.each {|i|
+#    id = i.split("=")[0].gsub(' ', '')
+#    case id
+#    when "podcast_title"
+#        conf[:title] = i.split("=")[1].chomp
+#    when "podcast_description"
+#        conf[:description] = i.split("=")[1].chomp
+#    when "podcast_artwork"
+#        podcast_artwork = i.split("=")[1].chomp
+#    when "public_url_base"
+#        public_url_base = i.split("=")[1].chomp
+#    when "podcast_url_homepage"
+#        podcast_url_homepage = i.split("=")[1].chomp
+#    else
+#        puts "Unrecognised config data: " + i
+#    end
+#}
 
 # Generated values
-date_format = '%a, %d %b %Y %H:%M:%S %z'
-podcast_pub_date = DateTime.now.strftime(date_format)
+conf[:pub_date] = Time.now.to_s
+conf[:url_homepage] ||= conf[:url_base]
 
 # Build the items
 items_content = ""
-Dir.entries('.').each do |file|
-    next if file =~ /^\./  # ignore invisible files
-    next unless file =~ /\.(mp3|m4a)$/  # only use audio files
-
+Dir.glob("*.{mp3,m4a}"). each do |file|
     puts "adding file: #{file}"
 
     probe = `ffprobe 2> /dev/null -show_format \"#{file}\"`
@@ -148,7 +155,7 @@ Dir.entries('.').each do |file|
 
     # Set remaining metadata without logic
     item_title = item_title_number + item_title_source
-    item_url = "#{public_url_base.gsub("https", "http")}/#{url_encode(file)}"
+    item_url = "#{conf[:url_base]}/#{url_encode(file)}"
     item_size_in_bytes = File.size(file).to_s
     item_duration = item_duration_source
     item_pub_date = begin
@@ -156,7 +163,7 @@ Dir.entries('.').each do |file|
     rescue Exception => e
       Time.now.to_s
     end
-    item_guid = item_url + url_encode(podcast_pub_date)
+    item_guid = item_url + url_encode(conf[:pub_date])
 
 
     item_content = <<-HTML
@@ -181,12 +188,12 @@ end
 content = <<-HTML
 <rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
     <channel>
-        <title>#{podcast_title}</title>
-        <description>#{podcast_description}</description>
-        <pubDate>#{podcast_pub_date}</pubDate>
-        <itunes:image href="#{podcast_artwork}"/>
-        <itunes:subtitle>#{podcast_description.to_s[0,254]}</itunes:subtitle>
-        <itunes:summary>#{podcast_description.to_s[0,3999]}</itunes:summary>
+        <title>#{conf[:title]}</title>
+        <description>#{conf[:description]}</description>
+        <pubDate>#{conf[:pub_date]}</pubDate>
+        <itunes:image href="#{conf[:artwork]}"/>
+        <itunes:subtitle>#{conf[:description].to_s[0,254]}</itunes:subtitle>
+        <itunes:summary>#{conf[:description].to_s[0,3999]}</itunes:summary>
 #{items_content}
     </channel>
 </rss>
