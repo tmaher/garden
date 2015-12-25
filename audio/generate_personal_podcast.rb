@@ -63,7 +63,7 @@ IO.readlines("config.txt").select {|l| l.match(conf_regexp)}.each do |line|
 end
 
 # Generated values
-conf[:pub_date] = Time.now.to_s
+conf[:pub_date] = Time.now.rfc822
 conf[:url_homepage] ||= conf[:url_base]
 
 # Build the items
@@ -92,9 +92,9 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   item[:category] = raw[:_genre] || "Podcasts"
 
   item[:pub_date] = begin
-    Time.parse(raw[:_date]).to_s
+    Time.parse(raw[:_date]).rfc822
   rescue Exception => e
-    Time.now.to_s
+    Time.now.rfc822
   end
 
   item[:desc_short] = raw[:_description] || raw[:_synopsis] || item[:artist] || ""
@@ -111,7 +111,7 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
         type=#{item[:mime].encode(:xml => :attr)} />
       <category>#{item[:category].encode(:xml => :text)}</category>
       <pubDate>#{item[:pub_date].encode(:xml => :text)}</pubDate>
-      <guid>#{item[:guid].encode(:xml => :text)}</guid>
+      <guid isPermaLink="false">#{item[:guid].encode(:xml => :text)}</guid>
       <itunes:author>#{item[:artist].encode(:xml => :text)}</itunes:author>
       <itunes:duration>#{item[:duration].to_s.encode(:xml => :text)}</itunes:duration>
     </item>
