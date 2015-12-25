@@ -44,40 +44,13 @@ require 'erb'
 
 include ERB::Util
 
-# Set up user variables
-#podcast_title = ""
-#podcast_description = ""
-#podcast_artwork = ""
-#public_url_base = ""
-
+# Import configuration data
 conf={}
 conf_regexp = /^\s*(\w[\w\_]\w*)\s*=\s*(.*)\s*$/
 IO.readlines("config.txt").select {|l| l.match(conf_regexp)}.each do |line|
   key, val =  line.match(conf_regexp)[1,2]
   conf[key.gsub(/^(podcast|public)_/, '').to_sym] = val.to_s
 end
-
-# Import configuration data
-#podcast_infos = IO.readlines("config.txt")
-#podcast_infos.select {|i|i.start_with?('#') == false} # Ignore comment lines in input
-
-#podcast_infos.each {|i|
-#    id = i.split("=")[0].gsub(' ', '')
-#    case id
-#    when "podcast_title"
-#        conf[:title] = i.split("=")[1].chomp
-#    when "podcast_description"
-#        conf[:description] = i.split("=")[1].chomp
-#    when "podcast_artwork"
-#        podcast_artwork = i.split("=")[1].chomp
-#    when "public_url_base"
-#        public_url_base = i.split("=")[1].chomp
-#    when "podcast_url_homepage"
-#        podcast_url_homepage = i.split("=")[1].chomp
-#    else
-#        puts "Unrecognised config data: " + i
-#    end
-#}
 
 # Generated values
 conf[:pub_date] = Time.now.to_s
@@ -86,102 +59,101 @@ conf[:url_homepage] ||= conf[:url_base]
 # Build the items
 items_content = ""
 Dir.glob("*.{mp3,m4a}"). each do |file|
-    puts "adding file: #{file}"
+  puts "adding file: #{file}"
 
-    probe = `ffprobe 2> /dev/null -show_format \"#{file}\"`
+  probe = `ffprobe 2> /dev/null -show_format \"#{file}\"`
 
-    tags = {}
-    probe.split("\n").select { |x| x.match(/\ATAG:.+=.+\z/) }.each do |tag|
-      key, val = tag.match(/\ATAG:(.+)=(.+)\z/)[1,2]
-      tags[key.to_sym] = val.to_s
-    end
+  tags = {}
+  probe.split("\n").select { |x| x.match(/\ATAG:.+=.+\z/) }.each do |tag|
+    key, val = tag.match(/\ATAG:(.+)=(.+)\z/)[1,2]
+    tags[key.to_sym] = val.to_s
+  end
 
-    # Aquiring source metadata
-    item_filename = File.basename(file, '').split('.')[0]
+  # Aquiring source metadata
+  item_filename = File.basename(file, '').split('.')[0]
 
-    item_title_number = tags[:track] || ""
-    item_title_source = tags[:title] || ""
-    item_text_artist = tags[:artist] || ""
-    item_text_albumartist = tags[:albumartist] || ""
-    item_text_description = tags[:description] || ""
-    item_text_synopsis = tags[:synopsis] || ""
-    item_text_comment = tags[:comment] || ""
-    item_duration_source = tags[:duration_time] || ""
-    item_pub_date_source = tags[:date] || ""
+  item_title_number = tags[:track] || ""
+  item_title_source = tags[:title] || ""
+  item_text_artist = tags[:artist] || ""
+  item_text_albumartist = tags[:albumartist] || ""
+  item_text_description = tags[:description] || ""
+  item_text_synopsis = tags[:synopsis] || ""
+  item_text_comment = tags[:comment] || ""
+  item_duration_source = tags[:duration_time] || ""
+  item_pub_date_source = tags[:date] || ""
 
-    # Convert number to ordinal
-    if item_title_number != ""
-        item_title_number += ". "
-    end
+  # Convert number to ordinal
+  if item_title_number != ""
+    item_title_number += ". "
+  end
 
 
-    # Get correct artist; defaulting to artist
-    if item_text_artist == ""
-        item_text_artist = item_text_albumartist
-    elsif item_text_albumartist.include? item_text_artist
-        item_text_artist = item_text_albumartist
-    end
+  # Get correct artist; defaulting to artist
+  if item_text_artist == ""
+      item_text_artist = item_text_albumartist
+  elsif item_text_albumartist.include? item_text_artist
+      item_text_artist = item_text_albumartist
+  end
 
-    # Figure out short text
-    item_text_short_array = [item_text_description, item_text_synopsis]
-    item_text_short = item_text_short_array.sort_by(&:length)[0].to_s
+  # Figure out short text
+  item_text_short_array = [item_text_description, item_text_synopsis]
+  item_text_short = item_text_short_array.sort_by(&:length)[0].to_s
+  if item_text_short == ""
+    item_text_short = item_text_comment
     if item_text_short == ""
-        item_text_short = item_text_comment
-        if item_text_short == ""
-            item_text_short = item_text_artist
-        end
+      item_text_short = item_text_artist
     end
+  end
 
-    # Eliminate duplicates for long text
-    item_text_long_array = [item_text_artist, item_text_description, item_text_synopsis, item_text_comment]
-    item_text_long_array = item_text_long_array.select {|e|item_text_long_array.grep(Regexp.new(e)).size == 1}
-    # Make sure that no component of long text is nil
-    item_text_long_array.each { |snil| snil = snil.to_s }
-    # Combine long text and add line breaks
-    item_text_long = ""
-    item_text_long_array.each { |s| item_text_long += s + "\n"}
-    item_text_long = item_text_long.chomp()
+  # Eliminate duplicates for long text
+  item_text_long_array = [item_text_artist, item_text_description, item_text_synopsis, item_text_comment]
+  item_text_long_array = item_text_long_array.select {|e|item_text_long_array.grep(Regexp.new(e)).size == 1}
+  # Make sure that no component of long text is nil
+  item_text_long_array.each { |snil| snil = snil.to_s }
+  # Combine long text and add line breaks
+  item_text_long = ""
+  item_text_long_array.each { |s| item_text_long += s + "\n"}
+  item_text_long = item_text_long.chomp()
 
-    # Figure out author
-    item_author = item_text_artist
-    if item_author == ""
-        item_author = item_text_albumartist
-    end
+  # Figure out author
+  item_author = item_text_artist
+  if item_author == ""
+    item_author = item_text_albumartist
+  end
 
-    # Figure out title base
-    if item_title_source == ""
-        item_title_source = item_filename
-    end
+  # Figure out title base
+  if item_title_source == ""
+    item_title_source = item_filename
+  end
 
-    # Set remaining metadata without logic
-    item_title = item_title_number + item_title_source
-    item_url = "#{conf[:url_base]}/#{url_encode(file)}"
-    item_size_in_bytes = File.size(file).to_s
-    item_duration = item_duration_source
-    item_pub_date = begin
-      Time.parse(item_pub_date_source).to_s
-    rescue Exception => e
-      Time.now.to_s
-    end
-    item_guid = item_url + url_encode(conf[:pub_date])
+  # Set remaining metadata without logic
+  item_title = item_title_number + item_title_source
+  item_url = "#{conf[:url_base]}/#{url_encode(file)}"
+  item_size_in_bytes = File.size(file).to_s
+  item_duration = item_duration_source
+  item_pub_date = begin
+    Time.parse(item_pub_date_source).to_s
+  rescue Exception => e
+    Time.now.to_s
+  end
+  item_guid = item_url + url_encode(conf[:pub_date])
 
-
-    item_content = <<-HTML
-        <item>
-            <title>#{item_title}</title>
-            <description>#{item_text_long}</description>
-            <itunes:subtitle>#{item_text_short}</itunes:subtitle>
-            <itunes:summary>#{item_text_short}</itunes:summary>
-            <enclosure url="#{item_url}" length="#{item_size_in_bytes}" type="audio/mpeg" />
-            <category>Podcasts</category>
-            <pubDate>#{item_pub_date}</pubDate>
-            <guid>#{item_guid}</guid>
-            <itunes:author>#{item_author}</itunes:author>
-            <itunes:duration>#{item_duration}</itunes:duration>
-        </item>
+  item_content = <<-HTML
+      <item>
+          <title>#{item_title}</title>
+          <description>#{item_text_long}</description>
+          <itunes:subtitle>#{item_text_short}</itunes:subtitle>
+          <itunes:summary>#{item_text_short}</itunes:summary>
+          <enclosure url="#{item_url}" length="#{item_size_in_bytes}" type="audio/mpeg" />
+          <category>Podcasts</category>
+          <pubDate>#{item_pub_date}</pubDate>
+          <guid>#{item_guid}</guid>
+          <itunes:author>#{item_author}</itunes:author>
+          <itunes:duration>#{item_duration}</itunes:duration>
+      </item>
 HTML
 
-    items_content << item_content
+  items_content << item_content
 end
 
 # Build the whole file
