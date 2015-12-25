@@ -7,3 +7,4 @@ alias irb="pry"
 if [ `uname` = "Linux" ]; then
     alias ls="ls --color=auto"
 fi
+alias be="bundle exec"
