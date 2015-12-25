@@ -79,17 +79,26 @@ Dir.entries('.').each do |file|
 
     puts "adding file: #{file}"
 
+    probe = `ffprobe 2> /dev/null -show_format \"#{file}\"`
+
+    tags = {}
+    probe.split("\n").select { |x| x.match(/\ATAG:.+=.+\z/) }.each do |tag|
+      key, val = tag.match(/\ATAG:(.+)=(.+)\z/)[1,2]
+      tags[key.to_sym] = val.to_s
+    end
+
     # Aquiring source metadata
     item_filename = File.basename(file, '').split('.')[0]
-    item_title_number = `ffprobe 2> /dev/null -show_format "#{file}" | grep TAG:track= | cut -d '=' -f 2`.sub(/^.*? = "/, '').sub(/"$/, '').chomp.to_s
-    item_title_source = `ffprobe 2> /dev/null -show_format "#{file}" | grep TAG:title= | cut -d '=' -f 2`.sub(/^.*? = "/, '').sub(/"$/, '').chomp.to_s
-    item_text_artist = `ffprobe 2> /dev/null -show_format "#{file}" | grep TAG:artist= | cut -d '=' -f 2`.sub(/^.*? = "/, '').sub(/"$/, '').chomp.to_s
-    item_text_albumartist = `ffprobe 2> /dev/null -show_format "#{file}" | grep TAG:albumartist= | cut -d '=' -f 2`.sub(/^.*? = "/, '').sub(/"$/, '').chomp.to_s
-    item_text_description = `ffprobe 2> /dev/null -show_format "#{file}" | grep TAG:description= | cut -d '=' -f 2`.sub(/^.*? = "/, '').sub(/"$/, '').chomp.to_s
-    item_text_synopsis = `ffprobe 2> /dev/null -show_format "#{file}" | grep TAG:synopsis= | cut -d '=' -f 2`.sub(/^.*? = "/, '').sub(/"$/, '').chomp.to_s # Also known as 'long description'
-    item_text_comment = `ffprobe 2> /dev/null -show_format "#{file}" | grep TAG:comment= | cut -d '=' -f 2`.sub(/^.*? = "/, '').sub(/"$/, '').chomp.to_s
-    item_duration_source = `ffprobe 2> /dev/null -show_format "#{file}" | grep duration_time= | cut -d '=' -f 2`.sub(/^.*? = "/, '').sub(/"$/, '').chomp.to_s
-    item_pub_date_source = `ffprobe 2> /dev/null -show_format "#{file}" | grep TAG:date= | cut -d '=' -f 2`.sub(/^.*? = "/, '').sub(/"$/, '').chomp.to_s
+
+    item_title_number = tags[:track] || ""
+    item_title_source = tags[:title] || ""
+    item_text_artist = tags[:artist] || ""
+    item_text_albumartist = tags[:albumartist] || ""
+    item_text_description = tags[:description] || ""
+    item_text_synopsis = tags[:synopsis] || ""
+    item_text_comment = tags[:comment] || ""
+    item_duration_source = tags[:duration_time] || ""
+    item_pub_date_source = tags[:date] || ""
 
     # Convert number to ordinal
     if item_title_number != ""
