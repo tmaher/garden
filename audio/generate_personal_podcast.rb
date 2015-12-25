@@ -45,6 +45,15 @@ require 'erb'
 
 include ERB::Util
 
+MIMES = { :default => "audio/mpeg",
+  ".mp3" => "audio/mpeg",
+  ".m4a" => "audio/x-m4a",
+  ".mp4" => "video/mp4",
+  ".m4v" => "video/x-m4v",
+  ".mov" => "video/quicktime",
+  ".epub" => "document/x-epub"
+}
+
 # Import configuration data
 conf={}
 conf_regexp = /^\s*(\w[\w\_]\w*)\s*=\s*(.*)\s*$/
@@ -62,7 +71,6 @@ items_content = ""
 Dir.glob("*.{mp3,m4a}"). each do |file|
   puts "adding file: #{file}"
   file_short = file.gsub /\.(mp3|m4a)$/, ''
-  file_ext = File.extname file
 
   probe = `ffprobe 2> /dev/null -show_format \"#{file}\"`
 
@@ -75,10 +83,13 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   end
 
   item[:title] = "#{raw[:_track]}. #{(raw[:_title] || file_short)}".gsub(/^\. /, '')
+  item[:artist] = raw[:_artist] || raw[:_albumartist]
   item[:duration] = raw[:_duration_time] || raw[:duration].to_i
   item[:url] = "#{conf[:url_base]}/#{url_encode(file)}"
   item[:guid] = Digest::SHA256.file(file).hexdigest
-  item[:artist] = raw[:_artist] || raw[:_albumartist]
+  item[:mime] = MIMES[File.extname(file).downcase] || MIMES[:default]
+  item[:size] = File.size(file).to_s
+  item[:category] = raw[:_genre] || "Podcasts"
 
   item[:pub_date] = begin
     Time.parse(raw[:_date]).to_s
@@ -86,46 +97,23 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
     Time.now.to_s
   end
 
-  # Aquiring source metadata
-  item_text_description = raw[:_description] || ""
-  item_text_synopsis = raw[:_synopsis] || ""
-  item_text_comment = raw[:_comment] || ""
-
-  # Figure out short text
-  item_text_short_array = [item_text_description, item_text_synopsis]
-  item_text_short = item_text_short_array.sort_by(&:length)[0].to_s
-  if item_text_short == ""
-    item_text_short = item_text_comment
-    if item_text_short == ""
-      item_text_short = item[:artist]
-    end
-  end
-
-  # Eliminate duplicates for long text
-  item_text_long_array = [item[:artist], item_text_description, item_text_synopsis, item_text_comment]
-  item_text_long_array = item_text_long_array.select {|e|item_text_long_array.grep(Regexp.new(e)).size == 1}
-  # Make sure that no component of long text is nil
-  item_text_long_array.each { |snil| snil = snil.to_s }
-  # Combine long text and add line breaks
-  item_text_long = ""
-  item_text_long_array.each { |s| item_text_long += s + "\n"}
-  item_text_long = item_text_long.chomp()
-
-  # Set remaining metadata without logic
-  item_size_in_bytes = File.size(file).to_s
+  item[:desc_short] = raw[:_description] || raw[:_synopsis] || item[:artist] || ""
+  item[:desc_long] = raw[:_synopsis] || raw[:_comment] || raw[:_description] || item[:artist] || ""
 
   item_content = <<-HTML
     <item>
-      <title>#{item[:title]}</title>
-      <description>#{item_text_long}</description>
-      <itunes:subtitle>#{item_text_short}</itunes:subtitle>
-      <itunes:summary>#{item_text_short}</itunes:summary>
-      <enclosure url="#{item[:url]}" length="#{item_size_in_bytes}" type="audio/mpeg" />
-      <category>Podcasts</category>
-      <pubDate>#{item[:pub_date]}</pubDate>
-      <guid>#{item[:guid]}</guid>
-      <itunes:author>#{item[:artist]}</itunes:author>
-      <itunes:duration>#{item[:duration]}</itunes:duration>
+      <title>#{item[:title].encode(:xml => :text)}</title>
+      <description>#{item[:desc_long].encode(:xml => :text)}</description>
+      <itunes:subtitle>#{item[:desc_short].encode(:xml => :text)}</itunes:subtitle>
+      <itunes:summary>#{item[:desc_short].encode(:xml => :text)}</itunes:summary>
+      <enclosure url=#{item[:url].encode(:xml => :attr)}
+        length=#{item[:size].encode(:xml => :attr)}
+        type=#{item[:mime].encode(:xml => :attr)} />
+      <category>#{item[:category].encode(:xml => :text)}</category>
+      <pubDate>#{item[:pub_date].encode(:xml => :text)}</pubDate>
+      <guid>#{item[:guid].encode(:xml => :text)}</guid>
+      <itunes:author>#{item[:artist].encode(:xml => :text)}</itunes:author>
+      <itunes:duration>#{item[:duration].to_s.encode(:xml => :text)}</itunes:duration>
     </item>
 HTML
 
@@ -136,13 +124,13 @@ end
 content = <<-HTML
 <rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
   <channel>
-    <title>#{conf[:title]}</title>
-    <link>#{conf[:url_homepage]}</link>
-    <description>#{conf[:description]}</description>
-    <pubDate>#{conf[:pub_date]}</pubDate>
-    <itunes:image href="#{conf[:artwork]}"/>
-    <itunes:subtitle>#{conf[:description].to_s[0,254]}</itunes:subtitle>
-    <itunes:summary>#{conf[:description].to_s[0,3999]}</itunes:summary>
+    <title>#{conf[:title].encode(:xml => :text)}</title>
+    <link>#{conf[:url_homepage].encode(:xml => :text)}</link>
+    <description>#{conf[:description].encode(:xml => :text)}</description>
+    <pubDate>#{conf[:pub_date].encode(:xml => :text)}</pubDate>
+    <itunes:image href=#{conf[:artwork].encode(:xml => :attr)} />
+    <itunes:subtitle>#{conf[:description].to_s[0,254].encode(:xml => :text)}</itunes:subtitle>
+    <itunes:summary>#{conf[:description].to_s[0,3999].encode(:xml => :text)}</itunes:summary>
 #{items_content}
   </channel>
 </rss>
