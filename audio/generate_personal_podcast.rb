@@ -63,10 +63,11 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
 
   probe = `ffprobe 2> /dev/null -show_format \"#{file}\"`
 
-  tags = {}
-  probe.split("\n").select { |x| x.match(/\ATAG:.+=.+\z/) }.each do |tag|
-    key, val = tag.match(/\ATAG:(.+)=(.+)\z/)[1,2]
-    tags[key.to_sym] = val.to_s
+  meta = {}
+  tag_regexp = /^(\w[\w:_]+)=(.*)$/
+  probe.split("\n").select { |x| x.match(tag_regexp) }.each do |tag|
+    key, val = tag.match(tag_regexp)[1,2]
+    meta[key.gsub(/^TAG:/, '_').to_sym] = val.to_s
   end
 
   # Aquiring source metadata
