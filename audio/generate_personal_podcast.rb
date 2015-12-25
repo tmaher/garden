@@ -76,10 +76,6 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   item[:title] = "#{raw[:_track]}. #{(raw[:_title] || file_short)}".gsub(/^\. /, '')
 
   # Aquiring source metadata
-  #item_filename = File.basename(file, '').split('.')[0]
-
-  #item_title_number = tags[:track] || ""
-  #item_title_source = tags[:title] || ""
   item_text_artist = raw[:_artist] || ""
   item_text_albumartist = raw[:_albumartist] || ""
   item_text_description = raw[:_description] || ""
@@ -87,11 +83,6 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   item_text_comment = raw[:_comment] || ""
   item_duration_source = raw[:_duration_time] || ""
   item_pub_date_source = raw[:_date] || ""
-
-  # Convert number to ordinal
-  #if item_title_number != ""
-  #  item_title_number += ". "
-  #end
 
   # Get correct artist; defaulting to artist
   if item_text_artist == ""
@@ -126,13 +117,7 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
     item_author = item_text_albumartist
   end
 
-  # Figure out title base
-  #if item_title_source == ""
-  #  item_title_source = item_filename
-  #end
-
   # Set remaining metadata without logic
-  #item_title = item_title_number + item_title_source
   item_url = "#{conf[:url_base]}/#{url_encode(file)}"
   item_size_in_bytes = File.size(file).to_s
   item_duration = item_duration_source
