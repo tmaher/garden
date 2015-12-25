@@ -80,20 +80,16 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   item[:guid] = Digest::SHA256.file(file).hexdigest
   item[:artist] = raw[:_artist] || raw[:_albumartist]
 
+  item[:pub_date] = begin
+    Time.parse(raw[:_date]).to_s
+  rescue Exception => e
+    Time.now.to_s
+  end
+
   # Aquiring source metadata
-  #item_text_artist = raw[:_artist] || ""
-  item_text_albumartist = raw[:_albumartist] || ""
   item_text_description = raw[:_description] || ""
   item_text_synopsis = raw[:_synopsis] || ""
   item_text_comment = raw[:_comment] || ""
-  item_duration_source = raw[:_duration_time] || ""
-
-  # Get correct artist; defaulting to artist
-  #if item_text_artist == ""
-  #    item_text_artist = item_text_albumartist
-  #elsif item_text_albumartist.include? item_text_artist
-  #    item_text_artist = item_text_albumartist
-  #end
 
   # Figure out short text
   item_text_short_array = [item_text_description, item_text_synopsis]
@@ -101,14 +97,12 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   if item_text_short == ""
     item_text_short = item_text_comment
     if item_text_short == ""
-      #item_text_short = item_text_artist
       item_text_short = item[:artist]
     end
   end
 
   # Eliminate duplicates for long text
   item_text_long_array = [item[:artist], item_text_description, item_text_synopsis, item_text_comment]
-  #item_text_long_array = [item_text_artist, item_text_description, item_text_synopsis, item_text_comment]
   item_text_long_array = item_text_long_array.select {|e|item_text_long_array.grep(Regexp.new(e)).size == 1}
   # Make sure that no component of long text is nil
   item_text_long_array.each { |snil| snil = snil.to_s }
@@ -117,21 +111,8 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   item_text_long_array.each { |s| item_text_long += s + "\n"}
   item_text_long = item_text_long.chomp()
 
-  # Figure out author
-  #item_author = item_text_artist
-  #if item_author == ""
-  #  item_author = item_text_albumartist
-  #end
-
   # Set remaining metadata without logic
-  #item_url = "#{conf[:url_base]}/#{url_encode(file)}"
   item_size_in_bytes = File.size(file).to_s
-  item_duration = item_duration_source
-  item[:pub_date] = begin
-    Time.parse(raw[:_date]).to_s
-  rescue Exception => e
-    Time.now.to_s
-  end
 
   item_content = <<-HTML
     <item>
@@ -156,6 +137,7 @@ content = <<-HTML
 <rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
   <channel>
     <title>#{conf[:title]}</title>
+    <link>#{conf[:url_homepage]}</link>
     <description>#{conf[:description]}</description>
     <pubDate>#{conf[:pub_date]}</pubDate>
     <itunes:image href="#{conf[:artwork]}"/>
