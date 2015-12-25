@@ -60,34 +60,38 @@ conf[:url_homepage] ||= conf[:url_base]
 items_content = ""
 Dir.glob("*.{mp3,m4a}"). each do |file|
   puts "adding file: #{file}"
+  file_short = file.gsub /\.(mp3|m4a)$/, ''
+  file_ext = File.extname file
 
   probe = `ffprobe 2> /dev/null -show_format \"#{file}\"`
 
-  meta = {}
-  tag_regexp = /^(\w[\w:_]+)=(.*)$/
+  item = {}
+  raw = {}
+  tag_regexp = /^(\w[\w:_]+)=(.+)$/
   probe.split("\n").select { |x| x.match(tag_regexp) }.each do |tag|
     key, val = tag.match(tag_regexp)[1,2]
-    meta[key.gsub(/^TAG:/, '_').to_sym] = val.to_s
+    raw[key.gsub(/^TAG:/, '_').to_sym] = val.to_s
   end
+
+  item[:title] = "#{raw[:_track]}. #{(raw[:_title] || file_short)}".gsub(/^\. /, '')
 
   # Aquiring source metadata
-  item_filename = File.basename(file, '').split('.')[0]
+  #item_filename = File.basename(file, '').split('.')[0]
 
-  item_title_number = tags[:track] || ""
-  item_title_source = tags[:title] || ""
-  item_text_artist = tags[:artist] || ""
-  item_text_albumartist = tags[:albumartist] || ""
-  item_text_description = tags[:description] || ""
-  item_text_synopsis = tags[:synopsis] || ""
-  item_text_comment = tags[:comment] || ""
-  item_duration_source = tags[:duration_time] || ""
-  item_pub_date_source = tags[:date] || ""
+  #item_title_number = tags[:track] || ""
+  #item_title_source = tags[:title] || ""
+  item_text_artist = raw[:_artist] || ""
+  item_text_albumartist = raw[:_albumartist] || ""
+  item_text_description = raw[:_description] || ""
+  item_text_synopsis = raw[:_synopsis] || ""
+  item_text_comment = raw[:_comment] || ""
+  item_duration_source = raw[:_duration_time] || ""
+  item_pub_date_source = raw[:_date] || ""
 
   # Convert number to ordinal
-  if item_title_number != ""
-    item_title_number += ". "
-  end
-
+  #if item_title_number != ""
+  #  item_title_number += ". "
+  #end
 
   # Get correct artist; defaulting to artist
   if item_text_artist == ""
@@ -123,12 +127,12 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   end
 
   # Figure out title base
-  if item_title_source == ""
-    item_title_source = item_filename
-  end
+  #if item_title_source == ""
+  #  item_title_source = item_filename
+  #end
 
   # Set remaining metadata without logic
-  item_title = item_title_number + item_title_source
+  #item_title = item_title_number + item_title_source
   item_url = "#{conf[:url_base]}/#{url_encode(file)}"
   item_size_in_bytes = File.size(file).to_s
   item_duration = item_duration_source
@@ -141,7 +145,7 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
 
   item_content = <<-HTML
       <item>
-          <title>#{item_title}</title>
+          <title>#{item[:title]}</title>
           <description>#{item_text_long}</description>
           <itunes:subtitle>#{item_text_short}</itunes:subtitle>
           <itunes:summary>#{item_text_short}</itunes:summary>
