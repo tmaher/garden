@@ -40,6 +40,7 @@
 
 require 'date'
 require 'time'
+require 'digest'
 require 'erb'
 
 include ERB::Util
@@ -75,6 +76,8 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
 
   item[:title] = "#{raw[:_track]}. #{(raw[:_title] || file_short)}".gsub(/^\. /, '')
   item[:duration] = raw[:_duration_time] || raw[:duration].to_i
+  item[:url] = "#{conf[:url_base]}/#{url_encode(file)}"
+  item[:guid] = Digest::SHA256.file(file).hexdigest
 
   # Aquiring source metadata
   item_text_artist = raw[:_artist] || ""
@@ -83,7 +86,6 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   item_text_synopsis = raw[:_synopsis] || ""
   item_text_comment = raw[:_comment] || ""
   item_duration_source = raw[:_duration_time] || ""
-  item_pub_date_source = raw[:_date] || ""
 
   # Get correct artist; defaulting to artist
   if item_text_artist == ""
@@ -119,15 +121,14 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
   end
 
   # Set remaining metadata without logic
-  item_url = "#{conf[:url_base]}/#{url_encode(file)}"
+  #item_url = "#{conf[:url_base]}/#{url_encode(file)}"
   item_size_in_bytes = File.size(file).to_s
   item_duration = item_duration_source
-  item_pub_date = begin
-    Time.parse(item_pub_date_source).to_s
+  item[:pub_date] = begin
+    Time.parse(raw[:_date]).to_s
   rescue Exception => e
     Time.now.to_s
   end
-  item_guid = item_url + url_encode(conf[:pub_date])
 
   item_content = <<-HTML
     <item>
@@ -135,10 +136,10 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
       <description>#{item_text_long}</description>
       <itunes:subtitle>#{item_text_short}</itunes:subtitle>
       <itunes:summary>#{item_text_short}</itunes:summary>
-      <enclosure url="#{item_url}" length="#{item_size_in_bytes}" type="audio/mpeg" />
+      <enclosure url="#{item[:url]}" length="#{item_size_in_bytes}" type="audio/mpeg" />
       <category>Podcasts</category>
-      <pubDate>#{item_pub_date}</pubDate>
-      <guid>#{item_guid}</guid>
+      <pubDate>#{item[:pub_date]}</pubDate>
+      <guid>#{item[:guid]}</guid>
       <itunes:author>#{item_author}</itunes:author>
       <itunes:duration>#{item[:duration]}</itunes:duration>
     </item>
