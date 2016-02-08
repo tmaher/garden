@@ -69,7 +69,8 @@ conf[:url_homepage] ||= conf[:url_base]
 # Build the items
 items_content = ""
 item_iter=0
-Dir.glob("*.{mp3,m4a}").sort.each do |file|
+asset_files = Dir.glob("*.{mp3,m4a}")
+asset_files.sort.each do |file|
   puts "adding file: #{file}"
   file_short = file.gsub /\.(mp3|m4a)$/, ''
   item_iter += 1
@@ -96,7 +97,9 @@ Dir.glob("*.{mp3,m4a}").sort.each do |file|
   item[:category] = raw[:_genre] || "Podcasts"
 
   item[:pub_date] = begin
-    Time.parse(raw[:_date]).rfc822
+    # Time.parse(raw[:_date]).rfc822
+    # use fake pub_date to get sort order right
+    (Time.now - ((asset_files.count - item_iter) * 86400 * 365.25)).rfc822
   rescue Exception => e
     Time.now.rfc822
   end
