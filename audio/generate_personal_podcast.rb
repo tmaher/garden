@@ -68,9 +68,12 @@ conf[:url_homepage] ||= conf[:url_base]
 
 # Build the items
 items_content = ""
-Dir.glob("*.{mp3,m4a}"). each do |file|
+item_iter=0
+Dir.glob("*.{mp3,m4a}").sort.each do |file|
   puts "adding file: #{file}"
   file_short = file.gsub /\.(mp3|m4a)$/, ''
+  item_iter += 1
+  file_num = file.match(/\A\d+-/) ? file.match(/\A(\d+)-/)[1] : item_iter
 
   probe = `ffprobe 2> /dev/null -show_format \"#{file}\"`
 
@@ -81,6 +84,7 @@ Dir.glob("*.{mp3,m4a}"). each do |file|
     key, val = tag.match(tag_regexp)[1,2]
     raw[key.gsub(/^TAG:/, '_').to_sym] = val.to_s
   end
+  raw[:_track] ||= "#{file_num}"
 
   item[:title] = "#{raw[:_track]}. #{(raw[:_title] || file_short)}".gsub(/^\. /, '')
   item[:artist] = raw[:_artist] || raw[:_albumartist]
