@@ -5,7 +5,7 @@ require 'open3'
 require 'fileutils'
 
 CHAPTER_FILE = "chapters.txt"
-BOOK_FILE = "_book.m4b"
+BOOK_FILE = "_book.m4a"
 OLD_FILE = "_old.mp3"
 TMP_FILE = "_tmp.mp3"
 
