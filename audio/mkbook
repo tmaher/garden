@@ -38,5 +38,12 @@ puts "about to exec #{cmd_arr}"
 o,e,s = Open3.capture3(*cmd_arr)
 raise "\ncould not merge chapters\n#{e}" unless s.success?
 puts o
+
+cmd_arr = ['mp4chaps', '--convert', '--chapter-qt', BOOK_FILE]
+puts "about to exec #{cmd_arr}"
+o,e,s = Open3.capture3(*cmd_arr)
+raise "\ncould not convert chapter data\n#{e}" unless s.success?
+puts o
+
 puts "*"*20
 puts "DONE"
