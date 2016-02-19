@@ -25,8 +25,10 @@ chapters = ARGV.reduce(Array.new) {|files, path| files | Dir.glob(path) }
 raise "\nneed one or more files" if chapters.first.nil?
 
 chapters.sort!
-chapters.map! { |path| puts "I got #{path}"; AudioFile.new path }
+chapters.map! { |path| AudioFile.new path }
 read_time = 0.0
-marks = [0.0] | (chapters.map { |c| read_time += c.duration }).slice(0..-2)
+offsets = (chapters.map { |c| read_time += c.duration }).slice(0..-2)
+puts "I got #{offsets}"
+marks = [0.0] | offsets
 
 marks.each { |mark| puts "Startdate #{mark}" }
