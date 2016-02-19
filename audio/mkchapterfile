@@ -23,10 +23,12 @@ class AudioFile < File
 end
 
 def seconds_to_hmsms ts
-  total_seconds, milliseconds = ts.divmod 1
-  total_minutes, seconds = total_seconds.divmod 60
-  total_hours, minutes = total_minutes.divmod 60
-  sprintf "%02d:%02d:%02d.%.3f", total_hours, minutes, seconds, milliseconds
+  total_msec = (ts * 1000.0).to_i
+  total_sec, msec = total_msec.divmod 1000
+  total_min, sec = total_sec.divmod 60
+  total_hr, min = total_min.divmod 60
+
+  sprintf "%02d:%02d:%02d.%03d", total_hr, min, sec, msec
 end
 
 chapters = ARGV.reduce(Array.new) {|files, path| files | Dir.glob(path) }
