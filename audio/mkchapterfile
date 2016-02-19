@@ -27,7 +27,7 @@ raise "\nneed one or more files" if chapters.first.nil?
 
 chapters.sort!
 chapters.map! { |path| AudioFile.new path }
-chapters.each { |c| puts "#{c.path}: #{c.duration}" }
+chapters.each { |c| puts "#{c.path}: #{c.avinfo}" }
 
 read_time = ""
 offsets = (chapters.map { |c| read_time += c.duration }).slice(0..-2)
