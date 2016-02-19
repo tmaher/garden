@@ -22,7 +22,7 @@ class AudioFile < File
 end
 
 chapters = ARGV.reduce(Array.new) {|files, path| files | Dir.glob(path) }
-raise "need one or more files" if chapters.first.nil?
+raise "\nneed one or more files" if chapters.first.nil?
 
 chapters.sort!
 chapters.map! { |path| AudioFile.new path }
