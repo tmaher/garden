@@ -29,7 +29,7 @@ chapters.sort!
 chapters.map! { |path| AudioFile.new path }
 chapters.each { |c| puts "#{c.path}: #{c.duration}" }
 
-read_time = ""
+read_time = 0.0
 marks = [0.0] | (chapters.map { |c| read_time += c[:duration] }).slice(0..-2)
 
 marks.each { |mark| puts "Startdate #{mark}" }
