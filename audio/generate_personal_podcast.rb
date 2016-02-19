@@ -146,7 +146,7 @@ content = <<-HTML
 HTML
 
 # write it out
-output_file = File.new("podcast.rss", 'w')
+output_file = File.new("rss", 'w')
 re = "[^\x09\x0A\x0D\x20-\uD7FF\uE000-\uFFFD\u10000-\u10FFFF]" # Regex for avoiding XML problems
 content.gsub(re, "")
 output_file.write(content)
