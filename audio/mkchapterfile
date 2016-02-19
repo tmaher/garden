@@ -11,6 +11,7 @@ class AudioFile < File
     dump,e,s = Open3.capture2("avprobe", "-of", "json", "-show_format",
                               File.realpath(audio_file)
                               )
+    puts "dump: #{dump.class}, e: #{e.class}, s: #{s.class}"
     @avinfo = JSON.parse dump
     raise ProbeFail, e unless s.success?
     super
