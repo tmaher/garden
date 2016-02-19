@@ -11,15 +11,12 @@ class AudioFile < File
     dump,e,s = Open3.capture3("avprobe", "-of", "json", "-show_format",
                               File.realpath(audio_file)
                               )
-    @avinfo = JSON.parse dump
+    @avinfo = JSON.parse(dump)['format']
     raise ProbeFail, e unless s.success?
     super
   end
 
-  def avinfo ; @avinfo end
-  def [](key) @avinfo[key.to_s]  end
-  def duration; @avinfo['duration'] end
-  def method_missing(key) self[key] end
+  def [](key) @avinfo[key.to_s] end
 end
 
 chapters = ARGV.reduce(Array.new) {|files, path| files | Dir.glob(path) }
@@ -30,8 +27,6 @@ chapters.map! { |path| AudioFile.new path }
 chapters.each { |c| puts "#{c.path}: #{c.avinfo}" }
 
 read_time = ""
-offsets = (chapters.map { |c| read_time += c.duration }).slice(0..-2)
-puts "I got #{offsets}"
-marks = [0.0] | offsets
+marks = [0.0] | (chapters.map { |c| read_time += c[:duration] }).slice(0..-2)
 
 marks.each { |mark| puts "Startdate #{mark}" }
