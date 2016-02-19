@@ -48,6 +48,7 @@ include ERB::Util
 MIMES = { :default => "audio/mpeg",
   ".mp3" => "audio/mpeg",
   ".m4a" => "audio/x-m4a",
+  ".m4b" => "audio/x-m4b",
   ".mp4" => "video/mp4",
   ".m4v" => "video/x-m4v",
   ".mov" => "video/quicktime",
