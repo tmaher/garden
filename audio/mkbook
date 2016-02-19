@@ -2,6 +2,7 @@
 ENV['PATH'] += ":#{File.dirname __FILE__}"
 
 require 'open3'
+require 'fileutils'
 
 CHAPTER_FILE = "chapters.txt"
 BOOK_FILE = "_book.m4b"
