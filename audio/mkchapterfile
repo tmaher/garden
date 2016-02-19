@@ -28,7 +28,7 @@ chapters.sort!
 chapters.map! { |path| AudioFile.new path }
 chapters.each { |c| puts "#{c.path}: #{c.duration}" }
 
-read_time = 0.0
+read_time = ""
 offsets = (chapters.map { |c| read_time += c.duration }).slice(0..-2)
 puts "I got #{offsets}"
 marks = [0.0] | offsets
