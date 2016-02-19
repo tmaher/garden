@@ -69,7 +69,7 @@ conf[:url_homepage] ||= conf[:url_base]
 # Build the items
 items_content = ""
 item_iter=0
-asset_files = Dir.glob("*.{mp3,m4a}")
+asset_files = Dir.glob("*.{mp3,m4a,m4b}")
 asset_files.sort.each do |file|
   puts "adding file: #{file}"
   file_short = file.gsub /\.(mp3|m4a)$/, ''
