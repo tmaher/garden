@@ -89,7 +89,7 @@ asset_files.sort.each do |file|
   raw[:_track] ||= "#{file_num}"
 
   item[:title] = "#{raw[:_track]}. #{(raw[:_title] || file_short).gsub(/\A\d+-/, '')}".gsub(/^\. /, '')
-  item[:artist] = raw[:_artist] || raw[:_albumartist]
+  item[:artist] = raw[:_artist] || raw[:_albumartist] || item[:title]
   item[:duration] = raw[:_duration_time] || raw[:duration].to_i
   item[:url] = "#{conf[:url_base]}/#{url_encode(file)}"
   item[:guid] = Digest::SHA256.file(file).hexdigest
