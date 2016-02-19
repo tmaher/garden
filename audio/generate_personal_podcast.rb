@@ -109,6 +109,10 @@ asset_files.sort.each do |file|
   item[:desc_short] = raw[:_description] || raw[:_synopsis] || item[:artist] || ""
   item[:desc_long] = raw[:_synopsis] || raw[:_comment] || raw[:_description] || item[:artist] || ""
 
+  #<enclosure url=#{item[:url].encode(:xml => :attr)}
+  #  length=#{item[:size].encode(:xml => :attr)}
+  #  type=#{item[:mime].encode(:xml => :attr)} />
+
   item_content = <<-HTML
     <item>
       <title>#{item[:title].encode(:xml => :text)}</title>
@@ -116,7 +120,7 @@ asset_files.sort.each do |file|
       <itunes:subtitle>#{item[:desc_short].encode(:xml => :text)}</itunes:subtitle>
       <itunes:summary>#{item[:desc_short].encode(:xml => :text)}</itunes:summary>
       <enclosure url=#{item[:url].encode(:xml => :attr)}
-        length=#{item[:size].encode(:xml => :attr)}
+        length=""
         type=#{item[:mime].encode(:xml => :attr)} />
       <category>#{item[:category].encode(:xml => :text)}</category>
       <pubDate>#{item[:pub_date].encode(:xml => :text)}</pubDate>
