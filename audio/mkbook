@@ -5,6 +5,7 @@ require 'open3'
 require 'fileutils'
 
 CHAPTER_FILE = "chapters.txt"
+BOOK_WRAPPED = "_book_MP3WRAP.mp3"
 BOOK_FILE = "_book.mp3"
 OLD_FILE = "_old.mp3"
 TMP_FILE = "_tmp.mp3"
@@ -20,20 +21,26 @@ o,e,s = Open3.capture3(*cmd_arr)
 raise "\ncould not figure out chapters\n#{e}" unless s.success?
 File.open("chapters.txt", "w") { |f| f.write o }
 
-FileUtils.copy chapters.shift, OLD_FILE
-chapters.each_slice(10) do |files|
-  cmd_arr = ['MP4Box', '-flat', '-cat', OLD_FILE]
-  files.each { |chapter| cmd_arr.push "-cat", chapter }
-  cmd_arr.push TMP_FILE
-  puts "about to exec #{cmd_arr}"
-  o,e,s = Open3.capture3(*cmd_arr)
-  raise "\ncould not merge files\n#{e}" unless s.success?
-  puts o
-  FileUtils.mv TMP_FILE, OLD_FILE
-end
+#FileUtils.copy chapters.shift, OLD_FILE
+#chapters.each_slice(10) do |files|
+#  cmd_arr = ['MP4Box', '-flat', '-cat', OLD_FILE]
+#  files.each { |chapter| cmd_arr.push "-cat", chapter }
+#  cmd_arr.push TMP_FILE
+#  puts "about to exec #{cmd_arr}"
+#  o,e,s = Open3.capture3(*cmd_arr)
+#  raise "\ncould not merge files\n#{e}" unless s.success?
+#  puts o
+#  FileUtils.mv TMP_FILE, OLD_FILE
+#end
 
-cmd_arr = ['MP4Box', '-chap', CHAPTER_FILE,
-    '-flat', '-add', OLD_FILE, BOOK_FILE]
+cmd_arr = ['mp3wrap', '-v', BOOK_FILE] + chapters
+puts "about to exec #{cmd_arr}"
+o,e,s = Open3.capture3(*cmd_arr)
+raise "\ncould not wrap files\n#{e}" unless s.success?
+puts o
+FileUtils.mv BOOK_WRAPPED, BOOK_FILE
+
+cmd_arr = ['MP4Box', '-chap', CHAPTER_FILE, BOOK_FILE]
 puts "about to exec #{cmd_arr}"
 o,e,s = Open3.capture3(*cmd_arr)
 raise "\ncould not merge chapters\n#{e}" unless s.success?
