@@ -5,8 +5,8 @@ require 'open3'
 require 'fileutils'
 
 CHAPTER_FILE = "chapters.txt"
-BOOK_FILE = "_book.m4b"
-TMP_FILE = "_tmp.m4b"
+BOOK_FILE = "_book.mp3"
+TMP_FILE = "_tmp.mp3"
 
 chapters = ARGV.reduce(Array.new) {|files, path| files | Dir.glob(path) }
 raise "\nneed one or more files" if chapters.first.nil?
@@ -14,6 +14,7 @@ chapters.sort!
 
 cmd_arr = ARGV
 cmd_arr.unshift "mkchapterfile"
+puts "about to exec #{cmd_arr}"
 o,e,s = Open3.capture3(*cmd_arr)
 raise "\ncould not figure out chapters\n#{e}" unless s.success?
 File.open("chapters.txt", "w") { |f| f.write o }
@@ -23,13 +24,16 @@ chapters.each_slice(10) do |files|
   cmd_arr = ['MP4Box', '-flat', '-cat', BOOK_FILE]
   files.each { |chapter| cmd_arr.push "-cat", chapter }
   cmd_arr.push TMP_FILE
+  puts "about to exec #{cmd_arr}"
   o,e,s = Open3.capture3(*cmd_arr)
   raise "\ncould not merge files\n#{e}" unless s.success?
   puts o
   FileUtils.mv TMP_FILE, BOOK_FILE
 end
 
-o,e,s = Open3.capture3('MP4Box', '-chap', CHAPTER_FILE, BOOK_FILE)
+cmd_arr = ['MP4Box', '-chap', CHAPTER_FILE, BOOK_FILE]
+puts "about to exec #{cmd_arr}"
+o,e,s = Open3.capture3(*cmd_arr)
 raise "\ncould not merge chapters\n#{e}" unless s.success?
 puts o
 puts "*"*20
