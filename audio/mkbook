@@ -5,7 +5,8 @@ require 'open3'
 require 'fileutils'
 
 CHAPTER_FILE = "chapters.txt"
-BOOK_FILE = "_book.mp3"
+BOOK_FILE = "_book.m4b"
+OLD_FILE = "_old.mp3"
 TMP_FILE = "_tmp.mp3"
 
 chapters = ARGV.reduce(Array.new) {|files, path| files | Dir.glob(path) }
@@ -19,19 +20,20 @@ o,e,s = Open3.capture3(*cmd_arr)
 raise "\ncould not figure out chapters\n#{e}" unless s.success?
 File.open("chapters.txt", "w") { |f| f.write o }
 
-FileUtils.copy chapters.shift, BOOK_FILE
+FileUtils.copy chapters.shift, OLD_FILE
 chapters.each_slice(10) do |files|
-  cmd_arr = ['MP4Box', '-flat', '-cat', BOOK_FILE]
+  cmd_arr = ['MP4Box', '-flat', '-cat', OLD_FILE]
   files.each { |chapter| cmd_arr.push "-cat", chapter }
   cmd_arr.push TMP_FILE
   puts "about to exec #{cmd_arr}"
   o,e,s = Open3.capture3(*cmd_arr)
   raise "\ncould not merge files\n#{e}" unless s.success?
   puts o
-  FileUtils.mv TMP_FILE, BOOK_FILE
+  FileUtils.mv TMP_FILE, OLD_FILE
 end
 
-cmd_arr = ['MP4Box', '-chap', CHAPTER_FILE, BOOK_FILE]
+cmd_arr = ['MP4Box', '-chap', CHAPTER_FILE,
+    '-flat', '-add', OLD_FILE, BOOK_FILE]
 puts "about to exec #{cmd_arr}"
 o,e,s = Open3.capture3(*cmd_arr)
 raise "\ncould not merge chapters\n#{e}" unless s.success?
