@@ -16,7 +16,10 @@ class AudioFile < File
     super
   end
 
+  def avinfo; @avinfo end
   def [](key) @avinfo[key.to_s] end
+  def duration; self[:duration].to_f end
+  def method_missing(name) self[name] end
 end
 
 chapters = ARGV.reduce(Array.new) {|files, path| files | Dir.glob(path) }
@@ -24,7 +27,7 @@ raise "\nneed one or more files" if chapters.first.nil?
 
 chapters.sort!
 chapters.map! { |path| AudioFile.new path }
-chapters.each { |c| puts "#{c.path}: #{c.avinfo}" }
+chapters.each { |c| puts "#{c.path}: #{c.duration}" }
 
 read_time = ""
 marks = [0.0] | (chapters.map { |c| read_time += c[:duration] }).slice(0..-2)
