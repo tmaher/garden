@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'open3'
+
+class AudioFile < File
+  @avinfo = nil
+  class ProbeFail < StandardError ;end
+
+  def initialize audio_file
+    dump,e,s = Open3.capture2("avprobe", "-of", "json", "-show_format",
+                              File.realpath(audio_file)
+                              )
+    @avinfo = JSON.parse dump
+    raise ProbeFail.new(e) unless s.success?
+    super
+  end
+
+  def [](key) @avinfo[key.to_s]  end
+  def duration; self['duration'].to_f end
+  def method_missing(key) self[key] end
+end
+
+chapters = ARGV.reduce(Array.new) {|files, path| files | Dir.glob(path) }
+puts "need one or more files" if chapters.first.nil?
+
+chapters.sort!
+chapters.map! { |path| AudioFile.new path }
+read_time = 0.0
+marks = [0.0] | (chapters.map { |c| read_time += c.duration }).slice(0..-2)
+
+marks.each { |mark| puts "Startdate #{mark}" }
