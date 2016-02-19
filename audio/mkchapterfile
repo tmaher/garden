@@ -43,5 +43,5 @@ marks = [0.0] | (chapters.map { |c| read_time += c.duration }).slice(0..-2)
 count = 0
 marks.each do |mark|
   count += 1
-  puts "#{seconds_to_hmsms mark} Track #{count}"
+  puts "#{seconds_to_hmsms mark} Chapter #{count}"
 end
