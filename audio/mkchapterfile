@@ -17,7 +17,7 @@ class AudioFile < File
   end
 
   def [](key) @avinfo[key.to_s]  end
-  def duration; self['duration'].to_f end
+  def duration; self['duration'] end
   def method_missing(key) self[key] end
 end
 
