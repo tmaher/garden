@@ -22,14 +22,24 @@ class AudioFile < File
   def method_missing(name) self[name] end
 end
 
+def seconds_to_hmsms ts
+  total_seconds, milliseconds = ts.divmod 1
+  total_minutes, seconds = total_seconds.divmod 60
+  total_hours, minutes = total_minutes.divmod 60
+  sprintf "%02d:%02d:%02d.%.3f", total_hours, minutes, seconds, milliseconds
+end
+
 chapters = ARGV.reduce(Array.new) {|files, path| files | Dir.glob(path) }
 raise "\nneed one or more files" if chapters.first.nil?
 
 chapters.sort!
 chapters.map! { |path| AudioFile.new path }
-chapters.each { |c| puts "#{c.path}: #{c.duration}" }
 
 read_time = 0.0
 marks = [0.0] | (chapters.map { |c| read_time += c.duration }).slice(0..-2)
 
-marks.each { |mark| puts "Startdate #{mark}" }
+count = 0
+marks.each do |mark|
+  count += 1
+  puts "#{seconds_to_hmsms mark} Track #{count}"
+end
