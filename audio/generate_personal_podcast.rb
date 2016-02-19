@@ -56,7 +56,7 @@ MIMES = { :default => "audio/mpeg",
 
 # Import configuration data
 conf={}
-conf_regexp = /^\s*(\w[\w\_]\w*)\s*=\s*(.*)\s*$/
+conf_regexp = /^\s*(\w[\w]\w*)\s*=\s*(.*)\s*$/
 IO.readlines("config.txt").select {|l| l.match(conf_regexp)}.each do |line|
   key, val =  line.match(conf_regexp)[1,2]
   conf[key.gsub(/^(podcast|public)_/, '').to_sym] = val.to_s
@@ -72,7 +72,7 @@ item_iter=0
 asset_files = Dir.glob("*.{mp3,m4a,m4b}")
 asset_files.sort.each do |file|
   puts "adding file: #{file}"
-  file_short = file.gsub /\.(mp3|m4a)$/, ''
+  file_short = file.gsub(/\.(mp3|m4a|m4b)$/, '')
   item_iter += 1
   file_num = file.match(/\A\d+-/) ? file.match(/\A(\d+)-/)[1] : item_iter
 
@@ -80,7 +80,7 @@ asset_files.sort.each do |file|
 
   item = {}
   raw = {}
-  tag_regexp = /^(\w[\w:_]+)=(.+)$/
+  tag_regexp = /^(\w[\w:]+)=(.*)$/
   probe.split("\n").select { |x| x.match(tag_regexp) }.each do |tag|
     key, val = tag.match(tag_regexp)[1,2]
     raw[key.gsub(/^TAG:/, '_').to_sym] = val.to_s
@@ -101,6 +101,7 @@ asset_files.sort.each do |file|
     # use fake pub_date to get sort order right
     (Time.now - ((asset_files.count - item_iter) * 86400 * 365.25)).rfc822
   rescue Exception => e
+    puts "#{e}: faking the time"
     Time.now.rfc822
   end
 
