@@ -12,7 +12,7 @@ class AudioFile < File
                               File.realpath(audio_file)
                               )
     @avinfo = JSON.parse dump
-    raise ProbeFail.new(e) unless s.success?
+    raise ProbeFail, e unless s.success?
     super
   end
 
@@ -22,7 +22,7 @@ class AudioFile < File
 end
 
 chapters = ARGV.reduce(Array.new) {|files, path| files | Dir.glob(path) }
-puts "need one or more files" if chapters.first.nil?
+raise "need one or more files" if chapters.first.nil?
 
 chapters.sort!
 chapters.map! { |path| AudioFile.new path }
