@@ -100,7 +100,7 @@ asset_files.sort.each do |file|
   item[:pub_date] = begin
     # Time.parse(raw[:_date]).rfc822
     # use fake pub_date to get sort order right
-    (Time.new(0) + ((item_iter * 86400 * 365.24)/4)).rfc822
+    (Time.at(0) + ((item_iter * 86400 * 365.24)/4)).rfc822
   rescue Exception => e
     puts "#{e}: faking the time"
     Time.now.rfc822
