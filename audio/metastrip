@@ -2,11 +2,13 @@
 
 require 'trollop'
 require 'open3'
+require 'shellwords'
 
-def shellout args
-  raise ArgumentError, "\narray required\n" unless args.kind_of? Array
-  o,e,s = Open3.capture3 args
-  raise RuntimeError, "\nargs\n#{args}\nstderr\n#{e}\n" unless s.success?
+def shellout *args
+  raise "Strings only!" unless args.all? { |a| a.kind_of? String }
+  args[0] = Shellwords.escape args[0]
+  o,e,s = Open3.capture3(*args)
+  raise "\nargs\n#{args}\nstderr\n#{e}\n" unless s.success?
   o
 end
 
@@ -33,16 +35,16 @@ Trollop::die :out_dir, "output already exists" if File.readable? out
 if [opts[:audio], opts[:meta], opts[:output]].uniq.count != 3
   Trollop::die :audio, "audio, meta, and out must be different" ;end
 
-shellout ['avconv', '-i', opt[:audio], '-i', opt[:meta],
+shellout('avconv', '-i', opts[:audio], '-i', opts[:meta],
           '-map', '0:0', '-codec:0:0', 'copy',
           '-map_metadata:g', '1', '-map_chapters', '1',
-          out]
+          out)
 
 meta_art = opts[:meta].gsub(/\.(aax|m4a|m4b)\z/i, '.art[0].jpg')
-shellout ['mp4art', '--extract', opts[:meta]] unless File.readable? meta_art
+shellout('mp4art', '--extract', opts[:meta]) unless File.readable? meta_art
 raise "can't generate artfile" unless File.readable? meta_art
 
-shellout ['mp4art', '-z', '--add', meta_art, out]
+shellout('mp4art', '-z', '--add', meta_art, out)
 
 puts "*"*40
 puts "metadata-merged file is #{out}"
