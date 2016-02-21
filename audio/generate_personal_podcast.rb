@@ -156,6 +156,8 @@ content.gsub(re, "")
 output_file.write(content)
 output_file.close
 
+File.symlink("podcast.rss", "rss") unless File.exists? "rss"
+
 # = Sample AppleScript to auto-run this script. =
 # This AppleScript also touches the new file so that it's modification
 # date (and thus the pubDate in the podcast) are the date/time that you
