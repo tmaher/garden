@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+require 'trollop'
+require 'open3'
+
+def oexec *args
+  o,e,s = Open3.capture3 args
+  raise RuntimeError, "\nargs\n#{args}\nstderr\n#{e}\n" unless s.success?
+  o
+end
+
+opts = Trollop::options do
+  opt :audio, "audio input file", :type => String, :default => ""
+  opt :meta, "metadata input file", :type => String, :default => ""
+  opt :out_dir, "output directory", :type => String, :default => "final"
+end
+
+Trollop::die :audio, "need audio file" unless File.readable? opts[:audio]
+Trollop::die :meta, "need metadata" unless File.readable? opts[:meta]
+unless Dir.exists? opts[:out_dir]
+  if File.exists? opts[:out_dir]
+    Trollop::die :out_dir, "must specify *directory* for output"; end
+  Trollop::die :out_dir, "no such output directory"
+end
+out = File.join opts[:out_dir], File.basename(opts[:audio])
+Trollop::die :out_dir, "output already exists" if File.readable? out
+if [opts[:audio], opts[:meta], opts[:output]].uniq.count != 3
+  Trollop::die :audio, "audio, meta, and out must be different" ;end
+
+meta_art = opts[:meta].gsub /\.(aax|m4a|m4b)\z/i, '.art[0].jpg'
+oexec('mp4art', '--extract', opts[:meta])
+art_file = "#{opts[:meta]}
