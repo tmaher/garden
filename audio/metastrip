@@ -3,7 +3,8 @@
 require 'trollop'
 require 'open3'
 
-def oexec *args
+def shellout args
+  raise ArgumentError, "\narray required\n" unless args.kind_of? Array
   o,e,s = Open3.capture3 args
   raise RuntimeError, "\nargs\n#{args}\nstderr\n#{e}\n" unless s.success?
   o
@@ -13,20 +14,35 @@ opts = Trollop::options do
   opt :audio, "audio input file", :type => String, :default => ""
   opt :meta, "metadata input file", :type => String, :default => ""
   opt :out_dir, "output directory", :type => String, :default => "final"
+  opt :force, "overwrite output & art", :default => false
 end
 
 Trollop::die :audio, "need audio file" unless File.readable? opts[:audio]
 Trollop::die :meta, "need metadata" unless File.readable? opts[:meta]
+Dir.mkdir opts[:out_dir] if opts[:force] and !(Dir.exists? opts[:out_dir])
 unless Dir.exists? opts[:out_dir]
   if File.exists? opts[:out_dir]
-    Trollop::die :out_dir, "must specify *directory* for output"; end
-  Trollop::die :out_dir, "no such output directory"
+    Trollop::die :out_dir, "must specify *directory* for output"
+  else
+    Trollop::die :out_dir, "no such output directory"
+  end
 end
 out = File.join opts[:out_dir], File.basename(opts[:audio])
+File.unlink out if opts[:force] and File.readable? out
 Trollop::die :out_dir, "output already exists" if File.readable? out
 if [opts[:audio], opts[:meta], opts[:output]].uniq.count != 3
   Trollop::die :audio, "audio, meta, and out must be different" ;end
 
-meta_art = opts[:meta].gsub /\.(aax|m4a|m4b)\z/i, '.art[0].jpg'
-oexec('mp4art', '--extract', opts[:meta])
-art_file = "#{opts[:meta]}
+shellout ['avconv', '-i', opt[:audio], '-i', opt[:meta],
+          '-map', '0:0', '-codec:0:0', 'copy',
+          '-map_metadata:g', '1', '-map_chapters', '1',
+          out]
+
+meta_art = opts[:meta].gsub(/\.(aax|m4a|m4b)\z/i, '.art[0].jpg')
+shellout ['mp4art', '--extract', opts[:meta]] unless File.readable? meta_art
+raise "can't generate artfile" unless File.readable? meta_art
+
+shellout ['mp4art', '-z', '--add', meta_art, out]
+
+puts "*"*40
+puts "metadata-merged file is #{out}"
