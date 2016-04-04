@@ -19,6 +19,7 @@ opts = Trollop::options do
   opt :force, "overwrite output & art", :default => false
 end
 
+metafile=nil
 Trollop::die :audio, "need audio file" unless File.readable? opts[:audio]
 if opts[:meta].empty?
   audio_base = File.basename(opts[:audio], ".m4a")
@@ -26,10 +27,10 @@ if opts[:meta].empty?
   candidates = Dir.glob("#{bookdir}/itunes/*/#{audio_base}.{aax,m4a,m4b}")
   raise "can't infer metafile" if candidates.empty?
   raise "too many meta-candidates" if candidates.length > 1
-  meta = candidates[0]
+  metafile = candidates[0]
 else
   Trollop::die :meta, "need metadata" unless File.readable? opts[:meta]
-  meta = opts[:meta]
+  metafile = opts[:meta]
 end
 
 Dir.mkdir opts[:out_dir] if opts[:force] and !(Dir.exists? opts[:out_dir])
@@ -43,7 +44,7 @@ end
 out = File.join opts[:out_dir], File.basename(opts[:audio])
 File.unlink out if opts[:force] and File.readable? out
 Trollop::die :out_dir, "output already exists" if File.readable? out
-if [opts[:audio], meta, opts[:output]].uniq.count != 3
+if [opts[:audio], metafile, opts[:output]].uniq.count != 3
   Trollop::die :audio, "audio, meta, and out must be different" ;end
 
 shellout('avconv', '-i', opts[:audio], '-i', metafile,
