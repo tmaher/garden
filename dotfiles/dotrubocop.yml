@@ -1,3 +1,55 @@
 AllCops:
   TargetRubyVersion: 2.2
   DisabledByDefault: false
+
+Metrics/LineLength:
+  Enabled: false
+
+Style/AndOr:
+  Enabled: false
+Style/HashSyntax:
+  Enabled: false
+Style/IfUnlessModifier:
+  Enabled: false
+Style/LeadingCommentSpace:
+  Enabled: false
+Style/RegexpLiteral:
+  Enabled: false
+Style/SpaceAfterComma:
+  Enabled: false
+Style/SpaceAroundOperators:
+  Enabled: false
+Style/SpaceInsideBlockBraces:
+  Enabled: false
+Style/SpaceInsideBrackets:
+  Enabled: false
+Style/SpaceInsideHashLiteralBraces:
+  Enabled: false
+Style/StringLiterals:
+  Enabled: false
+Style/TrailingCommaInLiteral:
+  Enabled: false
+Style/WordArray:
+  Enabled: false
+
+# **DO NOT DISABLE**
+Lint/Debugger:
+  Enabled: true
+Lint/FormatParameterMismatch:
+  Enabled: true
+Lint/LiteralInInterpolation:
+  Enabled: true
+
+Performance/DoubleStartEndWith:
+  Enabled: true
+
+Style/For:
+  Enabled: true
+Style/InitialIndentation:
+  Enabled: true
+Style/LambdaCall:
+  Enabled: true
+Style/MultilineIfThen:
+  Enabled: true
+Style/OneLineConditional:
+  Enabled: true
