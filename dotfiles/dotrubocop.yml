@@ -2,10 +2,29 @@ AllCops:
   TargetRubyVersion: 2.2
   DisabledByDefault: false
 
+Metrics/AbcSize:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
 Metrics/LineLength:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/ModuleLength:
+  Enabled: false
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Performance/Casecmp:
   Enabled: false
 
 Style/AndOr:
+  Enabled: false
+Style/EmptyLines:
+  Enabled: false
+Style/EmptyLiteral:
   Enabled: false
 Style/HashSyntax:
   Enabled: false
@@ -13,9 +32,19 @@ Style/IfUnlessModifier:
   Enabled: false
 Style/LeadingCommentSpace:
   Enabled: false
+Style/MethodCallParentheses:
+  Enabled: false
+Style/MethodDefParentheses:
+  Enabled: false
+Style/NumericLiterals:
+  Enabled: false
+Style/RaiseArgs:
+  EnforcedStyle: compact
 Style/RegexpLiteral:
   Enabled: false
 Style/SpaceAfterComma:
+  Enabled: false
+Style/SpaceAroundEqualsInParameterDefault:
   Enabled: false
 Style/SpaceAroundOperators:
   Enabled: false
@@ -24,6 +53,8 @@ Style/SpaceInsideBlockBraces:
 Style/SpaceInsideBrackets:
   Enabled: false
 Style/SpaceInsideHashLiteralBraces:
+  Enabled: false
+Style/SpaceInsideParens:
   Enabled: false
 Style/StringLiterals:
   Enabled: false
