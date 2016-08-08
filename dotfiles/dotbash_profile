@@ -12,7 +12,7 @@ MANPATH=$MANPATH:/usr/man:/usr/kerberos/man:/usr/X11R6/man
 MANPATH=$MANPATH:/Library/Developer/CommandLineTools/usr/share/man
 export MANPATH
 
-EDITOR=emacs
+EDITOR=atom
 SVN_EDITOR=$EDITOR
 export EDITOR
 export SVN_EDITOR
@@ -20,7 +20,7 @@ export SVN_EDITOR
 export PAGER=less
 export BLOCKSIZE=K
 
-HOST_SHORT=`hostname | tr A-Z a-z | sed  -e 's/\.tursom\.org$//'`
+HOST_SHORT=`hostname | tr A-Z a-z | sed  -e 's/\.pw0n\.me$//'`
 export HOST_SHORT
 
 if readlink /bin/sh | grep bash >/dev/null; then
@@ -31,7 +31,8 @@ fi
 export RUBY_BUILD_DEFINITIONS="${HOME}/.rbenv/site-build-definitions"
 export RUBY_CONFIGURE_OPTS="--with-arch=x86_64,i386 --with-openssl-dir=/usr/local/opt/openssl"
 
-# Cribbed from rbenv 0.4.0, 2014-12-12
+# Cribbed from rbenv 1.0.0, 2016-08-08
+
 # source "/usr/local/Cellar/rbenv/0.4.0/libexec/../completions/rbenv.bash"
 _rbenv() {
   COMPREPLY=()
@@ -51,32 +52,19 @@ complete -F _rbenv rbenv
 
 rbenv rehash 2>/dev/null
 rbenv() {
-  typeset command
+  local command
   command="$1"
   if [ "$#" -gt 0 ]; then
     shift
   fi
 
   case "$command" in
-    rehash|shell)
-    eval `rbenv "sh-$command" "$@"`;;
-    *)
+  rehash|shell)
+    eval "$(rbenv "sh-$command" "$@")";;
+  *)
     command rbenv "$command" "$@";;
   esac
 }
-
-export EC2_PRIVATE_KEY="$HOME/.ec2/pk.pem"
-export EC2_CERT="$HOME/.ec2/cert.pem"
-if [ `uname` == 'Darwin' ]; then
-  export JAVA_HOME="$(/usr/libexec/java_home)"
-  export EC2_HOME="/usr/local/Cellar/ec2-api-tools/1.6.1.2/jars"
-  export AWS_IAM_HOME="/usr/local/Cellar/aws-iam-tools/1.5.0/jars"
-  export AWS_CREDENTIAL_FILE="/Volumes/tmprv/heroku/master-creds-for-iam-tools.txt"
-fi
-
-PGHOST="/var/pgsql_socket"; export PGHOST
-
-krenew >/dev/null 2>&1
 
 proxy(){
   if [ x${http_proxy} = "x" ] || [ x${SSL_CERT_FILE} = "x" ]; then
