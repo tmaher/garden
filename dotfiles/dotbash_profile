@@ -12,7 +12,7 @@ MANPATH=$MANPATH:/usr/man:/usr/kerberos/man:/usr/X11R6/man
 MANPATH=$MANPATH:/Library/Developer/CommandLineTools/usr/share/man
 export MANPATH
 
-EDITOR=atom
+EDITOR=vim
 SVN_EDITOR=$EDITOR
 export EDITOR
 export SVN_EDITOR
