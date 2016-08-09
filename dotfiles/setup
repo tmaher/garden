@@ -15,6 +15,7 @@ ${INST} dotbash_logout "${HOME}/.bash_logout"
 ${INST} dotscreenrc "${HOME}/.screenrc"
 ${INST} dottmuxdotconf "${HOME}/.tmux.conf"
 ${INST} dotalias "${HOME}/.alias"
+${INST} dotrubocop.yml "${HOME}/.rubocop.yml"
 
 if [ -r /etc/debian_version ]; then
   ${INST} dotinputrc "${HOME}/.inputrc"
