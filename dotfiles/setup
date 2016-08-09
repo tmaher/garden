@@ -1,7 +1,8 @@
 #!/bin/bash
 
 export NOROOT=1
-. `dirname "$0"`/../gen/setup_hdr
+# shellcheck source=../gen/setup_hdr
+source "$(dirname "$0")/../gen/setup_hdr"
 
 if [ ! -r dotbashrc ]; then
   echo "ERROR: can't find stuff"
