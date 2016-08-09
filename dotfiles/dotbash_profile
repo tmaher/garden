@@ -87,4 +87,5 @@ proxy(){
   echo "***************************"
 }
 
+go-ssh-add add-all 2>/dev/null
 . $HOME/.bashrc
