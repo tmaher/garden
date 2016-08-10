@@ -22,6 +22,8 @@ Performance/Casecmp:
 
 Style/AndOr:
   Enabled: false
+Style/ClassAndModuleChildren
+  EnforcedStyle: compact
 Style/EmptyLines:
   Enabled: false
 Style/EmptyLiteral:
