@@ -1,7 +1,7 @@
 alias bismuth="ssh bismuth"
 alias cobalt="ssh cobalt"
 alias tmux="tmux-wrap"
-alias h="ruby /usr/bin/heroku"
+alias h="/usr/local/bin/heroku"
 alias less="less -R"
 alias irb="pry"
 if [ `uname` = "Linux" ]; then
