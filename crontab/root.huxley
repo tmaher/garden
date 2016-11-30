@@ -1,0 +1,2 @@
+10,25,40,55 * * * * chgrp -R avclub /home/sabnzbd/mason/downloads/couchpotato; chmod -R g+w /home/sabnzbd/mason/downloads/couchpotato
+10,25,40,55 * * * * chgrp -R avclub /home/sabnzbd/mason/downloads/sonarr ; chmod -R g+w /home/sabnzbd/mason/downloads/sonarr
