@@ -1,0 +1,28 @@
+#!/bin/bash -x
+
+set -e
+set -o pipefail
+
+. /etc/cfddnsupdate.conf
+
+old_v4=$(dig +short @${CF_NS} -t A    ${MY_FQDN})
+old_v6=$(dig +short @${CF_NS} -t AAAA ${MY_FQDN})
+
+my_v6=$(curl -6 https://diagnostic.opendns.com/myip)
+my_v4=$(curl -4 https://diagnostic.opendns.com/myip)
+
+if [ "${old_v4}" != "${my_v4}" ]; then
+  curl -H "X-Auth-Email:$CF_EMAIL" -H "X-Auth-Key:$CF_KEY" \
+    -H "Content-Type: application/json" \
+    -X PUT \
+    "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records/$CF_A_RECORD"
+    --data '{"type":"AAAA", "name": "'${MY_NAME}'", "content": "'${my_v4}'"}'
+fi
+
+if [ "${old_v6}" != "${my_v6}" ]; then
+  curl -H "X-Auth-Email:$CF_EMAIL" -H "X-Auth-Key:$CF_KEY" \
+    -H "Content-Type: application/json" \
+    -X PUT \
+    "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records/$CF_AAAA_RECORD"
+    --data '{"type":"AAAA", "name": "'${MY_NAME}'", "content": "'${my_v6}'"}'
+fi
