@@ -16,7 +16,7 @@ if [ "${old_v4}" != "${my_v4}" ]; then
     -H "Content-Type: application/json" \
     -X PUT \
     "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records/$CF_A_RECORD" \
-    --data '{"type":"A", "ttl": 101, "name": "'${MY_NAME}'", "content": "'${my_v4}'"}'
+    --data '{"type":"A", "ttl": 120, "name": "'${MY_NAME}'", "content": "'${my_v4}'"}'
 fi
 
 if [ "${old_v6}" != "${my_v6}" ]; then
@@ -24,5 +24,5 @@ if [ "${old_v6}" != "${my_v6}" ]; then
     -H "Content-Type: application/json" \
     -X PUT \
     "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records/$CF_AAAA_RECORD" \
-    --data '{"type":"AAAA", "ttl": 101, "name": "'${MY_NAME}'", "content": "'${my_v6}'"}'
+    --data '{"type":"AAAA", "ttl": 120, "name": "'${MY_NAME}'", "content": "'${my_v6}'"}'
 fi
