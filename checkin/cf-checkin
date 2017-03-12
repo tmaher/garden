@@ -15,14 +15,14 @@ if [ "${old_v4}" != "${my_v4}" ]; then
   curl -H "X-Auth-Email:$CF_EMAIL" -H "X-Auth-Key:$CF_KEY" \
     -H "Content-Type: application/json" \
     -X PUT \
-    "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records/$CF_A_RECORD"
-    --data '{"type":"AAAA", "ttl": 101, "name": "'${MY_NAME}'", "content": "'${my_v4}'"}'
+    "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records/$CF_A_RECORD" \
+    --data '{"type":"A", "ttl": 101, "name": "'${MY_NAME}'", "content": "'${my_v4}'"}'
 fi
 
 if [ "${old_v6}" != "${my_v6}" ]; then
   curl -H "X-Auth-Email:$CF_EMAIL" -H "X-Auth-Key:$CF_KEY" \
     -H "Content-Type: application/json" \
     -X PUT \
-    "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records/$CF_AAAA_RECORD"
+    "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records/$CF_AAAA_RECORD" \
     --data '{"type":"AAAA", "ttl": 101, "name": "'${MY_NAME}'", "content": "'${my_v6}'"}'
 fi
