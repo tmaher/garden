@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+cmd = '/usr/local/opt/openssl/bin/openssl'
+bundle_file = '/usr/local/etc/openssl/cert.pem'
+
+KEYCHAINS= [
+  '/System/Library/Keychains/SystemRootCertificates.keychain',
+  "#{ENV['HOME']}/Library/Keychains/login.keychain"
+].freeze
+
+certs_list = `security find-certificate -a -p #{KEYCHAINS.join(" ")}`
+certs = certs_list.scan(
+  /-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----/m
+)
+
+valid_certs = certs.select do |cert|
+  IO.popen("#{cmd} x509 -inform pem -checkend 0 -noout", "w") do |openssl_io|
+    openssl_io.write(cert)
+    openssl_io.close_write
+  end
+  $?.success?
+end
+
+
+#openssldir.mkpath
+#(openssldir/"cert.pem").atomic_write(valid_certs.join("\n"))
+File.open(bundle_file, 'w') { |f| f.write(valid_certs.join("\n"))}
+
+#puts "first cert: #{valid_certs[0]}"
