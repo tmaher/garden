@@ -41,12 +41,13 @@ unless Dir.exists? opts[:out_dir]
     Trollop::die :out_dir, "no such output directory"
   end
 end
-out = File.join opts[:out_dir], File.basename(opts[:audio])
+out = "#{opts[:out_dir]}/#{File.basename(opts[:audio], '.m4b')}.m4a"
 File.unlink out if opts[:force] and File.readable? out
 Trollop::die :out_dir, "output already exists" if File.readable? out
 if [opts[:audio], metafile, opts[:output]].uniq.count != 3
   Trollop::die :audio, "audio, meta, and out must be different" ;end
 
+puts "Writing to #{out}"
 shellout('avconv', '-i', opts[:audio], '-i', metafile,
           '-map', '0:0', '-codec:0:0', 'copy',
           '-map_metadata:g', '1', '-map_chapters', '1',
