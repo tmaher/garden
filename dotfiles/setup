@@ -9,12 +9,12 @@ if [ ! -r dotbashrc ]; then
   exit 1
 fi
 
-${INST} dotbashrc "${HOME}/.bashrc"
-${INST} dotbash_profile "${HOME}/.bash_profile"
-${INST} dotbash_logout "${HOME}/.bash_logout"
+${INST} dotbashrc.sh "${HOME}/.bashrc"
+${INST} dotbash_profile.sh "${HOME}/.bash_profile"
+${INST} dotbash_logout.sh "${HOME}/.bash_logout"
 ${INST} dotscreenrc "${HOME}/.screenrc"
 ${INST} dottmuxdotconf "${HOME}/.tmux.conf"
-${INST} dotalias "${HOME}/.alias"
+${INST} dotalias.sh "${HOME}/.alias"
 ${INST} dotrubocop.yml "${HOME}/.rubocop.yml"
 
 if [ -r /etc/debian_version ]; then
