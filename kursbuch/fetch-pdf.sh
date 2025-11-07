@@ -12,6 +12,11 @@ mkdir -p pdfs && cd pdfs
 let interval=0
 for url in $(cat ../html/list); do
   echo "fetching ${url}"
+  file=$(echo "${url}" | cut -f 7 -d / | cut -f 1 -d \?)
+  if [ -r "${file}" ]; then
+    echo "CACHE HIT - ${file} - skipping"
+    continue
+  fi
   curl -s --retry 5 --retry-delay 3 -O "${url}" &
   let interval++
   if [ ${interval} -gt 14 ] ; then

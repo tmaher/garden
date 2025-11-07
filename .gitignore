@@ -4,4 +4,6 @@ emacs/emacs.d/nxhtml/etc/schema/xhtml-loader.rnc
 emacs/emacs.d/auto-save-list/
 emacs/emacs.d/url/
 *.elc
-
+kursbuch/pdfs/*.pdf
+kursbuch/html/*.html
+kursbuch/html/list
